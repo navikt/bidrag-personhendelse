@@ -1,0 +1,60 @@
+application:
+  name: familie-ba-mottak
+
+server:
+  servlet:
+    context-path: /
+  port: 8090
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  autoconfigure.exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+  main.banner-mode: "off"
+  kafka:
+    client-id: bidrag-person-hendelse
+    properties:
+      security.protocol: SASL_SSL
+      sasl:
+        mechanism: PLAIN
+        jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${CREDENTIAL_USERNAME}" password="${CREDENTIAL_PASSWORD}";
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      max-poll-records: 1
+      auto-offset-reset: none
+      enable-auto-commit: false
+  http:
+    encoding:
+      charset: UTF-8
+  jackson:
+    deserialization:
+      # Allerede satt i felles, setter her slik at det gjelder for rest-params også
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+
+logging:
+  config: "classpath:logback-spring.xml"
+
+retry.backoff.delay: 5000
+
+funksjonsbrytere:
+  enabled: true
+  unleash:
+    uri: https://unleash.nais.io/api/
+    cluster: ${NAIS_CLUSTER_NAME}
+    applicationName: ${NAIS_APP_NAME}
+
+prosessering:
+  queue:
+    capacity: 10
+  pool:
+    size: 2
+
+management:
+  endpoint.health.show-details: always
+  endpoints.web:
+    exposure.include: info, health, metrics, prometheus
+    base-path: "/internal"
+  metrics.export.prometheus.enabled: true
+  health:
+    db:
+      enabled: true
