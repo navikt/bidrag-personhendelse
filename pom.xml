@@ -24,6 +24,7 @@
         <mockk.version>1.12.4</mockk.version>
         <confluent.version>6.2.5</confluent.version>
         <prosessering.version>1.20220624132237_7f5ba9c</prosessering.version>
+        <logback.encoder.version>6.6</logback.encoder.version>
         <spring.vault.version>2.3.2</spring.vault.version>
         <spring.cloud.version>3.1.1</spring.cloud.version>
         <token-validation-spring.version>2.1.1</token-validation-spring.version>
@@ -155,9 +156,17 @@
             <version>${spring.vault.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.papertrailapp</groupId>
-            <artifactId>logback-syslog4j</artifactId>
-            <version>1.0.0</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logback.encoder.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

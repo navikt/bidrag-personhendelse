@@ -53,7 +53,7 @@
         <appender-ref ref="stdout_json"/>
     </root>
 
-    <logger name="no.nav.bidrag.person" level="INFO"/>
+    <logger name="no.nav.bidrag.person.hendelse" level="INFO"/>
 
     <logger name="secureLogger" level="INFO" additivity="false" >
         <appender-ref ref="secureLog" />
