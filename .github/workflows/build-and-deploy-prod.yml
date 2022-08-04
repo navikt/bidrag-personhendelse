@@ -2,10 +2,10 @@ name: Build-Deploy-Prod
 on:
   push:
     branches:
-      - master
+      - main
 env:
-  IMAGE: ghcr.io/navikt/familie-ba-mottak:${{ github.sha }}
-  IMAGE_LATEST: ghcr.io/navikt/familie-ba-mottak:latest
+  IMAGE: ghcr.io/navikt/bidrag-person-hendelse:${{ github.sha }}
+  IMAGE_LATEST: ghcr.io/navikt/bidrag-person-hendelse:latest
 jobs:
   deploy-to-prod:
     name: Bygg app/image, push til github, deploy til dev-gcp

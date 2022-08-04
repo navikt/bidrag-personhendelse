@@ -39,9 +39,7 @@ spec:
   tokenx:
     enabled: true
   ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
-    - https://bidrag-person-hendelse.nais.adeo.no
-    - https://bidrag-person-hendelse.prod-fss-pub.nais.io
-    - https://bidrag-person-hendelse.prod-fss.nais.io
+    - https://bidrag-person-hendelse.intern.nav.no
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod

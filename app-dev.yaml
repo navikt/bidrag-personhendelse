@@ -35,7 +35,7 @@ spec:
       memory: 1024Mi
       cpu: 200m
   ingresses:
-    - https://bidrag-person-hendelse.dev-fss-pub.nais.io
+    - https://bidrag-person-hendelse.dev.intern.nav.no
     - https://bidrag-person-hendelse.dev.adeo.no
   secureLogs:
     enabled: true
@@ -43,7 +43,7 @@ spec:
     enabled: true
   env:
     - name: SPRING_PROFILES_ACTIVE
-      value: preprod
+      value: dev
   azure:
     application:
       enabled: true
