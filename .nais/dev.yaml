@@ -35,6 +35,9 @@ spec:
   ingresses:
     - https://bidrag-person-hendelse.dev.intern.nav.no
     - https://bidrag-person-hendelse.dev.adeo.no
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: dev, nais
   secureLogs:
     enabled: true
   kafka:
