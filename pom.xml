@@ -26,7 +26,6 @@
         <prosessering.version>1.20220624132237_7f5ba9c</prosessering.version>
         <logback.encoder.version>6.6</logback.encoder.version>
         <spring.cloud.version>3.1.1</spring.cloud.version>
-        <token-validation-spring.version>2.1.1</token-validation-spring.version>
     </properties>
 
     <dependencies>
@@ -110,13 +109,6 @@
             <version>4.4.1</version>
         </dependency>
 
-        <!-- NAV interne avhengigheter-->
-        <dependency>
-            <groupId>no.nav.security</groupId>
-            <artifactId>token-client-spring</artifactId>
-            <version>${token-validation-spring.version}</version>
-        </dependency>
-
         <!-- Kafka -->
         <dependency>
             <groupId>org.apache.avro</groupId>
@@ -167,10 +159,6 @@
             <artifactId>httpcore</artifactId>
             <version>4.4.15</version>
         </dependency>
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-        </dependency>
 
         <!-- Test -->
         <dependency>
@@ -195,12 +183,6 @@
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility-kotlin</artifactId>
             <version>4.2.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.security</groupId>
-            <artifactId>token-validation-test-support</artifactId>
-            <version>2.0.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
