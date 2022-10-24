@@ -1,6 +1,7 @@
 package no.nav.bidrag.person.hendelse.prosess
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.integrasjon.distribuere.Meldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
@@ -32,7 +33,7 @@ class Livshendelsebehandler(
                     log.error("Mangler dødsdato. Ignorerer hendelse ${livshendelse.hendelseId}")
                 }
 
-                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Gson().toJson(livshendelse))
+                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
             }
 
             else -> {
@@ -54,7 +55,8 @@ class Livshendelsebehandler(
                         log.info("Fødeland er ikke Norge. Ignorerer hendelse ${livshendelse.hendelseId}")
                     }
                 }
-                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Gson().toJson(livshendelse))
+
+                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
             }
 
             ANNULLERT -> {
@@ -69,12 +71,19 @@ class Livshendelsebehandler(
         }
     }
 
+    private fun oppretteGson(): Gson {
+        var gsonbuilder = GsonBuilder()
+        gsonbuilder.registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
+        var gson = gsonbuilder.create()
+        return gson
+    }
+
     private fun behandleUtflyttingHendelse(livshendelse: Livshendelse) {
 
         when (livshendelse.endringstype) {
             OPPRETTET -> {
                 logHendelse(livshendelse, "utflyttingsdato: ${livshendelse.utflyttingsdato}")
-                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Gson().toJson(livshendelse))
+                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
             }
 
             else -> {
@@ -88,7 +97,7 @@ class Livshendelsebehandler(
         when (livshendelse.endringstype) {
             OPPRETTET -> {
                 logHendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstandDato}")
-                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Gson().toJson(livshendelse))
+                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
             }
 
             else -> {

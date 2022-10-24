@@ -9,6 +9,7 @@ import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.springframework.core.env.Environment
 import java.time.LocalDate
 import java.util.*
 import kotlin.random.Random
@@ -22,7 +23,8 @@ class LivshendelsebehandlerTest {
 
     @BeforeEach
     internal fun setUp() {
-        mockMeldingsprodusent = mockk<Meldingsprodusent>(relaxed = true)
+        mockMeldingsprodusent = mockk(relaxed = true)
+        egenskaperWmq = mockk(relaxed = true)
         service = Livshendelsebehandler(egenskaperWmq, mockMeldingsprodusent)
         clearAllMocks()
     }
