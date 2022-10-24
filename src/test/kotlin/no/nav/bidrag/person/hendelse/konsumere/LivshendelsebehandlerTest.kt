@@ -3,25 +3,27 @@ package no.nav.bidrag.person.hendelse.konsumere
 import io.mockk.clearAllMocks
 import io.mockk.mockk
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
-import no.nav.bidrag.person.hendelse.integrasjon.motta.LivshendelseService
+import no.nav.bidrag.person.hendelse.integrasjon.distribuere.Meldingsprodusent
+import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
+import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.springframework.core.env.Environment
 import java.time.LocalDate
 import java.util.*
 import kotlin.random.Random
 import kotlin.random.nextUInt
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class LivshendelseServiceTest {
-    lateinit var mockenv: Environment
-    lateinit var service: LivshendelseService
+class LivshendelsebehandlerTest {
+    lateinit var  mockMeldingsprodusent: Meldingsprodusent
+    lateinit var service: Livshendelsebehandler
+    lateinit var egenskaperWmq: Wmq
 
     @BeforeEach
     internal fun setUp() {
-        mockenv = mockk<Environment>(relaxed = true)
-        service = LivshendelseService()
+        mockMeldingsprodusent = mockk<Meldingsprodusent>(relaxed = true)
+        service = Livshendelsebehandler(egenskaperWmq, mockMeldingsprodusent)
         clearAllMocks()
     }
 
@@ -33,8 +35,8 @@ class LivshendelseServiceTest {
             gjeldendeAktørId = "1234567890123",
             hendelseId = hendelseId,
             personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = LivshendelseService.OPPRETTET,
-            opplysningstype = LivshendelseService.OPPLYSNINGSTYPE_DØDSFALL,
+            endringstype = Livshendelsebehandler.OPPRETTET,
+            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_DOEDSFALL,
             dødsdato = LocalDate.now()
         )
 
@@ -49,8 +51,8 @@ class LivshendelseServiceTest {
             gjeldendeAktørId = "1234567890123",
             hendelseId = hendelseId,
             personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = LivshendelseService.OPPRETTET,
-            opplysningstype = LivshendelseService.OPPLYSNINGSTYPE_UTFLYTTING,
+            endringstype = Livshendelsebehandler.OPPRETTET,
+            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_UTFLYTTING,
             utflyttingsdato = LocalDate.now()
         )
 
@@ -65,8 +67,8 @@ class LivshendelseServiceTest {
             gjeldendeAktørId = "1234567890123",
             hendelseId = hendelseId,
             personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = LivshendelseService.OPPRETTET,
-            opplysningstype = LivshendelseService.OPPLYSNINGSTYPE_SIVILSTAND,
+            endringstype = Livshendelsebehandler.OPPRETTET,
+            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_SIVILSTAND,
             sivilstand = "GIFT",
             sivilstandDato = LocalDate.of(2022, 2, 22),
         )
@@ -83,8 +85,8 @@ class LivshendelseServiceTest {
             gjeldendeAktørId = "1234567890123",
             hendelseId = hendelseId,
             personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = LivshendelseService.OPPRETTET,
-            opplysningstype = LivshendelseService.OPPLYSNINGSTYPE_FØDSEL,
+            endringstype = Livshendelsebehandler.OPPRETTET,
+            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_FOEDSEL,
             fødselsdato = LocalDate.now(),
             fødeland = "NOR"
         )
@@ -100,8 +102,8 @@ class LivshendelseServiceTest {
             gjeldendeAktørId = "1234567890123",
             hendelseId = hendelseId,
             personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = LivshendelseService.OPPRETTET,
-            opplysningstype = LivshendelseService.OPPLYSNINGSTYPE_FØDSEL,
+            endringstype = Livshendelsebehandler.OPPRETTET,
+            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_FOEDSEL,
             fødselsdato = LocalDate.now(),
             fødeland = "POL"
         )
@@ -119,8 +121,8 @@ class LivshendelseServiceTest {
             gjeldendeAktørId = "1234567890123",
             hendelseId = hendelseId,
             personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = LivshendelseService.ANNULLERT,
-            opplysningstype = LivshendelseService.OPPLYSNINGSTYPE_FØDSEL,
+            endringstype = Livshendelsebehandler.ANNULLERT,
+            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_FOEDSEL,
             fødselsdato = LocalDate.now(),
             fødeland = "NOR",
             tidligereHendelseId = "unknown"

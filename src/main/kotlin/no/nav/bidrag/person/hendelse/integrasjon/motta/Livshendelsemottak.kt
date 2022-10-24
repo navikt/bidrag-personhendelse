@@ -1,12 +1,14 @@
 package no.nav.bidrag.person.hendelse.integrasjon.motta
 
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
+import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import no.nav.person.pdl.leesah.Personhendelse
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.slf4j.MDC
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
@@ -19,7 +21,12 @@ import java.time.LocalDate
     havingValue = "true",
     matchIfMissing = true
 )
-class LivshendelseConsumer(val livshendelseService: LivshendelseService) {
+class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
+
+    object MdcKonstanter {
+        const val MDC_KALLID = "id-kall"
+    }
+
     @KafkaListener(
         groupId = "srvbidrag-person-hendelse",
         topics = ["aapen-person-pdl-leesah-v1"],
@@ -41,15 +48,18 @@ class LivshendelseConsumer(val livshendelseService: LivshendelseService) {
             cr.value().hentUtflyttingsdato(),
             cr.value().hentTidligereHendelseId(),
             cr.value().hentSivilstandType(),
-            cr.value().hentSivilstandDato(),
+            cr.value().hentSivilstandDato()
         )
 
         try {
+            MDC.put(MdcKonstanter.MDC_KALLID, livshendelse.hendelseId)
             SECURE_LOGGER.info("Har mottatt leesah-hendelse $cr")
-            livshendelseService.prosesserNyHendelse(livshendelse)
+            livshendelsebehandler.prosesserNyHendelse(livshendelse)
         } catch (e: RuntimeException) {
             SECURE_LOGGER.error("Feil i prosessering av leesah-hendelser", e)
             throw RuntimeException("Feil i prosessering av leesah-hendelser")
+        } finally {
+            MDC.clear()
         }
 
         ack.acknowledge()
@@ -119,8 +129,7 @@ class LivshendelseConsumer(val livshendelseService: LivshendelseService) {
     }
 
     companion object {
-
         val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
-        val log: Logger = LoggerFactory.getLogger(LivshendelseConsumer::class.java)
+        val log: Logger = LoggerFactory.getLogger(Livshendelsemottak::class.java)
     }
 }

@@ -21,7 +21,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       max-poll-records: 1
-      auto-offset-reset: none
+      auto-offset-reset: earliest
       enable-auto-commit: false
   http:
     encoding:
@@ -58,3 +58,15 @@ management:
   health:
     db:
       enabled: true
+
+wmq:
+  host: ${WMQ_HOST}
+  port: ${WMQ_PORT}
+  channel: ${WMQ_CHANNEL}
+  queue-manager: ${WMQ_QUEUEMANAGER}
+  username: ${WMQ_USERNAME}
+  password: ${WMQ_PASSWORD}
+  timeout: ${WMQ_TIMEOUT}
+  application-name: ${WMQ_APPLICATION_NAME}
+  queueNameLivshendelser: ${}
+

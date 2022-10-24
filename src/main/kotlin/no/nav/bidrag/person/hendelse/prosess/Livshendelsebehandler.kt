@@ -1,31 +1,40 @@
-package no.nav.bidrag.person.hendelse.integrasjon.motta
+package no.nav.bidrag.person.hendelse.prosess
 
+import com.google.gson.Gson
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
+import no.nav.bidrag.person.hendelse.integrasjon.distribuere.Meldingsprodusent
+import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class LivshendelseService {
+class Livshendelsebehandler(
+    val egenskaperWmq: Wmq,
+    val meldingsprodusent: Meldingsprodusent
+) {
 
     fun prosesserNyHendelse(livshendelse: Livshendelse) {
         when (livshendelse.opplysningstype) {
-            OPPLYSNINGSTYPE_DØDSFALL -> behandleDødsfallHendelse(livshendelse)
-            OPPLYSNINGSTYPE_FØDSEL -> behandleFødselsHendelse(livshendelse)
+            OPPLYSNINGSTYPE_DOEDSFALL -> behandleDoedsfallHendelse(livshendelse)
+            OPPLYSNINGSTYPE_FOEDSEL -> behandleFoedselsHendelse(livshendelse)
             OPPLYSNINGSTYPE_UTFLYTTING -> behandleUtflyttingHendelse(livshendelse)
             OPPLYSNINGSTYPE_SIVILSTAND -> behandleSivilstandHendelse(livshendelse)
         }
     }
 
-    private fun behandleDødsfallHendelse(livshendelse: Livshendelse) {
+    private fun behandleDoedsfallHendelse(livshendelse: Livshendelse) {
 
         when (livshendelse.endringstype) {
             OPPRETTET -> {
                 if (livshendelse.dødsdato == null) {
                     log.error("Mangler dødsdato. Ignorerer hendelse ${livshendelse.hendelseId}")
                 }
+
+                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Gson().toJson(livshendelse))
             }
+
             else -> {
                 logHendelse(livshendelse)
                 logHendelse(livshendelse, "Ikke av type OPPRETTET. Dødsdato: ${livshendelse.dødsdato}")
@@ -33,7 +42,7 @@ class LivshendelseService {
         }
     }
 
-    private fun behandleFødselsHendelse(livshendelse: Livshendelse) {
+    private fun behandleFoedselsHendelse(livshendelse: Livshendelse) {
         when (livshendelse.endringstype) {
             OPPRETTET, KORRIGERT -> {
                 logHendelse(livshendelse, "fødselsdato: ${livshendelse.fødselsdato}")
@@ -45,12 +54,15 @@ class LivshendelseService {
                         log.info("Fødeland er ikke Norge. Ignorerer hendelse ${livshendelse.hendelseId}")
                     }
                 }
+                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Gson().toJson(livshendelse))
             }
+
             ANNULLERT -> {
                 if (livshendelse.tidligereHendelseId == null) {
                     log.warn("Mottatt annuller fødsel uten tidligereHendelseId, hendelseId ${livshendelse.hendelseId}")
                 }
             }
+
             else -> {
                 logHendelse(livshendelse)
             }
@@ -62,7 +74,9 @@ class LivshendelseService {
         when (livshendelse.endringstype) {
             OPPRETTET -> {
                 logHendelse(livshendelse, "utflyttingsdato: ${livshendelse.utflyttingsdato}")
+                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Gson().toJson(livshendelse))
             }
+
             else -> {
                 logHendelse(livshendelse, "Ikke av type OPPRETTET.")
             }
@@ -74,7 +88,9 @@ class LivshendelseService {
         when (livshendelse.endringstype) {
             OPPRETTET -> {
                 logHendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstandDato}")
+                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Gson().toJson(livshendelse))
             }
+
             else -> {
                 logHendelse(livshendelse, "Ikke av type OPPRETTET.")
             }
@@ -84,16 +100,12 @@ class LivshendelseService {
     private fun logHendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
         log.info(
             "person-pdl-leesah melding mottatt: " +
-                "hendelseId: ${livshendelse.hendelseId} " +
-                "offset: ${livshendelse.offset}, " +
-                "opplysningstype: ${livshendelse.opplysningstype}, " +
-                "aktørid: ${livshendelse.gjeldendeAktørId}, " +
-                "endringstype: ${livshendelse.endringstype}, $ekstraInfo"
+                    "hendelseId: ${livshendelse.hendelseId} " +
+                    "offset: ${livshendelse.offset}, " +
+                    "opplysningstype: ${livshendelse.opplysningstype}, " +
+                    "aktørid: ${livshendelse.gjeldendeAktørId}, " +
+                    "endringstype: ${livshendelse.endringstype}, $ekstraInfo"
         )
-    }
-
-    private fun erUnder18år(fødselsDato: LocalDate): Boolean {
-        return LocalDate.now().isBefore(fødselsDato.plusYears(18))
     }
 
     private fun erUnder6mnd(fødselsDato: LocalDate): Boolean {
@@ -108,12 +120,12 @@ class LivshendelseService {
     }
 
     companion object {
-        val log: Logger = LoggerFactory.getLogger(LivshendelseService::class.java)
+        val log: Logger = LoggerFactory.getLogger(Livshendelsebehandler::class.java)
         const val OPPRETTET = "OPPRETTET"
         const val KORRIGERT = "KORRIGERT"
         const val ANNULLERT = "ANNULLERT"
-        const val OPPLYSNINGSTYPE_DØDSFALL = "DOEDSFALL_V1"
-        const val OPPLYSNINGSTYPE_FØDSEL = "FOEDSEL_V1"
+        const val OPPLYSNINGSTYPE_DOEDSFALL = "DOEDSFALL_V1"
+        const val OPPLYSNINGSTYPE_FOEDSEL = "FOEDSEL_V1"
         const val OPPLYSNINGSTYPE_UTFLYTTING = "UTFLYTTING_FRA_NORGE"
         const val OPPLYSNINGSTYPE_SIVILSTAND = "SIVILSTAND_V1"
     }

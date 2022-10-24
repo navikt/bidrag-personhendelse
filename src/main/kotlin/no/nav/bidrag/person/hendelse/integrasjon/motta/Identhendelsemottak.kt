@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service
     havingValue = "true",
     matchIfMissing = true
 )
-class IdenthendelseConsumer {
+class Identhendelsemottak {
 
     @KafkaListener(
         groupId = "bidrag-person-hendelse",
@@ -52,6 +52,6 @@ class IdenthendelseConsumer {
     companion object {
 
         val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
-        val log: Logger = LoggerFactory.getLogger(IdenthendelseConsumer::class.java)
+        val log: Logger = LoggerFactory.getLogger(Identhendelsemottak::class.java)
     }
 }

@@ -5,7 +5,7 @@ spring:
       security.protocol: SASL_PLAINTEXT
       sasl:
         jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="igroup" password="itest";
-      schema.registry.url: http://localhost:8081
+      schema.registry.url: http://localhost:8089
     consumer:
       group-id: srvc01
 funksjonsbrytere:
@@ -15,6 +15,18 @@ funksjonsbrytere:
     uri: http://dummy/api/
     cluster: localhost
     applicationName: bidrag-person-hendelse
+
 #logging:
 #  config: "classpath:logback-test.xml"
-KAFKA_BROKERS: http://localhost:9092
+KAFKA_BROKERS: http://localhost:9093
+
+# WMQ
+WMQ_HOST: host.docker.internal
+WMQ_PORT: 1414
+WMQ_CHANNEL: DEV.APP.SVRCONN
+WMQ_QUEUE_MANAGER: QM1
+WMQ_USERNAME: app
+WMQ_PASSWORD: passw0rd
+WMQ_QUEUE_LIVSHENDELSER: DEV.QUEUE.1
+WMQ_TIMEOUT: 15000
+WMQ_APPLICATION_NAME: bidrag-person-hendelse

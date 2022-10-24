@@ -3,3 +3,13 @@ spring:
     bootstrap-servers: a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00148.adeo.no:8443,a01apvl00149.adeo.no:8443,a01apvl00150.adeo.no:8443
     properties:
       schema.registry.url: http://kafka-schema-registry.tpa:8081
+
+# WMQ
+WMQ_HOST: a01apvl269.adeo.no
+WMQ_PORT: 1414
+WMQ_CHANNEL: P_BIDRAG_PERSON_HENDELSE
+WMQ_QUEUE_MANAGER: MPLS02
+WMQ_USERNAME: srvbidrag-person-hendelse
+WMQ_PASSWORD: {MQ_PASSWORD}
+WMQ_TIMEOUT: 15000
+WMQ_APPLICATION_NAME: bidrag-person-hendelse

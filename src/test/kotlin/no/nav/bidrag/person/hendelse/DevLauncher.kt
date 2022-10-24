@@ -9,6 +9,6 @@ class DevLauncher
 
 fun main(args: Array<String>) {
     val app = SpringApplicationBuilder(DevLauncher::class.java)
-        .profiles("dev")
+        .profiles(args[0])
     app.run(*args)
 }
