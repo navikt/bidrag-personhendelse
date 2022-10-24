@@ -297,10 +297,6 @@
                 </dependencies>
                 <configuration>
                     <jvmTarget>17</jvmTarget>
-                    <compilerPlugins>
-                        <plugin>spring</plugin>
-                        <plugin>jpa</plugin>
-                    </compilerPlugins>
                 </configuration>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
