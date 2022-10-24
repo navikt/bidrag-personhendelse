@@ -28,7 +28,7 @@ open class KafkaTestdataProdusentkonfig(
     )
 
     @Bean
-    fun producerFactory(): ProducerFactory<String, String> {
+    open fun producerFactory(): ProducerFactory<String, String> {
         val konfig = HashMap<String, Object>()
         konfig[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafkaegenskaper.bootstrapServers as Object
         konfig[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java as Object
@@ -38,7 +38,7 @@ open class KafkaTestdataProdusentkonfig(
 
     @Bean
     @Qualifier("testdata")
-    fun kafkaTemplateTestdata(): KafkaTemplate<String?, String?>? {
+    open fun kafkaTemplateTestdata(): KafkaTemplate<String?, String?>? {
         return KafkaTemplate(producerFactory())
     }
 }

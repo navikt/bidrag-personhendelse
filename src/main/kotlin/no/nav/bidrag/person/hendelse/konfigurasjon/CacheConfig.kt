@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 open class CacheConfig {
 
     @Bean
-    fun cacheManager(): CacheManager = object : ConcurrentMapCacheManager() {
+    open fun cacheManager(): CacheManager = object : ConcurrentMapCacheManager() {
         override fun createConcurrentMapCache(name: String): Cache {
             val concurrentMap = Caffeine
                 .newBuilder()

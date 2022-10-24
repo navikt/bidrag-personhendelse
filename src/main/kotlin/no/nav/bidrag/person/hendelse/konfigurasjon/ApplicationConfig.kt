@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @ConfigurationPropertiesScan
 open class ApplicationConfig {
     @Bean
-    fun servletWebServerFactory(): ServletWebServerFactory {
+    open fun servletWebServerFactory(): ServletWebServerFactory {
         return JettyServletWebServerFactory()
     }
 }

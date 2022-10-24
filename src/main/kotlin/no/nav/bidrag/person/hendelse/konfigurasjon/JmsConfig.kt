@@ -34,7 +34,7 @@ open class JmsConfig(var wmq: Wmq) {
     }
 
     @Bean
-    fun jmsTemplate(): JmsTemplate {
+    open fun jmsTemplate(): JmsTemplate {
         return JmsTemplate(forbindelsefabrikk())
     }
 }
