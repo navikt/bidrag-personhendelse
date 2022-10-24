@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 
 @Configuration
 @EnableCaching
-class CacheConfig {
+open class CacheConfig {
 
     @Bean
     fun cacheManager(): CacheManager = object : ConcurrentMapCacheManager() {

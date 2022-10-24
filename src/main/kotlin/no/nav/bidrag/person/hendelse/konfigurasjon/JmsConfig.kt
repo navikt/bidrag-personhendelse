@@ -12,7 +12,7 @@ import javax.jms.JMSException
 
 @EnableJms
 @Configuration
-class JmsConfig(var wmq: Wmq) {
+open class JmsConfig(var wmq: Wmq) {
 
     @Throws(JMSException::class)
     fun forbindelsefabrikk(): JmsConnectionFactory? {

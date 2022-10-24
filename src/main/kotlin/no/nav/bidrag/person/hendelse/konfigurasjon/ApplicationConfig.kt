@@ -18,7 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableScheduling
 @EnableRetry
 @ConfigurationPropertiesScan
-class ApplicationConfig {
+open class ApplicationConfig {
     @Bean
     fun servletWebServerFactory(): ServletWebServerFactory {
         return JettyServletWebServerFactory()

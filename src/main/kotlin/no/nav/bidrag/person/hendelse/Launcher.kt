@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties(Wmq::class)
-class Launcher
+open class Launcher
 
 fun main(args: Array<String>) {
     SpringApplication.run(Launcher::class.java, *args)
