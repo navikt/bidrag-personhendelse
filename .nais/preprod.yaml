@@ -10,6 +10,9 @@ spec:
   image: {{ image }}
   port: 8090
   leaderElection: true
+  azure:
+    application:
+      enabled: true
   liveness:
     path: /internal/health
     initialDelay: 50
@@ -36,7 +39,7 @@ spec:
     - https://bidrag-person-hendelse.dev.intern.nav.no
   env:
     - name: SPRING_PROFILES_ACTIVE
-      value: preprod-feature, nais
+      value: preprod, nais
   secureLogs:
     enabled: true
   kafka:

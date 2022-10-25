@@ -47,18 +47,10 @@ jobs:
         with:
           path: deploy
 
-      - name: Deploy til dev-gcp feature
+      - name: Deploy til dev-gcp
         if: github.ref != 'refs/heads/main'
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
-          RESOURCE: deploy/.nais/preprod-feature.yaml
-
-      - name: Deploy til dev-gcp main
-        if: github.ref == 'refs/heads/main'
-        uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-gcp
-          RESOURCE: deploy/.nais/preprod-main.yaml
+          RESOURCE: deploy/.nais/preprod.yaml
