@@ -19,14 +19,15 @@ import org.springframework.stereotype.Service
 class Identhendelsemottak {
 
     @KafkaListener(
-        groupId = "bidrag-person-hendelse",
-        topics = ["aapen-person-pdl-aktor-v1"],
-        id = "identhendelse",
+        groupId = "aktor-v1.bidrag",
+        topics = ["pdl.aktor-v1"],
+        id = "bidrag-person-hendelse,aktor-v1",
         idIsGroup = false,
         containerFactory = "kafkaIdenthendelseListenerContainerFactory"
     )
     fun listen(consumerRecord: ConsumerRecord<String, Aktor?>, ack: Acknowledgment) {
         try {
+            log.info("Aktørhendelse mottatt")
             SECURE_LOGGER.info("Har mottatt ident-hendelse $consumerRecord")
 
             val aktoer = consumerRecord.value()

@@ -28,13 +28,15 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
     }
 
     @KafkaListener(
-        groupId = "leesah-v1-bidrag",
+        groupId = "leesah-v1.bidrag",
         topics = ["pdl.leesah-v1"],
-        id = "bidrag-person-hendelse-001",
+        id = "bidrag-person-hendelse.leesah-v1",
         idIsGroup = false,
         containerFactory = "kafkaLeesahListenerContainerFactory"
     )
     fun listen(cr: ConsumerRecord<String, Personhendelse>, ack: Acknowledgment) {
+
+        log.info("Melding mottatt: ", )
         val livshendelse = Livshendelse(
             cr.value().hentHendelseId(),
             cr.key().substring(6),
