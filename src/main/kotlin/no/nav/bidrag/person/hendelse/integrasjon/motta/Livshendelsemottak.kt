@@ -29,7 +29,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
 
     @KafkaListener(
         groupId = "leesah-v1-bidrag",
-        topics = ["teambidrag.aapen-person-pdl-leesah-v1"],
+        topics = ["bidrag.aapen-person-pdl-leesah-v1"],
         id = "bidrag-person-hendelse-leesah-v1",
         idIsGroup = false,
         containerFactory = "kafkaLeesahListenerContainerFactory"

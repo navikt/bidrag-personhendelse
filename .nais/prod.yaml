@@ -4,7 +4,7 @@ metadata:
   name: bidrag-person-hendelse
   namespace: bidrag
   labels:
-    team: teambidrag
+    team: bidrag
 
 spec:
   image: {{ image }}
