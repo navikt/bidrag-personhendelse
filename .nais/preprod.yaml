@@ -40,6 +40,8 @@ spec:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod, nais
+    - name: JAVA_TOOL_OPTIONS
+      value: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
   secureLogs:
     enabled: true
   kafka:
