@@ -74,7 +74,7 @@ wmq:
   port: ${WMQ_PORT}
   channel: ${WMQ_CHANNEL}
   queue-manager: ${WMQ_QUEUEMANAGER}
-  username: srvbdpers-hendelses
+  username: srvbdpers-hendelse
   password: ${PASSORD_SRVBDPERS_HENDELSE}
   timeout: ${WMQ_TIMEOUT}
   application-name: ${WMQ_APPLICATION_NAME}
