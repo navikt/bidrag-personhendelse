@@ -10,7 +10,11 @@ class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
 
     fun sendeMelding(mottakerkoe: String, melding: String) {
         secureLogger.info("Sender melding til {} med innhold: {}", mottakerkoe, melding)
-        jmsTemplate.send(mottakerkoe) { s -> s.createTextMessage(melding) }
+        try {
+            jmsTemplate.send(mottakerkoe) { s -> s.createTextMessage(melding) }
+        } catch(e:Exception) {
+            e.printStackTrace()
+        }
     }
 
     companion object {
