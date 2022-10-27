@@ -19,9 +19,9 @@ import org.springframework.stereotype.Service
 class Identhendelsemottak {
 
     @KafkaListener(
-        groupId = "aktor-v1.bidrag",
-        topics = ["pdl.aktor-v1"],
-        id = "bidrag-person-hendelse,aktor-v1",
+        groupId = "aktor-v2.bidrag",
+        topics = ["pdl.aktor-v2"],
+        id = "bidrag-person-hendelse.aktor-v2",
         idIsGroup = false,
         containerFactory = "kafkaIdenthendelseListenerContainerFactory"
     )
