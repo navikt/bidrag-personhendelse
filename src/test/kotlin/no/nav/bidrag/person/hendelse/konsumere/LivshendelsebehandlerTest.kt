@@ -9,7 +9,6 @@ import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.springframework.core.env.Environment
 import java.time.LocalDate
 import java.util.*
 import kotlin.random.Random
@@ -17,7 +16,7 @@ import kotlin.random.nextUInt
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LivshendelsebehandlerTest {
-    lateinit var  mockMeldingsprodusent: Meldingsprodusent
+    lateinit var mockMeldingsprodusent: Meldingsprodusent
     lateinit var service: Livshendelsebehandler
     lateinit var egenskaperWmq: Wmq
 
@@ -32,15 +31,15 @@ class LivshendelsebehandlerTest {
     @Test
     fun `Skal opprette VurderLivshendelseTask for dødsfallhendelse`() {
         val hendelseId = UUID.randomUUID().toString()
-        val livshendelse = Livshendelse(
-            offset = Random.nextUInt().toLong(),
-            gjeldendeAktørId = "1234567890123",
-            hendelseId = hendelseId,
-            personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = Livshendelsebehandler.OPPRETTET,
-            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_DOEDSFALL,
-            dødsdato = LocalDate.now()
-        )
+        val livshendelse = Livshendelse.Builder()
+            .offset(Random.nextUInt().toLong())
+            .gjeldendeAktørid("1234567890123")
+            .hendelseid(hendelseId)
+            .personidenter(listOf("12345678901", "1234567890123"))
+            .endringstype(Livshendelsebehandler.OPPRETTET)
+            .opplysningstype(Livshendelsebehandler.OPPLYSNINGSTYPE_DOEDSFALL)
+            .dødsdato(LocalDate.now())
+            .build()
 
         service.prosesserNyHendelse(livshendelse)
     }
@@ -48,15 +47,14 @@ class LivshendelsebehandlerTest {
     @Test
     fun `Skal opprette VurderLivshendelseTask for utflyttingshendelse`() {
         val hendelseId = UUID.randomUUID().toString()
-        val livshendelse = Livshendelse(
-            offset = Random.nextUInt().toLong(),
-            gjeldendeAktørId = "1234567890123",
-            hendelseId = hendelseId,
-            personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = Livshendelsebehandler.OPPRETTET,
-            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_UTFLYTTING,
-            utflyttingsdato = LocalDate.now()
-        )
+        val livshendelse = Livshendelse.Builder()
+            .offset(Random.nextUInt().toLong())
+            .gjeldendeAktørid("1234567890123")
+            .hendelseid(hendelseId)
+            .personidenter(listOf("12345678901", "1234567890123"))
+            .endringstype(Livshendelsebehandler.OPPRETTET)
+            .opplysningstype(Livshendelsebehandler.OPPLYSNINGSTYPE_UTFLYTTING)
+            .utflyttingsdato(LocalDate.now()).build()
 
         service.prosesserNyHendelse(livshendelse)
     }
@@ -64,16 +62,16 @@ class LivshendelsebehandlerTest {
     @Test
     fun `Skal opprette VurderLivshendelseTask for sivilstandhendelse GIFT`() {
         val hendelseId = UUID.randomUUID().toString()
-        val livshendelse = Livshendelse(
-            offset = Random.nextUInt().toLong(),
-            gjeldendeAktørId = "1234567890123",
-            hendelseId = hendelseId,
-            personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = Livshendelsebehandler.OPPRETTET,
-            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_SIVILSTAND,
-            sivilstand = "GIFT",
-            sivilstandDato = LocalDate.of(2022, 2, 22),
-        )
+        val livshendelse = Livshendelse.Builder()
+            .offset(Random.nextUInt().toLong())
+            .gjeldendeAktørid("1234567890123")
+            .hendelseid(hendelseId)
+            .personidenter(listOf("12345678901", "1234567890123"))
+            .endringstype(Livshendelsebehandler.OPPRETTET)
+            .opplysningstype(Livshendelsebehandler.OPPLYSNINGSTYPE_SIVILSTAND)
+            .sivilstand("GIFT")
+            .sivilstandDato(LocalDate.of(2022, 2, 22))
+            .build()
 
         service.prosesserNyHendelse(livshendelse)
         service.prosesserNyHendelse(livshendelse.copy(sivilstand = "UOPPGITT"))
@@ -82,16 +80,16 @@ class LivshendelsebehandlerTest {
     @Test
     fun `Skal opprette MottaFødselshendelseTask med fnr på payload`() {
         val hendelseId = UUID.randomUUID().toString()
-        val livshendelse = Livshendelse(
-            offset = Random.nextUInt().toLong(),
-            gjeldendeAktørId = "1234567890123",
-            hendelseId = hendelseId,
-            personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = Livshendelsebehandler.OPPRETTET,
-            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_FOEDSEL,
-            fødselsdato = LocalDate.now(),
-            fødeland = "NOR"
-        )
+        val livshendelse = Livshendelse.Builder()
+            .offset(Random.nextUInt().toLong())
+            .gjeldendeAktørid("1234567890123")
+            .hendelseid(hendelseId)
+            .personidenter(listOf("12345678901", "1234567890123"))
+            .endringstype(Livshendelsebehandler.OPPRETTET)
+            .opplysningstype(Livshendelsebehandler.OPPLYSNINGSTYPE_FOEDSEL)
+            .fødselsdato(LocalDate.now())
+            .fødeland("NOR")
+            .build()
 
         service.prosesserNyHendelse(livshendelse)
     }
@@ -99,16 +97,17 @@ class LivshendelsebehandlerTest {
     @Test
     fun `Skal ignorere fødselshendelser utenfor norge`() {
         val hendelseId = UUID.randomUUID().toString()
-        val livshendelse = Livshendelse(
-            offset = Random.nextUInt().toLong(),
-            gjeldendeAktørId = "1234567890123",
-            hendelseId = hendelseId,
-            personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = Livshendelsebehandler.OPPRETTET,
-            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_FOEDSEL,
-            fødselsdato = LocalDate.now(),
-            fødeland = "POL"
-        )
+
+        val livshendelse = Livshendelse.Builder()
+            .offset(Random.nextUInt().toLong())
+            .gjeldendeAktørid("1234567890123")
+            .hendelseid(hendelseId)
+            .personidenter(listOf("12345678901", "1234567890123"))
+            .endringstype(Livshendelsebehandler.OPPRETTET)
+            .opplysningstype(Livshendelsebehandler.OPPLYSNINGSTYPE_FOEDSEL)
+            .fødselsdato(LocalDate.now())
+            .fødeland("PDL")
+            .build()
 
         service.prosesserNyHendelse(livshendelse)
         service.prosesserNyHendelse(livshendelse.copy(fødeland = "NOR"))
@@ -118,17 +117,18 @@ class LivshendelsebehandlerTest {
     @Test
     fun `Skal opprette MottaAnnullerFødselTask når endringstype er ANNULLERT`() {
         val hendelseId = UUID.randomUUID().toString()
-        val livshendelse = Livshendelse(
-            offset = Random.nextUInt().toLong(),
-            gjeldendeAktørId = "1234567890123",
-            hendelseId = hendelseId,
-            personIdenter = listOf("12345678901", "1234567890123"),
-            endringstype = Livshendelsebehandler.ANNULLERT,
-            opplysningstype = Livshendelsebehandler.OPPLYSNINGSTYPE_FOEDSEL,
-            fødselsdato = LocalDate.now(),
-            fødeland = "NOR",
-            tidligereHendelseId = "unknown"
-        )
+
+        val livshendelse = Livshendelse.Builder()
+            .offset(Random.nextUInt().toLong())
+            .gjeldendeAktørid("1234567890123")
+            .hendelseid(hendelseId)
+            .personidenter(listOf("12345678901", "1234567890123"))
+            .endringstype(Livshendelsebehandler.ANNULLERT)
+            .opplysningstype(Livshendelsebehandler.OPPLYSNINGSTYPE_FOEDSEL)
+            .fødselsdato(LocalDate.now())
+            .fødeland("NOR")
+            .tidligereHendelseid("ukjent")
+            .build()
 
         service.prosesserNyHendelse(livshendelse)
     }

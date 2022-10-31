@@ -35,26 +35,27 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         containerFactory = "kafkaLeesahListenerContainerFactory"
     )
     fun listen(cr: ConsumerRecord<String, Personhendelse>, ack: Acknowledgment) {
+        log.info("Livshendelse med hendelseid {} mottatt.", cr.value().hentHendelseId())
 
-        log.info("Melding mottatt: ", )
-        val livshendelse = Livshendelse(
-            cr.value().hentHendelseId(),
-            cr.key().substring(6),
-            cr.offset(),
-            cr.value().hentOpplysningstype(),
-            cr.value().hentEndringstype(),
-            cr.value().hentPersonidenter(),
-            cr.value().hentDødsdato(),
-            cr.value().hentFødselsdato(),
-            cr.value().hentFødeland(),
-            cr.value().hentUtflyttingsdato(),
-            cr.value().hentTidligereHendelseId(),
-            cr.value().hentSivilstandType(),
-            cr.value().hentSivilstandDato()
-        )
+        val livshendelse = Livshendelse.Builder()
+            .hendelseid(cr.value().hentHendelseId())
+            .gjeldendeAktørid(cr.value().hentGjeldendeAktørid())
+            .offset(cr.value().hentOffset().toLong())
+            .opplysningstype(cr.value().hentOpplysningstype())
+            .endringstype(cr.value().hentEndringstype())
+            .personidenter(cr.value().hentPersonidenter())
+            .gjeldendePersonident(cr.value().hentGjeldendePersonident())
+            .dødsdato(cr.value().hentDødsdato())
+            .fødselsdato(cr.value().hentFødselsdato())
+            .fødeland(cr.value().hentFødeland())
+            .utflyttingsdato(cr.value().hentUtflyttingsdato())
+            .tidligereHendelseid(cr.value().hentTidligereHendelseId())
+            .sivilstand(cr.value().hentSivilstandtype())
+            .sivilstandDato(cr.value().hentSivilstandDato())
+            .build()
 
         try {
-            MDC.put(MdcKonstanter.MDC_KALLID, livshendelse.hendelseId)
+            MDC.put(MdcKonstanter.MDC_KALLID, livshendelse.hendelseid)
             SECURE_LOGGER.info("Har mottatt leesah-hendelse $cr")
             livshendelsebehandler.prosesserNyHendelse(livshendelse)
         } catch (e: RuntimeException) {
@@ -67,19 +68,13 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         ack.acknowledge()
     }
 
-    private fun GenericRecord.hentOpplysningstype() =
-        get("opplysningstype").toString()
-
-    private fun GenericRecord.hentPersonidenter() =
-        (get("personidenter") as GenericData.Array<*>)
-            .map { it.toString() }
-
-    private fun GenericRecord.hentEndringstype() =
-        get("endringstype").toString()
-
-    private fun GenericRecord.hentHendelseId() =
-        get("hendelseId").toString()
-
+    private fun GenericRecord.hentOffset() = get("offset").toString()
+    private fun GenericRecord.hentOpplysningstype() = get("opplysningstype").toString()
+    private fun GenericRecord.hentPersonidenter() = (get("personidenter") as GenericData.Array<*>).map { it.toString() }
+    private fun GenericRecord.hentGjeldendePersonident() = get("gjeldendePersonident").toString()
+    private fun GenericRecord.hentEndringstype() = get("endringstype").toString()
+    private fun GenericRecord.hentHendelseId() = get("hendelseId").toString()
+    private fun GenericRecord.hentGjeldendeAktørid() = get("gjeldendeAktørId").toString()
     private fun GenericRecord.hentDødsdato(): LocalDate? {
         return deserialiserDatofeltFraSubrecord("doedsfall", "doedsdato")
     }
@@ -100,7 +95,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return deserialiserDatofeltFraSubrecord("utflyttingFraNorge", "utflyttingsdato")
     }
 
-    private fun GenericRecord.hentSivilstandType(): String? {
+    private fun GenericRecord.hentSivilstandtype(): String? {
         return (get("sivilstand") as GenericRecord?)?.get("type")?.toString()
     }
 

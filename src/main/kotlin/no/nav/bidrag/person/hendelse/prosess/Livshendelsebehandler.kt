@@ -30,7 +30,7 @@ class Livshendelsebehandler(
         when (livshendelse.endringstype) {
             OPPRETTET -> {
                 if (livshendelse.dødsdato == null) {
-                    log.error("Mangler dødsdato. Ignorerer hendelse ${livshendelse.hendelseId}")
+                    log.error("Mangler dødsdato. Ignorerer hendelse ${livshendelse.hendelseid}")
                 }
 
                 meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
@@ -49,10 +49,10 @@ class Livshendelsebehandler(
                 logHendelse(livshendelse, "fødselsdato: ${livshendelse.fødselsdato}")
                 val fødselsdato = livshendelse.fødselsdato
                 if (fødselsdato == null) {
-                    log.warn("Mangler fødselsdato. Ignorerer hendelse ${livshendelse.hendelseId}")
+                    log.warn("Mangler fødselsdato. Ignorerer hendelse ${livshendelse.hendelseid}")
                 } else if (erUnder6mnd(fødselsdato)) {
                     if (erUtenforNorge(livshendelse.fødeland)) {
-                        log.info("Fødeland er ikke Norge. Ignorerer hendelse ${livshendelse.hendelseId}")
+                        log.info("Fødeland er ikke Norge. Ignorerer hendelse ${livshendelse.hendelseid}")
                     }
                 }
 
@@ -60,8 +60,8 @@ class Livshendelsebehandler(
             }
 
             ANNULLERT -> {
-                if (livshendelse.tidligereHendelseId == null) {
-                    log.warn("Mottatt annuller fødsel uten tidligereHendelseId, hendelseId ${livshendelse.hendelseId}")
+                if (livshendelse.tidligereHendelseid == null) {
+                    log.warn("Mottatt annuller fødsel uten tidligereHendelseId, hendelseId ${livshendelse.hendelseid}")
                 }
             }
 
@@ -109,10 +109,10 @@ class Livshendelsebehandler(
     private fun logHendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
         log.info(
             "person-pdl-leesah melding mottatt: " +
-                    "hendelseId: ${livshendelse.hendelseId} " +
+                    "hendelseId: ${livshendelse.hendelseid} " +
                     "offset: ${livshendelse.offset}, " +
                     "opplysningstype: ${livshendelse.opplysningstype}, " +
-                    "aktørid: ${livshendelse.gjeldendeAktørId}, " +
+                    "aktørid: ${livshendelse.gjeldendeAktørid}, " +
                     "endringstype: ${livshendelse.endringstype}, $ekstraInfo"
         )
     }
@@ -137,5 +137,6 @@ class Livshendelsebehandler(
         const val OPPLYSNINGSTYPE_FOEDSEL = "FOEDSEL_V1"
         const val OPPLYSNINGSTYPE_UTFLYTTING = "UTFLYTTING_FRA_NORGE"
         const val OPPLYSNINGSTYPE_SIVILSTAND = "SIVILSTAND_V1"
+        const val OPPLYSNINGSTYPE_PERSONIDENT = "PERSONIDENT"
     }
 }
