@@ -36,6 +36,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
     )
     fun listen(cr: ConsumerRecord<String, Personhendelse>, ack: Acknowledgment) {
         log.info("Livshendelse med hendelseid {} mottatt.", cr.value().hentHendelseId())
+        SECURE_LOGGER.info("Har mottatt leesah-hendelse $cr")
 
         val livshendelse = Livshendelse.Builder()
             .hendelseid(cr.value().hentHendelseId())
@@ -56,7 +57,6 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
 
         try {
             MDC.put(MdcKonstanter.MDC_KALLID, livshendelse.hendelseid)
-            SECURE_LOGGER.info("Har mottatt leesah-hendelse $cr")
             livshendelsebehandler.prosesserNyHendelse(livshendelse)
         } catch (e: RuntimeException) {
             SECURE_LOGGER.error("Feil i prosessering av leesah-hendelser", e)
