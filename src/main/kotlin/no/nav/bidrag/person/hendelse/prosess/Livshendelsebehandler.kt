@@ -22,6 +22,7 @@ class Livshendelsebehandler(
             OPPLYSNINGSTYPE_FOEDSEL -> behandleFoedselsHendelse(livshendelse)
             OPPLYSNINGSTYPE_UTFLYTTING -> behandleUtflyttingHendelse(livshendelse)
             OPPLYSNINGSTYPE_SIVILSTAND -> behandleSivilstandHendelse(livshendelse)
+            OPPLYSNINGSTYPE_PERSONIDENT -> behandleIdenthendelse(livshendelse)
         }
     }
 
@@ -37,8 +38,8 @@ class Livshendelsebehandler(
             }
 
             else -> {
-                logHendelse(livshendelse)
-                logHendelse(livshendelse, "Ikke av type OPPRETTET. Dødsdato: ${livshendelse.dødsdato}")
+                logLivshendelse(livshendelse)
+                logLivshendelse(livshendelse, "Ikke av type OPPRETTET. Dødsdato: ${livshendelse.dødsdato}")
             }
         }
     }
@@ -46,7 +47,7 @@ class Livshendelsebehandler(
     private fun behandleFoedselsHendelse(livshendelse: Livshendelse) {
         when (livshendelse.endringstype) {
             OPPRETTET, KORRIGERT -> {
-                logHendelse(livshendelse, "fødselsdato: ${livshendelse.fødselsdato}")
+                logLivshendelse(livshendelse, "fødselsdato: ${livshendelse.fødselsdato}")
                 val fødselsdato = livshendelse.fødselsdato
                 if (fødselsdato == null) {
                     log.warn("Mangler fødselsdato. Ignorerer hendelse ${livshendelse.hendelseid}")
@@ -66,7 +67,7 @@ class Livshendelsebehandler(
             }
 
             else -> {
-                logHendelse(livshendelse)
+                logLivshendelse(livshendelse)
             }
         }
     }
@@ -82,12 +83,12 @@ class Livshendelsebehandler(
 
         when (livshendelse.endringstype) {
             OPPRETTET -> {
-                logHendelse(livshendelse, "utflyttingsdato: ${livshendelse.utflyttingsdato}")
+                logLivshendelse(livshendelse, "utflyttingsdato: ${livshendelse.utflyttingsdato}")
                 meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
             }
 
             else -> {
-                logHendelse(livshendelse, "Ikke av type OPPRETTET.")
+                logLivshendelse(livshendelse, "Ikke av type OPPRETTET.")
             }
         }
     }
@@ -96,19 +97,24 @@ class Livshendelsebehandler(
 
         when (livshendelse.endringstype) {
             OPPRETTET -> {
-                logHendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstandDato}")
+                logLivshendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstandDato}")
                 meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
             }
 
             else -> {
-                logHendelse(livshendelse, "Ikke av type OPPRETTET.")
+                logLivshendelse(livshendelse, "Ikke av type OPPRETTET.")
             }
         }
     }
 
-    private fun logHendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
+    private fun behandleIdenthendelse(livshendelse: Livshendelse) {
+        logLivshendelse(livshendelse, "Identhendelse")
+        meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
+    }
+
+    private fun logLivshendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
         log.info(
-            "person-pdl-leesah melding mottatt: " +
+            "Livshendelse mottatt: " +
                     "hendelseId: ${livshendelse.hendelseid} " +
                     "offset: ${livshendelse.offset}, " +
                     "opplysningstype: ${livshendelse.opplysningstype}, " +

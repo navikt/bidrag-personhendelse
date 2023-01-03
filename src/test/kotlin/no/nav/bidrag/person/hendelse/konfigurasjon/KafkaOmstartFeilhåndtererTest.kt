@@ -14,7 +14,7 @@ import org.springframework.kafka.KafkaException
 import org.springframework.kafka.listener.MessageListenerContainer
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class KafkaRestartingErrorHandlerTest {
+class KafkaOmstartFeilhåndtererTest {
 
     @MockK(relaxed = true)
     lateinit var container: MessageListenerContainer
@@ -23,7 +23,7 @@ class KafkaRestartingErrorHandlerTest {
     lateinit var consumer: Consumer<*, *>
 
     @InjectMockKs
-    lateinit var errorHandler: KafkaRestartingErrorHandler
+    lateinit var errorHandler: KafkaOmstartFeilhåndterer
 
     @BeforeEach
     internal fun setUp() {

@@ -22,12 +22,12 @@ import java.time.Duration
     havingValue = "true",
     matchIfMissing = true
 )
-open class KafkaConfig {
+open class Kafkakonfig {
 
     @Bean
     open fun kafkaIdenthendelseListenerContainerFactory(
         properties: KafkaProperties,
-        kafkaRestartingErrorHandler: KafkaRestartingErrorHandler,
+        kafkaOmstartFeilhåndterer: KafkaOmstartFeilhåndterer,
         environment: Environment
     ): ConcurrentKafkaListenerContainerFactory<String, Aktor> {
         properties.properties.put("specific.avro.reader", "true")
@@ -39,14 +39,14 @@ open class KafkaConfig {
                 it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = OffsetResetStrategy.LATEST.toString().lowercase()
             }
         )
-        factory.setCommonErrorHandler(kafkaRestartingErrorHandler)
+        factory.setCommonErrorHandler(kafkaOmstartFeilhåndterer)
         return factory
     }
 
     @Bean
     open fun kafkaLeesahListenerContainerFactory(
         properties: KafkaProperties,
-        kafkaRestartingErrorHandler: KafkaRestartingErrorHandler,
+        kafkaOmstartFeilhåndterer: KafkaOmstartFeilhåndterer,
         environment: Environment
     ): ConcurrentKafkaListenerContainerFactory<Int, GenericRecord> {
         val factory = ConcurrentKafkaListenerContainerFactory<Int, GenericRecord>()
@@ -57,7 +57,7 @@ open class KafkaConfig {
                 it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = OffsetResetStrategy.EARLIEST.toString().lowercase()
             }
         )
-        factory.setCommonErrorHandler(kafkaRestartingErrorHandler)
+        factory.setCommonErrorHandler(kafkaOmstartFeilhåndterer)
         return factory
     }
 }

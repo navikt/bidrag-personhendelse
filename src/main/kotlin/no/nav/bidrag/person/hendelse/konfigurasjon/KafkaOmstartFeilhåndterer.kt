@@ -16,9 +16,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
 @Component
-class KafkaRestartingErrorHandler : CommonContainerStoppingErrorHandler() {
+class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
 
-    val LOGGER: Logger = LoggerFactory.getLogger(KafkaRestartingErrorHandler::class.java)
+    val LOGGER: Logger = LoggerFactory.getLogger(KafkaOmstartFeilhåndterer::class.java)
     val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
 
     private val executor: Executor

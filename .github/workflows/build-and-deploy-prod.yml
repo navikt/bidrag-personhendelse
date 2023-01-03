@@ -8,7 +8,7 @@ env:
   IMAGE_LATEST: ghcr.io/navikt/bidrag-person-hendelse:latest
 jobs:
   deploy-to-prod:
-    name: Bygg app/image, push til github, deploy til dev-gcp
+    name: Bygg app/image, push til github, deploy til prod-gcp
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

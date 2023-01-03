@@ -7,8 +7,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties(Wmq::class)
-open class Launcher
+open class Starter
 
 fun main(args: Array<String>) {
-    SpringApplication.run(Launcher::class.java, *args)
+    SpringApplication.run(Starter::class.java, *args)
 }
