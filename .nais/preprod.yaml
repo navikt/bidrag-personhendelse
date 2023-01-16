@@ -48,3 +48,14 @@ spec:
     enabled: true
   kafka:
     pool: nav-dev
+  gcp:
+    permissions:
+      - resource:
+          apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+          kind: Project
+        role: roles/cloudsql.client
+    sqlInstances:
+      - type: POSTGRES_14
+        databases:
+          - name: person-hendelse-preprod
+            envVarPrefix: DB

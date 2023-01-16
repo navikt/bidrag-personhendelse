@@ -1,6 +1,6 @@
 package no.nav.bidrag.person.hendelse.integrasjon.motta
 
-import no.nav.bidrag.person.hendelse.domene.Livshendelse
+import no.nav.bidrag.person.hendelse.domene.*
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import no.nav.person.pdl.leesah.Personhendelse
 import org.apache.avro.generic.GenericData
@@ -13,7 +13,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Service
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 
 @Service
 @ConditionalOnProperty(
@@ -35,25 +37,27 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         containerFactory = "kafkaLeesahListenerContainerFactory"
     )
     fun listen(cr: ConsumerRecord<String, Personhendelse>, ack: Acknowledgment) {
-        log.info("Livshendelse med hendelseid {} mottatt.", cr.value().hentHendelseId())
+        log.info("Livshendelse med hendelseid {} mottatt.", cr.value().henteHendelseId())
         SECURE_LOGGER.info("Har mottatt leesah-hendelse $cr")
 
-        val livshendelse = Livshendelse.Builder()
-            .hendelseid(cr.value().hentHendelseId())
-            .gjeldendeAktørid(cr.value().hentGjeldendeAktørid())
-            .offset(cr.value().hentOffset().toLong())
-            .opplysningstype(cr.value().hentOpplysningstype())
-            .endringstype(cr.value().hentEndringstype())
-            .personidenter(cr.value().hentPersonidenter())
-            .gjeldendePersonident(cr.value().hentGjeldendePersonident())
-            .dødsdato(cr.value().hentDødsdato())
-            .fødselsdato(cr.value().hentFødselsdato())
-            .fødeland(cr.value().hentFødeland())
-            .utflyttingsdato(cr.value().hentUtflyttingsdato())
-            .tidligereHendelseid(cr.value().hentTidligereHendelseId())
-            .sivilstand(cr.value().hentSivilstandtype())
-            .sivilstandDato(cr.value().hentSivilstandDato())
-            .build()
+        val livshendelse = Livshendelse(
+            cr.value().henteHendelseId(),
+            cr.value().henteOffset(),
+            cr.value().henteOpprettetTidspunkt(),
+            cr.value().henteMaster(),
+            cr.value().henteOpplysningstype(),
+            cr.value().henteEndringstype(),
+            cr.value().hentePersonidenter(),
+            cr.value().henteDødsdato(),
+            cr.value().henteFlyttedato(),
+            cr.value().henteFolkeregisteridentifikator(),
+            cr.value().henteFødsel(),
+            cr.value().henteInnflytting(),
+            cr.value().henteNavn(),
+            cr.value().hentUtflytting(),
+            cr.value().henteTidligereHendelseId(),
+            cr.value().henteSivilstand()
+        )
 
         try {
             MDC.put(MdcKonstanter.MDC_KALLID, livshendelse.hendelseid)
@@ -68,41 +72,49 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         ack.acknowledge()
     }
 
-    private fun GenericRecord.hentOffset() = get("offset").toString()
-    private fun GenericRecord.hentOpplysningstype() = get("opplysningstype").toString()
-    private fun GenericRecord.hentPersonidenter() = (get("personidenter") as GenericData.Array<*>).map { it.toString() }
-    private fun GenericRecord.hentGjeldendePersonident() = get("gjeldendePersonident").toString()
-    private fun GenericRecord.hentEndringstype() = get("endringstype").toString()
-    private fun GenericRecord.hentHendelseId() = get("hendelseId").toString()
-    private fun GenericRecord.hentGjeldendeAktørid() = get("gjeldendeAktørId").toString()
-    private fun GenericRecord.hentDødsdato(): LocalDate? {
+    private fun GenericRecord.henteOffset() = get("offset").toString().toLong()
+    private fun GenericRecord.henteMaster() = get("master").toString()
+    private fun GenericRecord.henteOpprettetTidspunkt() = get("opprettet").toString()
+        //Instant.ofEpochMilli(Integer.parseInt(get("opprettet").toString()).toLong()).atZone(ZoneId.systemDefault()).toLocalDateTime()
+
+    private fun GenericRecord.henteOpplysningstype() = get("opplysningstype").toString()
+    private fun GenericRecord.hentePersonidenter() = (get("personidenter") as GenericData.Array<*>).map { it.toString() }
+    private fun GenericRecord.henteEndringstype() = get("endringstype").toString()
+    private fun GenericRecord.henteHendelseId() = get("hendelseId").toString()
+    private fun GenericRecord.henteDødsdato(): LocalDate? {
         return deserialiserDatofeltFraSubrecord("doedsfall", "doedsdato")
     }
 
-    private fun GenericRecord.hentFødselsdato(): LocalDate? {
-        return deserialiserDatofeltFraSubrecord("foedsel", "foedselsdato")
+    private fun GenericRecord.henteFlyttedato(): LocalDate? {
+        return deserialiserDatofeltFraSubrecord("bostedsadresse", "angittFlyttedato")
     }
 
-    private fun GenericRecord.hentFødeland(): String? {
-        return (get("foedsel") as GenericRecord?)?.get("foedeland")?.toString()
+    private fun GenericRecord.henteFolkeregisteridentifikator(): Folkeregisteridentifikator? {
+        return get("folkeregisteridentifikator") as Folkeregisteridentifikator
     }
 
-    private fun GenericRecord.hentTidligereHendelseId(): String? {
+    private fun GenericRecord.henteFødsel(): Fødsel? {
+        return get("foedsel") as Fødsel
+    }
+
+    private fun GenericRecord.henteInnflytting(): Innflytting? {
+        return get("innflytting") as Innflytting
+    }
+
+    private fun GenericRecord.henteTidligereHendelseId(): String? {
         return get("tidligereHendelseId")?.toString()
     }
 
-    private fun GenericRecord.hentUtflyttingsdato(): LocalDate? {
-        return deserialiserDatofeltFraSubrecord("utflyttingFraNorge", "utflyttingsdato")
+    private fun GenericRecord.henteNavn(): Navn? {
+        return get("navn") as Navn
     }
 
-    private fun GenericRecord.hentSivilstandtype(): String? {
-        return (get("sivilstand") as GenericRecord?)?.get("type")?.toString()
+    private fun GenericRecord.hentUtflytting(): Utflytting? {
+        return get("utflytting") as Utflytting
     }
 
-    private fun GenericRecord.hentSivilstandDato(): LocalDate? {
-        return deserialiserDatofeltFraSubrecord("sivilstand", "gyldigFraOgMed")
-            ?: deserialiserDatofeltFraSubrecord("sivilstand", "bekreftelsesdato")
-        // Fra pdldocs: bekreftelsesdato kun tilgjengelig når gyldighetsdato er ukjent.
+    private fun GenericRecord.henteSivilstand(): Sivilstand? {
+        return get("sivilstand") as Sivilstand
     }
 
     private fun GenericRecord.deserialiserDatofeltFraSubrecord(
