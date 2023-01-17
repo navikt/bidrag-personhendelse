@@ -27,6 +27,7 @@
         <prosessering.version>1.20220624132237_7f5ba9c</prosessering.version>
         <logback.encoder.version>6.6</logback.encoder.version>
         <spring.cloud.version>4.0.0</spring.cloud.version>
+        <spring-cloud-gcp.version>3.4.1</spring-cloud-gcp.version>
     </properties>
 
     <dependencies>
@@ -58,6 +59,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
+            <version>${spring-cloud-gcp.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
