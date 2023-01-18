@@ -5,7 +5,6 @@ import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
-import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -18,10 +17,9 @@ import org.springframework.kafka.core.ProducerFactory
 @Profile("lokal")
 @ConfigurationPropertiesScan
 open class KafkaTestdataProdusentkonfig(
-  val kafkaegenskaper: Kafka
+    val kafkaegenskaper: Kafka
 ) {
 
-    @ConstructorBinding
     @ConfigurationProperties("spring.kafka")
     data class Kafka(
         val bootstrapServers: String

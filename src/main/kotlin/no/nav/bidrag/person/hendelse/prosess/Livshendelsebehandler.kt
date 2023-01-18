@@ -5,8 +5,8 @@ import com.google.gson.GsonBuilder
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
-import no.nav.bidrag.person.hendelse.historikk.Hendelsearkiv
-import no.nav.bidrag.person.hendelse.historikk.HendelsearkivDao
+import no.nav.bidrag.person.hendelse.database.Hendelsearkiv
+import no.nav.bidrag.person.hendelse.database.HendelsearkivDao
 import no.nav.bidrag.person.hendelse.integrasjon.distribuere.Meldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
 import org.slf4j.Logger
@@ -69,7 +69,7 @@ class Livshendelsebehandler(
             return
         }
 
-        loggeLivshendelse(livshendelse, "Type: ${livshendelse?.verge?.type}, omfang: ${livshendelse?.verge?.vergeEllerFullmektig?.omfang}")
+        loggeLivshendelse(livshendelse, "Type: ${livshendelse.verge?.type}, omfang: ${livshendelse.verge?.vergeEllerFullmektig?.omfang}")
 
         when (livshendelse.endringstype) {
             ANNULLERT -> tellerVergeAnnullert.increment()
@@ -235,7 +235,7 @@ class Livshendelsebehandler(
                     log.warn("Mangler fødselsdato. Ignorerer hendelse ${livshendelse.hendelseid}")
                 } else if (erUnder6mnd(fødselsdato)) {
                     tellerFødselIgnorert.increment()
-                    if (erUtenforNorge(livshendelse.fødsel?.fødeland)) {
+                    if (erUtenforNorge(livshendelse.fødsel.fødeland)) {
                         log.info("Fødeland er ikke Norge. Ignorerer hendelse ${livshendelse.hendelseid}")
                     } else {
                         meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
@@ -293,7 +293,7 @@ class Livshendelsebehandler(
 
         when (livshendelse.endringstype) {
             OPPRETTET -> {
-                loggeLivshendelse(livshendelse, "sivilstandDato: ${livshendelse?.sivilstand?.sivilstandDato}")
+                loggeLivshendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstand?.sivilstandDato}")
                 var livshendelseJson = oppretteGson().toJson(livshendelse)
                 meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, livshendelseJson)
             }
@@ -318,7 +318,7 @@ class Livshendelsebehandler(
             )
         }
 
-        hendelsearkivDao.lagre(
+        hendelsearkivDao.save(
             Hendelsearkiv(
                 livshendelse.hendelseid,
                 livshendelse.opplysningstype,

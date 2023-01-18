@@ -11,23 +11,30 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.7</version>
+        <version>3.0.1</version>
     </parent>
 
     <properties>
         <revision>1.0</revision>
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
-        <google.gson.version>2.9.1</google.gson.version>
+        <google.gson.version>2.10.1</google.gson.version>
         <java.version>17</java.version>
         <jvmTarget>17</jvmTarget>
+        <javax.jms-api.version>2.0.1</javax.jms-api.version>
         <kotlin.version>1.7.20</kotlin.version>
         <mockk.version>1.12.5</mockk.version>
+        <apache.httpcore.version>4.4.15</apache.httpcore.version>
+        <apache.httpclient.version>4.5.13</apache.httpclient.version>
+        <apache.avro.version>1.11.0</apache.avro.version>
+        <availability.version>4.2.0</availability.version>
         <confluent.version>6.2.7</confluent.version>
+        <ibm.mq.allclient.version>9.2.5.0</ibm.mq.allclient.version>
         <prosessering.version>1.20220624132237_7f5ba9c</prosessering.version>
         <logback.encoder.version>6.6</logback.encoder.version>
         <spring.cloud.version>4.0.0</spring.cloud.version>
         <spring-cloud-gcp.version>3.4.1</spring-cloud-gcp.version>
+        <unleash-client-java.version>4.4.1</unleash-client-java.version>
     </properties>
 
     <dependencies>
@@ -96,16 +103,22 @@
         <dependency>
             <groupId>com.ibm.mq</groupId>
             <artifactId>com.ibm.mq.allclient</artifactId>
-            <version>9.2.5.0</version>
+            <version>${ibm.mq.allclient.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>javax.jms-api</artifactId>
-            <version>2.0.1</version>
+            <version>${javax.jms-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-activemq</artifactId>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>5.17.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+            <version>5.3.24</version>
         </dependency>
 
         <!-- Kotlin -->
@@ -123,14 +136,14 @@
         <dependency>
             <groupId>no.finn.unleash</groupId>
             <artifactId>unleash-client-java</artifactId>
-            <version>4.4.1</version>
+            <version>${unleash-client-java.version}</version>
         </dependency>
 
         <!-- Kafka -->
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
-            <version>1.11.0</version>
+            <version>${apache.avro.version}</version>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
@@ -149,6 +162,12 @@
         </dependency>
 
         <!-- Diverse -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>5.0.0</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -174,16 +193,36 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
+            <version>${apache.httpclient.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>4.4.15</version>
+            <version>${apache.httpcore.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>9.11.0</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- Test -->
@@ -208,15 +247,15 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility-kotlin</artifactId>
-            <version>4.2.0</version>
+            <version>${availability.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
-
     <repositories>
         <repository>
             <id>confluent</id>
@@ -332,10 +371,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <fork>true</fork>
-                    <mainClass>${main-class}</mainClass>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>

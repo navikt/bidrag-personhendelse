@@ -27,7 +27,7 @@ data class Livshendelse(
 
     fun hentPersonident() = personidenter.first { it.length == 11 }
     fun hentGjeldendeAktørid() = personidenter.first { it.length == 13 }
-    fun hentPersonidenter() = personidenter?.filter { it.length == 11 }
+    fun hentPersonidenter() = personidenter.filter { it.length == 11 }
 
     enum class Gradering {
         STRENGT_FORTROLIG_UTLAND,

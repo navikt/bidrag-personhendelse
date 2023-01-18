@@ -7,7 +7,7 @@ import no.nav.bidrag.person.hendelse.domene.Fødsel
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.domene.Sivilstand
 import no.nav.bidrag.person.hendelse.domene.Utflytting
-import no.nav.bidrag.person.hendelse.historikk.HendelsearkivDao
+import no.nav.bidrag.person.hendelse.database.HendelsearkivDao
 import no.nav.bidrag.person.hendelse.integrasjon.distribuere.Meldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
@@ -30,7 +30,7 @@ class LivshendelsebehandlerTest {
     lateinit var egenskaperWmq: Wmq
 
     @BeforeEach
-    internal fun setUp() {
+    internal fun oppsett() {
         mockMeldingsprodusent = mockk(relaxed = true)
         egenskaperWmq = mockk(relaxed = true)
         mockHendelsearkivDao = mockk(relaxed = true)
@@ -39,7 +39,7 @@ class LivshendelsebehandlerTest {
     }
 
     @Test
-    fun `Skal opprette VurderLivshendelseTask for dødsfallhendelse`() {
+    fun `Skal prosessere dødsfallhendelse`() {
         val hendelseId = UUID.randomUUID().toString()
 
         val livshendelse = Livshendelse(
@@ -57,7 +57,7 @@ class LivshendelsebehandlerTest {
     }
 
     @Test
-    fun `Skal opprette VurderLivshendelseTask for utflyttingshendelse`() {
+    fun `Skal prosessere utflyttingshendelse`() {
         val hendelseId = UUID.randomUUID().toString()
 
         val livshendelse = Livshendelse(
@@ -81,7 +81,7 @@ class LivshendelsebehandlerTest {
     }
 
     @Test
-    fun `Skal opprette VurderLivshendelseTask for sivilstandhendelse GIFT`() {
+    fun `Skal prosessere sivilstandhendelse`() {
         val hendelseId = UUID.randomUUID().toString()
         val livshendelse = Livshendelse(
             hendelseId,
@@ -107,7 +107,7 @@ class LivshendelsebehandlerTest {
     }
 
     @Test
-    fun `Skal opprette MottaFødselshendelseTask med fnr på payload`() {
+    fun `Skal prosessere fødselsmelding`() {
         val hendelseId = UUID.randomUUID().toString()
 
         val livshendelse = Livshendelse(

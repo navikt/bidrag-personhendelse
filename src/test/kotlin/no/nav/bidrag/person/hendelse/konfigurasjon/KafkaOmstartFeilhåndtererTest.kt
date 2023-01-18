@@ -34,15 +34,15 @@ class KafkaOmstartFeilhåndtererTest {
     @Test
     fun `skal stoppe container hvis man mottar feil med en tom liste med records`() {
         assertThatThrownBy { errorHandler.handleRemaining(RuntimeException("Feil i test"), emptyList(), consumer, container) }
-            .hasMessageContaining("Feil i test")
+            .hasMessageContaining("Stopper kafka container")
             .hasCauseExactlyInstanceOf(RuntimeException::class.java)
     }
 
     @Test
     fun `skal stoppe container hvis man mottar feil med en liste med records`() {
         val consumerRecord = ConsumerRecord("topic", 1, 1, 1, "record")
-        assertThatThrownBy { errorHandler.handleRemaining(RuntimeException("Feil i test"), listOf(consumerRecord), consumer, container) }
-            .hasMessageContaining("Feil i test")
+        assertThatThrownBy { errorHandler.handleRemaining(RuntimeException(), listOf(consumerRecord), consumer, container) }
+            .hasMessageContaining("Stopper kafka container")
             .isInstanceOf(KafkaException::class.java)
             .hasCauseExactlyInstanceOf(RuntimeException::class.java)
     }
@@ -51,7 +51,7 @@ class KafkaOmstartFeilhåndtererTest {
     fun `skal stoppe container hvis man mottar feil hvor liste med records er null`() {
         val consumerRecord = ConsumerRecord("topic", 1, 1, 1, "record")
         assertThatThrownBy { errorHandler.handleRemaining(RuntimeException("Feil i test"), null, consumer, container) }
-            .hasMessageContaining("Feil i test")
+            .hasMessageContaining("Stopper kafka container")
             .hasCauseExactlyInstanceOf(RuntimeException::class.java)
     }
 }
