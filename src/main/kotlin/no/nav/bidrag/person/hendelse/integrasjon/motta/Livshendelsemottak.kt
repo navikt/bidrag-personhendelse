@@ -90,15 +90,15 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
     }
 
     private fun GenericRecord.henteFolkeregisteridentifikator(): Folkeregisteridentifikator? {
-        return get("Folkeregisteridentifikator") as Folkeregisteridentifikator
+        return get("Folkeregisteridentifikator") as Folkeregisteridentifikator?
     }
 
     private fun GenericRecord.henteFødsel(): Fødsel? {
-        return get("foedsel") as Fødsel
+        return get("foedsel") as Fødsel?
     }
 
     private fun GenericRecord.henteInnflytting(): Innflytting? {
-        return get("InnflyttingTilNorge") as Innflytting
+        return get("InnflyttingTilNorge") as Innflytting?
     }
 
     private fun GenericRecord.henteTidligereHendelseId(): String? {
@@ -106,15 +106,15 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
     }
 
     private fun GenericRecord.henteNavn(): Navn? {
-        return get("navn") as Navn
+        return get("navn") as Navn?
     }
 
     private fun GenericRecord.hentUtflytting(): Utflytting? {
-        return get("utflyttingFraNorge") as Utflytting
+        return get("utflyttingFraNorge") as Utflytting?
     }
 
     private fun GenericRecord.henteSivilstand(): Sivilstand? {
-        return get("sivilstand") as Sivilstand
+        return get("sivilstand") as Sivilstand?
     }
 
     private fun GenericRecord.deserialiserDatofeltFraSubrecord(
