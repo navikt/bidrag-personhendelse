@@ -90,7 +90,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
     }
 
     private fun GenericRecord.henteFolkeregisteridentifikator(): Folkeregisteridentifikator? {
-        return get("folkeregisteridentifikator") as Folkeregisteridentifikator
+        return get("Folkeregisteridentifikator") as Folkeregisteridentifikator
     }
 
     private fun GenericRecord.henteFødsel(): Fødsel? {
@@ -98,7 +98,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
     }
 
     private fun GenericRecord.henteInnflytting(): Innflytting? {
-        return get("innflytting") as Innflytting
+        return get("InnflyttingTilNorge") as Innflytting
     }
 
     private fun GenericRecord.henteTidligereHendelseId(): String? {
@@ -110,7 +110,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
     }
 
     private fun GenericRecord.hentUtflytting(): Utflytting? {
-        return get("utflytting") as Utflytting
+        return get("utflyttingFraNorge") as Utflytting
     }
 
     private fun GenericRecord.henteSivilstand(): Sivilstand? {
