@@ -42,7 +42,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
 
         val livshendelse = Livshendelse(
             cr.value().henteHendelseId(),
-            cr.value().henteOffset(),
+            cr.offset(),
             cr.value().henteOpprettetTidspunkt(),
             cr.value().henteMaster(),
             cr.value().henteOpplysningstype(),
