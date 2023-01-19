@@ -4,12 +4,16 @@ application:
 server:
   servlet:
     context-path: /
+    encoding.charset: UTF-8
   port: 8090
 spring:
   main:
     allow-bean-definition-overriding: true
   autoconfigure.exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
   main.banner-mode: "off"
+  flyway:
+    enabled: true
+    locations: classpath:/db/migration
   kafka:
     bootstrap-servers: ${KAFKA_BROKERS}
     properties:
@@ -33,9 +37,6 @@ spring:
       max-poll-records: 1
       auto-offset-reset: earliest
       enable-auto-commit: false
-  http:
-    encoding:
-      charset: UTF-8
   jackson:
     deserialization:
       # Allerede satt i felles, setter her slik at det gjelder for rest-params også
@@ -64,10 +65,10 @@ management:
   endpoints.web:
     exposure.include: info, health, metrics, prometheus
     base-path: "/internal"
-  metrics.export.prometheus.enabled: true
   health:
     db:
       enabled: true
+  prometheus.metrics.export.enabled: true
 
 wmq:
   host: ${WMQ_HOST}

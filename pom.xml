@@ -23,6 +23,7 @@
         <jvmTarget>17</jvmTarget>
         <javax.jms-api.version>2.0.1</javax.jms-api.version>
         <kotlin.version>1.7.20</kotlin.version>
+        <flyway-maven-plugin.version>9.11.0</flyway-maven-plugin.version>
         <mockk.version>1.12.5</mockk.version>
         <apache.httpcore.version>4.4.15</apache.httpcore.version>
         <apache.httpclient.version>4.5.13</apache.httpclient.version>
@@ -314,6 +315,11 @@
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>${flyway-maven-plugin.version}</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro-maven-plugin</artifactId>
