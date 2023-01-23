@@ -42,11 +42,11 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
 
 
         val livshendelse = Livshendelse(
-            personhendelse?.hendelseId as String,
+            personhendelse?.hendelseId.toString(),
             cr.offset(),
             personhendelse?.opprettet.toString(),
             personhendelse?.master as String,
-            personhendelse?.opplysningstype as String,
+            personhendelse?.opplysningstype.toString(),
             personhendelse.endringstype.name,
             personhendelse?.personidenter?.stream()?.map(CharSequence::toString)?.collect(Collectors.toList()),
             henteDødsdato(personhendelse.doedsfall),
@@ -56,7 +56,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             henteInnflytting(personhendelse.innflyttingTilNorge),
             henteNavn(personhendelse.navn),
             henteUtflytting(personhendelse.utflyttingFraNorge),
-            personhendelse.tidligereHendelseId as String?,
+            personhendelse?.tidligereHendelseId?.toString(),
             henteSivilstand(personhendelse.sivilstand)
         )
 
