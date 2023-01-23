@@ -56,7 +56,7 @@ class LivshendelsemottakTest {
         )
 
         // hvis
-        livshendelsemottak.listen(personhendelse, cr) { }
+        livshendelsemottak.listen(personhendelse, cr)
 
         // så
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
@@ -78,7 +78,7 @@ class LivshendelsemottakTest {
         )
 
         // hvis
-        livshendelsemottak.listen(personhendelse, cr) { }
+        livshendelsemottak.listen(personhendelse, cr)
 
         // så
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
@@ -100,7 +100,7 @@ class LivshendelsemottakTest {
         )
 
         // hvis
-        livshendelsemottak.listen(personhendelse, cr) { }
+        livshendelsemottak.listen(personhendelse, cr)
 
         // så
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
@@ -126,7 +126,7 @@ class LivshendelsemottakTest {
         )
 
         // hvis
-        livshendelsemottak.listen(personhendelse, cr) { }
+        livshendelsemottak.listen(personhendelse, cr)
 
         // så
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
@@ -149,7 +149,7 @@ class LivshendelsemottakTest {
         )
 
         // hvis
-        livshendelsemottak.listen(personhendelse, cr) { }
+        livshendelsemottak.listen(personhendelse, cr)
 
         // så
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
@@ -171,7 +171,7 @@ class LivshendelsemottakTest {
         )
 
         // hvis
-        livshendelsemottak.listen(personhendelse, cr) { }
+        livshendelsemottak.listen(personhendelse, cr)
 
         // så
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
@@ -193,7 +193,7 @@ class LivshendelsemottakTest {
         )
 
         // hvis
-        livshendelsemottak.listen(personhendelse, cr) { }
+        livshendelsemottak.listen(personhendelse, cr)
 
         // så
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
@@ -216,7 +216,7 @@ class LivshendelsemottakTest {
         )
 
         // hvis
-        livshendelsemottak.listen(personhendelse, cr) { }
+        livshendelsemottak.listen(personhendelse, cr)
 
         // så
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
@@ -239,7 +239,7 @@ class LivshendelsemottakTest {
         )
 
         // hvis
-        livshendelsemottak.listen(personhendelse, cr) { }
+        livshendelsemottak.listen(personhendelse, cr)
 
         // så
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()

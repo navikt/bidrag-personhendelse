@@ -36,7 +36,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         idIsGroup = false,
         containerFactory = "kafkaLeesahListenerContainerFactory"
     )
-    fun listen(@Payload personhendelse: Personhendelse, cr: ConsumerRecord<String, Personhendelse>, ack: Acknowledgment) {
+    fun listen(@Payload personhendelse: Personhendelse, cr: ConsumerRecord<String, Personhendelse>) {
         log.info("Livshendelse med hendelseid {} mottatt.", personhendelse.hendelseId)
         SECURE_LOGGER.info("Har mottatt leesah-hendelse $cr")
 
@@ -69,8 +69,6 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         } finally {
             MDC.clear()
         }
-
-        ack.acknowledge()
     }
 
     private fun henteDødsdato(doedsfall: Doedsfall?): LocalDate? {
