@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.kafka.annotation.KafkaListener
-import org.springframework.kafka.support.Acknowledgment
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -128,7 +127,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
                 navn.originaltNavn?.mellomnavn.toString(),
                 navn.originaltNavn?.etternavn.toString(),
             )
-            Navn(navn.fornavn.toString(), navn.mellomnavn.toString(), navn.etternavn.toString(), originaltNavn, navn.gyldigFraOgMed)
+            Navn(navn.fornavn?.toString(), navn.mellomnavn?.toString(), navn.etternavn?.toString(), originaltNavn, navn.gyldigFraOgMed)
         }
     }
 
@@ -136,7 +135,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (utflytting == null) {
             null
         } else {
-            Utflytting(utflytting.tilflyttingsland.toString(), utflytting.tilflyttingsstedIUtlandet.toString(), utflytting.utflyttingsdato)
+            Utflytting(utflytting.tilflyttingsland?.toString(), utflytting.tilflyttingsstedIUtlandet?.toString(), utflytting.utflyttingsdato)
         }
     }
 
@@ -144,7 +143,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (sivilstand == null) {
             null
         } else {
-            Sivilstand(sivilstand.type.toString(), sivilstand.bekreftelsesdato)
+            Sivilstand(sivilstand.type?.toString(), sivilstand.bekreftelsesdato)
         }
     }
 
