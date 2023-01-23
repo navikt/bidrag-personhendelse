@@ -1,5 +1,6 @@
 package no.nav.bidrag.person.hendelse.konfigurasjon
 
+import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
 import no.nav.person.pdl.aktor.v2.Aktor
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.consumer.ConsumerConfig
@@ -25,30 +26,12 @@ import java.time.Duration
 open class Kafkakonfig {
 
     @Bean
-    open fun kafkaIdenthendelseListenerContainerFactory(
-        properties: KafkaProperties,
-        kafkaOmstartFeilhåndterer: KafkaOmstartFeilhåndterer,
-        environment: Environment
-    ): ConcurrentKafkaListenerContainerFactory<String, Aktor> {
-        properties.properties.put("specific.avro.reader", "true")
-        val factory = ConcurrentKafkaListenerContainerFactory<String, Aktor>()
-        factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
-        factory.containerProperties.authExceptionRetryInterval = Duration.ofSeconds(2)
-        factory.consumerFactory = DefaultKafkaConsumerFactory(
-            properties.buildConsumerProperties().also {
-                it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = OffsetResetStrategy.LATEST.toString().lowercase()
-            }
-        )
-        factory.setCommonErrorHandler(kafkaOmstartFeilhåndterer)
-        return factory
-    }
-
-    @Bean
     open fun kafkaLeesahListenerContainerFactory(
         properties: KafkaProperties,
         kafkaOmstartFeilhåndterer: KafkaOmstartFeilhåndterer,
         environment: Environment
     ): ConcurrentKafkaListenerContainerFactory<Int, GenericRecord> {
+        properties.properties[KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG] = "true"
         val factory = ConcurrentKafkaListenerContainerFactory<Int, GenericRecord>()
         factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
         factory.containerProperties.authExceptionRetryInterval = Duration.ofSeconds(2)
