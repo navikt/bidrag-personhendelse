@@ -45,7 +45,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             personhendelse?.hendelseId.toString(),
             cr.offset(),
             personhendelse?.opprettet.toString(),
-            personhendelse?.master as String,
+            personhendelse?.master.toString(),
             personhendelse?.opplysningstype.toString(),
             personhendelse.endringstype.name,
             personhendelse?.personidenter?.stream()?.map(CharSequence::toString)?.collect(Collectors.toList()),
@@ -96,9 +96,9 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             return null
         } else {
             return Folkeregisteridentifikator(
-                folkeregisteridentifikator.identifikasjonsnummer as String,
-                folkeregisteridentifikator.type as String,
-                folkeregisteridentifikator.status as String
+                folkeregisteridentifikator.identifikasjonsnummer.toString(),
+                folkeregisteridentifikator.type.toString(),
+                folkeregisteridentifikator.status.toString()
             )
         }
     }
@@ -107,7 +107,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (foedsel == null) {
             null
         } else {
-            Fødsel(foedsel.foedeland as String, foedsel.foedselsdato)
+            Fødsel(foedsel.foedeland.toString(), foedsel.foedselsdato)
         }
     }
 
@@ -115,7 +115,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (innflytting == null) {
             null
         } else {
-            Innflytting(innflytting.fraflyttingsland as String, innflytting.fraflyttingsstedIUtlandet as String)
+            Innflytting(innflytting.fraflyttingsland.toString(), innflytting.fraflyttingsstedIUtlandet.toString())
         }
     }
 
@@ -124,11 +124,11 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             null
         } else {
             var originaltNavn = OriginaltNavn(
-                navn.originaltNavn?.fornavn as String?,
-                navn.originaltNavn?.mellomnavn as String?,
-                navn.originaltNavn?.etternavn as String?
+                navn.originaltNavn?.fornavn.toString(),
+                navn.originaltNavn?.mellomnavn.toString(),
+                navn.originaltNavn?.etternavn.toString(),
             )
-            Navn(navn.fornavn as String?, navn.mellomnavn as String?, navn.etternavn as String?, originaltNavn, navn.gyldigFraOgMed)
+            Navn(navn.fornavn.toString(), navn.mellomnavn.toString(), navn.etternavn.toString(), originaltNavn, navn.gyldigFraOgMed)
         }
     }
 
@@ -136,7 +136,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (utflytting == null) {
             null
         } else {
-            Utflytting(utflytting.tilflyttingsland as String?, utflytting.tilflyttingsstedIUtlandet as String?, utflytting.utflyttingsdato)
+            Utflytting(utflytting.tilflyttingsland.toString(), utflytting.tilflyttingsstedIUtlandet.toString(), utflytting.utflyttingsdato)
         }
     }
 
@@ -144,7 +144,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (sivilstand == null) {
             null
         } else {
-            Sivilstand(sivilstand.type as String, sivilstand.bekreftelsesdato)
+            Sivilstand(sivilstand.type.toString(), sivilstand.bekreftelsesdato)
         }
     }
 
