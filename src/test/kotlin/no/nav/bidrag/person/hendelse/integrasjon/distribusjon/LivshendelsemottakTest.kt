@@ -4,7 +4,6 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
-import no.nav.bidrag.person.hendelse.domene.Sivilstand
 import no.nav.bidrag.person.hendelse.integrasjon.mottak.Livshendelsemottak
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import no.nav.person.pdl.leesah.Endringstype
@@ -155,7 +154,7 @@ class LivshendelsemottakTest {
         // så
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
-        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.INNFLYTTING_V1.name)
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.INNFLYTTING_TIL_NORGE.name)
         assertThat(livshendelseSomSendesTilBehandling.captured.innflytting?.fraflyttingsland).isEqualTo(personhendelse.innflyttingTilNorge.fraflyttingsland)
     }
 
@@ -199,7 +198,7 @@ class LivshendelsemottakTest {
         // så
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
-        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.UTFLYTTING_V1.name)
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.UTFLYTTING_FRA_NORGE.name)
         assertThat(livshendelseSomSendesTilBehandling.captured.utflytting?.tilflyttingsland).isEqualTo(personhendelse.utflyttingFraNorge.tilflyttingsland)
         assertThat(livshendelseSomSendesTilBehandling.captured.utflytting?.utflyttingsdato).isEqualTo(personhendelse.utflyttingFraNorge.utflyttingsdato)
     }
@@ -299,7 +298,7 @@ class LivshendelsemottakTest {
             var innflytting = InnflyttingTilNorge("POL", "Birk")
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.innflyttingTilNorge = innflytting
-            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.INNFLYTTING_V1.name
+            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.INNFLYTTING_TIL_NORGE.name
 
             return personhendelse
         }
@@ -316,7 +315,7 @@ class LivshendelsemottakTest {
             var utflytting = UtflyttingFraNorge.newBuilder().setTilflyttingsland("POL").setUtflyttingsdato(LocalDate.now()).build()
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.utflyttingFraNorge = utflytting
-            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.UTFLYTTING_V1.name
+            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.UTFLYTTING_FRA_NORGE.name
             return personhendelse
         }
 

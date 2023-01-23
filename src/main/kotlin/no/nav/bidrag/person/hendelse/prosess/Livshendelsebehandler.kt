@@ -28,9 +28,9 @@ class Livshendelsebehandler(
             Opplysningstype.DOEDSFALL_V1.toString() -> behandleDødsfall(livshendelse)
             Opplysningstype.FOEDSEL_V1.toString() -> behandleFødsel(livshendelse)
             Opplysningstype.FOLKEREGISTERIDENTIFIKATOR_V1.toString() -> behandleFolkeregisteridentifikator(livshendelse)
-            Opplysningstype.INNFLYTTING_V1.toString() -> behandleInnflytting(livshendelse)
+            Opplysningstype.INNFLYTTING_TIL_NORGE.toString() -> behandleInnflytting(livshendelse)
             Opplysningstype.NAVN_V1.toString() -> behandleNavn(livshendelse)
-            Opplysningstype.UTFLYTTING_V1.toString() -> behandleUtflytting(livshendelse)
+            Opplysningstype.UTFLYTTING_FRA_NORGE.toString() -> behandleUtflytting(livshendelse)
             Opplysningstype.SIVILSTAND_V1.toString() -> behandleSivilstand(livshendelse)
             Opplysningstype.VERGE_V1.toString() -> behandleVerge(livshendelse)
         }
@@ -403,7 +403,7 @@ class Livshendelsebehandler(
     }
 
     enum class Opplysningstype {
-        ADRESSEBESKYTTELSE_V1, BOSTEDSADRESSE_V1, DOEDSFALL_V1, FOEDSEL_V1, FOLKEREGISTERIDENTIFIKATOR_V1, INNFLYTTING_V1, NAVN_V1, UTFLYTTING_V1, SIVILSTAND_V1, VERGE_V1
+        ADRESSEBESKYTTELSE_V1, BOSTEDSADRESSE_V1, DOEDSFALL_V1, FOEDSEL_V1, FOLKEREGISTERIDENTIFIKATOR_V1, INNFLYTTING_TIL_NORGE, NAVN_V1, UTFLYTTING_FRA_NORGE, SIVILSTAND_V1, VERGE_V1
     }
 
 }
