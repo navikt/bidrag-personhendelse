@@ -1,4 +1,4 @@
-package no.nav.bidrag.person.hendelse.integrasjon.distribuere
+package no.nav.bidrag.person.hendelse.integrasjon.distribusjon
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

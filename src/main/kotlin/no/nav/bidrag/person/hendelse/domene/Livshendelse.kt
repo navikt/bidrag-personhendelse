@@ -10,7 +10,7 @@ data class Livshendelse(
     val master: String,
     val opplysningstype: String,
     val endringstype: String,
-    val personidenter: List<String>,
+    val personidenter: List<String>?,
     val doedsdato: LocalDate? = null,
     val flyttedato: LocalDate? = LocalDate.now(),
     val folkeregisteridentifikator: Folkeregisteridentifikator? = null,
@@ -25,9 +25,9 @@ data class Livshendelse(
 
 ) {
 
-    fun hentPersonident() = personidenter.first { it.length == 11 }
-    fun hentGjeldendeAktørid() = personidenter.first { it.length == 13 }
-    fun hentPersonidenter() = personidenter.filter { it.length == 11 }
+    fun hentPersonident() = personidenter?.first { it.length == 11 }
+    fun hentGjeldendeAktørid() = personidenter?.first { it.length == 13 }
+    fun hentPersonidenter() = personidenter?.filter { it.length == 11 }
 
     enum class Gradering {
         STRENGT_FORTROLIG_UTLAND,

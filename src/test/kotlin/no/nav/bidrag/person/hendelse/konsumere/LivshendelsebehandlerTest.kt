@@ -8,7 +8,7 @@ import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.domene.Sivilstand
 import no.nav.bidrag.person.hendelse.domene.Utflytting
 import no.nav.bidrag.person.hendelse.database.HendelsearkivDao
-import no.nav.bidrag.person.hendelse.integrasjon.distribuere.Meldingsprodusent
+import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import org.junit.jupiter.api.BeforeEach

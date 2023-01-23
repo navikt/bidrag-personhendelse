@@ -7,6 +7,7 @@ protocol PersonhendelseProto {
   import idl "sivilstand/Sivilstand.avdl";
   import idl "utflytting/Utflytting.avdl";
   import idl "innflytting/Innflytting.avdl";
+  import idl "folkeregisteridentifikator/Folkeregisteridentifikator.avdl";
   import idl "navn/Navn.avdl";
   import idl "kontaktadresse/Kontaktadresse.avdl";
   import idl "bostedsadresse/Bostedsadresse.avdl";
@@ -37,6 +38,7 @@ protocol PersonhendelseProto {
     union { null, no.nav.person.pdl.leesah.verge.VergemaalEllerFremtidsfullmakt } vergemaalEllerFremtidsfullmakt = null;
     union { null, no.nav.person.pdl.leesah.utflytting.UtflyttingFraNorge } utflyttingFraNorge = null;
     union { null, no.nav.person.pdl.leesah.innflytting.InnflyttingTilNorge } InnflyttingTilNorge = null;
+    union { null, no.nav.person.pdl.leesah.folkeregisteridentifikator.Folkeregisteridentifikator } Folkeregisteridentifikator = null;
     union { null, no.nav.person.pdl.leesah.navn.Navn } navn = null;
     union { null, no.nav.person.pdl.leesah.kontaktadresse.Kontaktadresse } kontaktadresse = null;
     union { null, no.nav.person.pdl.leesah.bostedsadresse.Bostedsadresse } bostedsadresse = null;

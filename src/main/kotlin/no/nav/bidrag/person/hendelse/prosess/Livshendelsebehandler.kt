@@ -7,7 +7,7 @@ import io.micrometer.core.instrument.Metrics
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.database.Hendelsearkiv
 import no.nav.bidrag.person.hendelse.database.HendelsearkivDao
-import no.nav.bidrag.person.hendelse.integrasjon.distribuere.Meldingsprodusent
+import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -310,8 +310,8 @@ class Livshendelsebehandler(
 
         var listeMedPersonidenter = livshendelse.personidenter
 
-        if (livshendelse.personidenter.size > MAKS_ANTALL_PERSONIDENTER) {
-            listeMedPersonidenter = listeMedPersonidenter.subList(0, MAKS_ANTALL_PERSONIDENTER)
+        if (livshendelse.personidenter?.size!! > MAKS_ANTALL_PERSONIDENTER) {
+            listeMedPersonidenter = listeMedPersonidenter?.subList(0, MAKS_ANTALL_PERSONIDENTER)
             log.warn(
                 "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over ${MAKS_ANTALL_PERSONIDENTER} personidenter. " +
                         "Kun de ${MAKS_ANTALL_PERSONIDENTER} første arkiveres."
@@ -325,7 +325,7 @@ class Livshendelsebehandler(
                 livshendelse.endringstype,
                 livshendelse.master,
                 livshendelse.offset,
-                listeMedPersonidenter.joinToString { it },
+                listeMedPersonidenter?.joinToString { it },
                 livshendelse.tidligereHendelseid,
                 oppretteGson().toJson(livshendelse)
             )
