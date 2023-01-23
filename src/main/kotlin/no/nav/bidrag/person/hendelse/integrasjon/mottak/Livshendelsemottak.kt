@@ -143,7 +143,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (sivilstand == null) {
             null
         } else {
-            Sivilstand(sivilstand.type?.toString(), sivilstand.bekreftelsesdato)
+            Sivilstand(sivilstand.type?.toString(), sivilstand.bekreftelsesdato, sivilstand.gyldigFraOgMed)
         }
     }
 

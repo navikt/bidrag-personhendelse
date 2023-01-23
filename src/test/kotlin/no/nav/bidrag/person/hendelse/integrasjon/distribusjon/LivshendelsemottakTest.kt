@@ -222,7 +222,7 @@ class LivshendelsemottakTest {
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
         assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.SIVILSTAND_V1.name)
-        assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.sivilstandDato).isEqualTo(personhendelse.sivilstand.bekreftelsesdato)
+        assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.bekreftelsesdato).isEqualTo(personhendelse.sivilstand.bekreftelsesdato)
         assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.sivilstand).isEqualTo(personhendelse.sivilstand.type)
     }
 
@@ -245,7 +245,7 @@ class LivshendelsemottakTest {
         val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
         assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.SIVILSTAND_V1.name)
-        assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.sivilstandDato).isEqualTo(personhendelse.sivilstand.bekreftelsesdato)
+        assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.bekreftelsesdato).isEqualTo(personhendelse.sivilstand.bekreftelsesdato)
         assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.sivilstand).isEqualTo(personhendelse.sivilstand.type)
         assertThat(livshendelseSomSendesTilBehandling.captured.tidligereHendelseid).isNotEmpty()
         assertThat(livshendelseSomSendesTilBehandling.captured.tidligereHendelseid).isEqualTo(personhendelse.tidligereHendelseId)

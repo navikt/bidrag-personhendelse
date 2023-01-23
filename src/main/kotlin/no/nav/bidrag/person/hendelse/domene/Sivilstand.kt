@@ -4,5 +4,6 @@ import java.time.LocalDate
 
 data class Sivilstand (
     val sivilstand: String? = null,
-    val sivilstandDato: LocalDate = LocalDate.now()
+    val bekreftelsesdato: LocalDate? = null,
+    val gyldigFraOgMedDato: LocalDate? = null
 )

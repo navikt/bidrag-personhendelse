@@ -293,7 +293,7 @@ class Livshendelsebehandler(
 
         when (livshendelse.endringstype) {
             OPPRETTET -> {
-                loggeLivshendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstand?.sivilstandDato}")
+                loggeLivshendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstand?.bekreftelsesdato}")
                 var livshendelseJson = oppretteGson().toJson(livshendelse)
                 meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, livshendelseJson)
             }
