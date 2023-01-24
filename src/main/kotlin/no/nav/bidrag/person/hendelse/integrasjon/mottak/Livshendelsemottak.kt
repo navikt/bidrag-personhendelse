@@ -106,7 +106,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (foedsel == null) {
             null
         } else {
-            Fødsel(foedsel.foedeland.toString(), foedsel.foedselsdato)
+            Fødsel(foedsel.foedeland?.toString(), foedsel.foedselsdato)
         }
     }
 
@@ -114,7 +114,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (innflytting == null) {
             null
         } else {
-            Innflytting(innflytting.fraflyttingsland.toString(), innflytting.fraflyttingsstedIUtlandet.toString())
+            Innflytting(innflytting.fraflyttingsland?.toString(), innflytting.fraflyttingsstedIUtlandet?.toString())
         }
     }
 
@@ -123,9 +123,9 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             null
         } else {
             var originaltNavn = OriginaltNavn(
-                navn.originaltNavn?.fornavn.toString(),
-                navn.originaltNavn?.mellomnavn.toString(),
-                navn.originaltNavn?.etternavn.toString(),
+                navn.originaltNavn?.fornavn?.toString(),
+                navn.originaltNavn?.mellomnavn?.toString(),
+                navn.originaltNavn?.etternavn?.toString(),
             )
             Navn(navn.fornavn?.toString(), navn.mellomnavn?.toString(), navn.etternavn?.toString(), originaltNavn, navn.gyldigFraOgMed)
         }
