@@ -26,22 +26,25 @@ WMQ_HOST: host.docker.internal
 WMQ_PORT: 1414
 WMQ_CHANNEL: DEV.APP.SVRCONN
 WMQ_QUEUEMANAGER: QM1
-WMQ_QUEUE_LIVSHENDELSER: DEV.QUEUE.1
+WMQ_QUEUE_NAME_LIVSHENDELSER: DEV.QUEUE.1
 WMQ_TIMEOUT: 15000
 WMQ_APPLICATION_NAME: bidrag-person-hendelse
 PASSORD_SRVBIDRAG_PERSON_HEN: passw0rd
 KAFKA_BROKERS: http://localhost:9093
 
-wmq:
-  host: ${WMQ_HOST}
-  port: ${WMQ_PORT}
-  channel: ${WMQ_CHANNEL}
-  queue-manager: ${WMQ_QUEUEMANAGER}
-  username: srvbidrag-person-hen
-  password: ${PASSORD_SRVBIDRAG_PERSON_HEN}
-  timeout: ${WMQ_TIMEOUT}
-  application-name: ${WMQ_APPLICATION_NAME}
-  queueNameLivshendelser: ${WMQ_QUEUE_NAME_LIVSHENDELSER}
+egenskaper:
+  generelt:
+    antall-minutter-forsinket-videresending: 120
+  wmq:
+    host: ${WMQ_HOST}
+    port: ${WMQ_PORT}
+    channel: ${WMQ_CHANNEL}
+    queue-manager: ${WMQ_QUEUEMANAGER}
+    username: srvbidrag-person-hen
+    password: ${PASSORD_SRVBIDRAG_PERSON_HEN}
+    timeout: ${WMQ_TIMEOUT}
+    application-name: ${WMQ_APPLICATION_NAME}
+    queueNameLivshendelser: ${WMQ_QUEUE_NAME_LIVSHENDELSER}
 
 ---
 spring:

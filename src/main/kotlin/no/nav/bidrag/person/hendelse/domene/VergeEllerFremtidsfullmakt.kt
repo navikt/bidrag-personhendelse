@@ -9,5 +9,5 @@ data class VergeEllerFremtidsfullmakt(
 data class VergeEllerFullmektig(
     val motpartsPersonident: String? = null,
     val omfang: String? = null,
-    val omfangetErInnenPersonligOmraade: String? = null
+    val omfangetErInnenPersonligOmraade: Boolean = false
 )

@@ -4,6 +4,7 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
+import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
 import no.nav.bidrag.person.hendelse.integrasjon.mottak.Livshendelsemottak
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import no.nav.person.pdl.leesah.Endringstype
@@ -59,9 +60,9 @@ class LivshendelsemottakTest {
         livshendelsemottak.listen(personhendelse, cr)
 
         // så
-        val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
+        val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
-        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.DOEDSFALL_V1.name)
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.DOEDSFALL_V1)
         assertThat(livshendelseSomSendesTilBehandling.captured.doedsdato).isEqualTo(personhendelse.doedsfall.doedsdato)
     }
 
@@ -81,9 +82,9 @@ class LivshendelsemottakTest {
         livshendelsemottak.listen(personhendelse, cr)
 
         // så
-        val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
+        val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
-        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.BOSTEDSADRESSE_V1.name)
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.BOSTEDSADRESSE_V1)
         assertThat(livshendelseSomSendesTilBehandling.captured.flyttedato).isEqualTo(personhendelse.bostedsadresse.angittFlyttedato)
     }
 
@@ -103,11 +104,11 @@ class LivshendelsemottakTest {
         livshendelsemottak.listen(personhendelse, cr)
 
         // så
-        val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
+        val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
 
         assertThat(livshendelseSomSendesTilBehandling.captured).isNotNull
-        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.FOLKEREGISTERIDENTIFIKATOR_V1.name)
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.FOLKEREGISTERIDENTIFIKATOR_V1)
         assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.identifikasjonsnummer).isEqualTo(personhendelse.folkeregisteridentifikator.identifikasjonsnummer)
         assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.type).isEqualTo(personhendelse.folkeregisteridentifikator.type)
         assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.status).isEqualTo(personhendelse.folkeregisteridentifikator.status)
@@ -129,9 +130,9 @@ class LivshendelsemottakTest {
         livshendelsemottak.listen(personhendelse, cr)
 
         // så
-        val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
+        val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
-        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.FOEDSEL_V1.name)
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.FOEDSEL_V1)
         assertThat(livshendelseSomSendesTilBehandling.captured.fødsel?.fødeland).isEqualTo(personhendelse.foedsel.foedeland)
         assertThat(livshendelseSomSendesTilBehandling.captured.fødsel?.fødselsdato).isEqualTo(personhendelse.foedsel.foedselsdato)
     }
@@ -152,9 +153,9 @@ class LivshendelsemottakTest {
         livshendelsemottak.listen(personhendelse, cr)
 
         // så
-        val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
+        val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
-        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.INNFLYTTING_TIL_NORGE.name)
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.INNFLYTTING_TIL_NORGE)
         assertThat(livshendelseSomSendesTilBehandling.captured.innflytting?.fraflyttingsland).isEqualTo(personhendelse.innflyttingTilNorge.fraflyttingsland)
     }
 
@@ -174,9 +175,9 @@ class LivshendelsemottakTest {
         livshendelsemottak.listen(personhendelse, cr)
 
         // så
-        val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
+        val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
-        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.NAVN_V1.name)
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.NAVN_V1)
         assertThat(livshendelseSomSendesTilBehandling.captured.navn?.fornavn).isEqualTo(personhendelse.navn.fornavn)
     }
 
@@ -196,9 +197,9 @@ class LivshendelsemottakTest {
         livshendelsemottak.listen(personhendelse, cr)
 
         // så
-        val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
+        val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
-        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.UTFLYTTING_FRA_NORGE.name)
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.UTFLYTTING_FRA_NORGE)
         assertThat(livshendelseSomSendesTilBehandling.captured.utflytting?.tilflyttingsland).isEqualTo(personhendelse.utflyttingFraNorge.tilflyttingsland)
         assertThat(livshendelseSomSendesTilBehandling.captured.utflytting?.utflyttingsdato).isEqualTo(personhendelse.utflyttingFraNorge.utflyttingsdato)
     }
@@ -219,9 +220,9 @@ class LivshendelsemottakTest {
         livshendelsemottak.listen(personhendelse, cr)
 
         // så
-        val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
+        val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
-        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.SIVILSTAND_V1.name)
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.SIVILSTAND_V1)
         assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.bekreftelsesdato).isEqualTo(personhendelse.sivilstand.bekreftelsesdato)
         assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.sivilstand).isEqualTo(personhendelse.sivilstand.type)
     }
@@ -242,9 +243,9 @@ class LivshendelsemottakTest {
         livshendelsemottak.listen(personhendelse, cr)
 
         // så
-        val livshendelseSomSendesTilBehandling =  slot<Livshendelse>()
+        val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
-        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Livshendelsebehandler.Opplysningstype.SIVILSTAND_V1.name)
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.SIVILSTAND_V1)
         assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.bekreftelsesdato).isEqualTo(personhendelse.sivilstand.bekreftelsesdato)
         assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.sivilstand).isEqualTo(personhendelse.sivilstand.type)
         assertThat(livshendelseSomSendesTilBehandling.captured.tidligereHendelseid).isNotEmpty()
@@ -252,70 +253,70 @@ class LivshendelsemottakTest {
     }
 
     companion object {
-        open fun hentePersonhendelseForDødsfall(): Personhendelse {
+        fun hentePersonhendelseForDødsfall(): Personhendelse {
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.doedsfall = Doedsfall(LocalDate.now())
-            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.DOEDSFALL_V1.name
+            personhendelse.opplysningstype = Opplysningstype.DOEDSFALL_V1.name
 
             return personhendelse
         }
 
-        open fun hentePersonhendelseForBostedsadresse(): Personhendelse {
+        fun hentePersonhendelseForBostedsadresse(): Personhendelse {
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.bostedsadresse = Bostedsadresse.newBuilder()
                 .setAngittFlyttedato(LocalDate.now())
                 .setVegadresse(Vegadresse.newBuilder().setAdressenavn("Korketrekkeren 20").build())
                 .build()
-            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.BOSTEDSADRESSE_V1.name
+            personhendelse.opplysningstype = Opplysningstype.BOSTEDSADRESSE_V1.name
 
             return personhendelse
         }
 
-        open fun hentePersonhendelseForFolkeregisteridentifikator(): Personhendelse {
+        fun hentePersonhendelseForFolkeregisteridentifikator(): Personhendelse {
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.folkeregisteridentifikator = Folkeregisteridentifikator.newBuilder()
                 .setIdentifikasjonsnummer("12345678910")
                 .setStatus("I_BRUK")
                 .setType("FNR")
                 .build()
-            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.FOLKEREGISTERIDENTIFIKATOR_V1.name
+            personhendelse.opplysningstype = Opplysningstype.FOLKEREGISTERIDENTIFIKATOR_V1.name
 
             return personhendelse
         }
 
-        open fun hentePersonhendelseForFødsel(): Personhendelse {
+        fun hentePersonhendelseForFødsel(): Personhendelse {
             var fødsel = Foedsel()
             fødsel.foedeland = "NOR"
             fødsel.foedselsdato = LocalDate.now()
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.foedsel = fødsel
-            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.FOEDSEL_V1.name
+            personhendelse.opplysningstype = Opplysningstype.FOEDSEL_V1.name
 
             return personhendelse
         }
 
-        open fun hentePersonhendelseForInnflytting(): Personhendelse {
+        fun hentePersonhendelseForInnflytting(): Personhendelse {
             var innflytting = InnflyttingTilNorge("POL", "Birk")
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.innflyttingTilNorge = innflytting
-            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.INNFLYTTING_TIL_NORGE.name
+            personhendelse.opplysningstype = Opplysningstype.INNFLYTTING_TIL_NORGE.name
 
             return personhendelse
         }
 
-        open fun hentePersonhendelseForNavn(): Personhendelse {
+        fun hentePersonhendelseForNavn(): Personhendelse {
             var navn = Navn.newBuilder().setFornavn("Stolpe").setEtternavn("Hekk").build()
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.navn = navn
-            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.NAVN_V1.name
+            personhendelse.opplysningstype = Opplysningstype.NAVN_V1.name
             return personhendelse
         }
 
-        open fun hentePersonhendelseForUtflytting(): Personhendelse {
+        fun hentePersonhendelseForUtflytting(): Personhendelse {
             var utflytting = UtflyttingFraNorge.newBuilder().setTilflyttingsland("POL").setUtflyttingsdato(LocalDate.now()).build()
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.utflyttingFraNorge = utflytting
-            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.UTFLYTTING_FRA_NORGE.name
+            personhendelse.opplysningstype = Opplysningstype.UTFLYTTING_FRA_NORGE.name
             return personhendelse
         }
 
@@ -323,17 +324,17 @@ class LivshendelsemottakTest {
             var sivilstand = no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now()).setType("GIFT").build()
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.sivilstand = sivilstand
-            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.SIVILSTAND_V1.name
+            personhendelse.opplysningstype = Opplysningstype.SIVILSTAND_V1.name
             return personhendelse
         }
 
-        open fun hentePersonhendelseForSivilstandKorrigering(): Personhendelse {
+        fun hentePersonhendelseForSivilstandKorrigering(): Personhendelse {
             var sivilstand = no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now()).setType("GIFT").build()
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.sivilstand = sivilstand
             personhendelse.tidligereHendelseId = "123"
             personhendelse.endringstype = Endringstype.KORRIGERT
-            personhendelse.opplysningstype = Livshendelsebehandler.Opplysningstype.SIVILSTAND_V1.name
+            personhendelse.opplysningstype = Opplysningstype.SIVILSTAND_V1.name
             return personhendelse
         }
 

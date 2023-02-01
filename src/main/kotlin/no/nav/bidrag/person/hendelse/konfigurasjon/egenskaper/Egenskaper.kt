@@ -2,7 +2,16 @@ package no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-@ConfigurationProperties("wmq")
+
+@ConfigurationProperties(prefix = "egenskaper")
+data class Egenskaper(val generelt: Generelt, val wmq: Wmq)
+
+@ConfigurationProperties("generelt")
+data class Generelt(
+    val antallMinutterForsinketVideresending: Int = 120
+)
+
+@ConfigurationProperties("egenskaper.wmq")
 data class Wmq(
     var host: String,
     val port: Int,
