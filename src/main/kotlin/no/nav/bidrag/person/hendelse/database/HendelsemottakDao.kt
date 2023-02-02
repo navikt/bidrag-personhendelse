@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
 @Repository
-interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
+open interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_FORCE_INCREMENT)
     fun save(hendelsemottak: Hendelsemottak): Hendelsemottak

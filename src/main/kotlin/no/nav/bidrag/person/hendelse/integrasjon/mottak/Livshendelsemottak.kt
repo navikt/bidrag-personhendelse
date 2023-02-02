@@ -76,8 +76,8 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             MDC.put(MdcKonstanter.MDC_KALLID, livshendelse.hendelseid)
             livshendelsebehandler.prosesserNyHendelse(livshendelse)
         } catch (e: RuntimeException) {
-            SECURE_LOGGER.error("Feil i prosessering av leesah-hendelser", e)
-            throw RuntimeException("Feil i prosessering av leesah-hendelser")
+            SECURE_LOGGER.error("Feil i prosessering av leesah-hendelse", e)
+            throw RuntimeException("Feil i prosessering av leesah-hendelse")
         } finally {
             MDC.clear()
         }

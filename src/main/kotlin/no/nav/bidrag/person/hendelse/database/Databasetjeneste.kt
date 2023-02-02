@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
-open class Databasetjeneste(private val hendelsemottakDao: HendelsemottakDao) {
+open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
 
     @Transactional
     fun kansellereIkkeOverførteAnnullerteHendelser() {

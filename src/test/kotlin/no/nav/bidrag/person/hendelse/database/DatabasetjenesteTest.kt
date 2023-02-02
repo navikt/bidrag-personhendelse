@@ -24,12 +24,12 @@ open class DatabasetjenesteTest {
     @Autowired
     lateinit var hendelsemottakDao: HendelsemottakDao
 
+    @Autowired
     lateinit var databasetjeneste: Databasetjeneste
 
     @BeforeEach
     fun initialisere() {
         hendelsemottakDao.deleteAll()
-        databasetjeneste = Databasetjeneste(hendelsemottakDao)
     }
 
     @Test
