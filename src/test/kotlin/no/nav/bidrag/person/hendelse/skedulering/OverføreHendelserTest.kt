@@ -50,7 +50,10 @@ open class OverføreHendelserTest {
         var hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
         var hendelseMottattUtenforVenteperiode =
             Livshendelse(hendelseid1, Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1, Livshendelse.Endringstype.OPPRETTET, personidenter)
-        var lagretHendelseMottattUtenforVenteperiode = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
+        var lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
+        lagretHendelseVenteperiodeUtløpt.statustidspunkt =
+            LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
+        hendelsemottakDao.save(lagretHendelseVenteperiodeUtløpt)
 
         var hendelseid2 = "38468520-70f2-40c0-b4ae-6c765c307a7d"
         var hendelseMottattInnenforVenteperiode = Livshendelse(
@@ -59,10 +62,10 @@ open class OverføreHendelserTest {
             Livshendelse.Endringstype.ANNULLERT,
             personidenter
         )
-        databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
-        lagretHendelseMottattUtenforVenteperiode.statustidspunkt =
-            LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
-        hendelsemottakDao.save(lagretHendelseMottattUtenforVenteperiode)
+        var lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
+        lagretHendelserVenteperiodeIkkeUtløpt.statustidspunkt =
+            LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() -5)
+        hendelsemottakDao.save(lagretHendelserVenteperiodeIkkeUtløpt)
 
         var hendelseid3 = "87925614-70f2-40c0-b4ae-6c765c308h8h"
         var hendelseMedStatusOverført = Livshendelse(
@@ -71,7 +74,8 @@ open class OverføreHendelserTest {
             Livshendelse.Endringstype.ANNULLERT,
             personidenter
         )
-        databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
+        var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
+        hendelsemottakDao.save(lagretHendelseMedStatusOverført)
 
         // hvis
         overføreHendelser.overføreHendelserTilBisys()

@@ -37,9 +37,10 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
         return hendelsemottakDao.henteIdTilHendelserSomSkalSendesVidere(statustidspunktFør)
     }
 
-    fun henteMottattHendelse(id: Int): String {
+    @Transactional
+    fun henteHendelse(id: Int): Hendelsemottak {
         var hendelsemottak = hendelsemottakDao.findById(id)
-        return hendelsemottak.hendelse
+        return hendelsemottak
     }
 
     fun hendelseFinnesIDatabasen(hendelseid: String, opplysningstype: Livshendelse.Opplysningstype): Boolean {
