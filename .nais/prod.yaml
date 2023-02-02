@@ -43,7 +43,7 @@ spec:
     - secret: bidrag-person-hendelse-passord-systembruker
   env:
     - name: SPRING_PROFILES_ACTIVE
-      value: prod, nais
+      value: prod, i-sky
   kafka:
     pool: nav-prod
   gcp:

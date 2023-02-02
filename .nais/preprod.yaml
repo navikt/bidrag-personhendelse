@@ -41,7 +41,7 @@ spec:
     - secret: bidrag-person-hendelse-passord-systembruker
   env:
     - name: SPRING_PROFILES_ACTIVE
-      value: preprod, nais
+      value: preprod, i-sky
     - name: JAVA_TOOL_OPTIONS
       value: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
   secureLogs:
