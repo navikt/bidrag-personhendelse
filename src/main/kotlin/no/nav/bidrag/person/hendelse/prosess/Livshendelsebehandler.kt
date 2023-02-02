@@ -34,6 +34,9 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
@@ -59,6 +62,9 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
@@ -84,6 +90,9 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
@@ -94,7 +103,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             else -> {}
         }
 
-        if (!Endringstype.OPPRETTET.equals(livshendelse.endringstype)) {
+        if (Endringstype.OPPRETTET != livshendelse.endringstype) {
             log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Flyttedato: ${livshendelse.flyttedato}")
         }
 
@@ -106,27 +115,29 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
         loggeLivshendelse(livshendelse, "dødsdato: ${livshendelse.doedsdato}");
 
         when (livshendelse.endringstype) {
-            Endringstype.OPPRETTET -> {
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
                 if (livshendelse.doedsdato == null) {
                     log.error("Mangler dødsdato. Ignorerer hendelse ${livshendelse.hendelseid}")
                     tellerDødsfallIgnorert.increment()
                 } else {
                     tellerDødsfall.increment()
+                    databasetjeneste.lagreHendelse(livshendelse)
                 }
             }
 
             else -> {
-                log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Dødsdato: ${livshendelse.doedsdato}")
+                log.warn("Ignorerer hendelse med id ${livshendelse.hendelseid} og opplysningstype ${livshendelse.opplysningstype}. Dødsdato: ${livshendelse.doedsdato}")
             }
         }
-
-        databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun behandleFolkeregisteridentifikator(livshendelse: Livshendelse) {
@@ -135,6 +146,9 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
@@ -160,21 +174,23 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
         tellerInnflytting.increment()
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.hendelseid}. Ignorerer denne."
+            )
             return
         }
 
         when (livshendelse.endringstype) {
-            Endringstype.OPPRETTET -> {
+            Endringstype.OPPRETTET, Endringstype.ANNULLERT -> {
                 loggeLivshendelse(livshendelse, "Fraflyttingsland: ${livshendelse.innflytting?.fraflyttingsland}")
+                databasetjeneste.lagreHendelse(livshendelse)
             }
 
             else -> {
                 tellerInnflyttingIgnorert.increment()
-                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET.")
+                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET eller ANNULLERT.")
             }
         }
-
-        databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun behandleNavn(livshendelse: Livshendelse) {
@@ -182,26 +198,33 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
         loggeLivshendelse(livshendelse);
 
         when (livshendelse.endringstype) {
-            Endringstype.OPPRETTET -> {
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
                 val manglerFornavn = livshendelse.navn?.fornavn == null
                 if (manglerFornavn || livshendelse.navn?.etternavn == null) {
                     val navnedel = if (manglerFornavn) "Fornavn" else "Etternavn"
-                    log.info("${navnedel} mangler. Ignorerer navnehendelse med id ${livshendelse.hendelseid}")
+                    log.warn("${navnedel} mangler. Ignorerer navnehendelse med id ${livshendelse.hendelseid}")
+                } else {
+                    databasetjeneste.lagreHendelse(livshendelse)
                 }
             }
 
+            Endringstype.ANNULLERT -> {
+                databasetjeneste.lagreHendelse(livshendelse)
+            }
+
             else -> {
-                log.warn("Navnehendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Endringstype: ${livshendelse.endringstype}")
+                log.warn("Ignorerer navnehendelse med id ${livshendelse.hendelseid} av type ${livshendelse.opplysningstype}. Endringstype: ${livshendelse.endringstype}")
             }
         }
-
-        databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun behandleFødsel(livshendelse: Livshendelse) {
@@ -209,6 +232,9 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
@@ -250,21 +276,23 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
         when (livshendelse.endringstype) {
-            Endringstype.OPPRETTET -> {
+            Endringstype.OPPRETTET, Endringstype.ANNULLERT -> {
                 loggeLivshendelse(livshendelse, "utflyttingsdato: ${livshendelse.utflytting?.utflyttingsdato}")
+                databasetjeneste.lagreHendelse(livshendelse)
             }
 
             else -> {
                 tellerUtflyttingIgnorert.increment()
-                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET.")
+                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET eller ANNULLERT.")
             }
         }
-
-        databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun behandleSivilstand(livshendelse: Livshendelse) {
@@ -272,20 +300,22 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
         tellerSivilstand.increment()
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
         when (livshendelse.endringstype) {
-            Endringstype.OPPRETTET -> {
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT, Endringstype.ANNULLERT -> {
                 loggeLivshendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstand?.bekreftelsesdato}")
+                databasetjeneste.lagreHendelse(livshendelse)
             }
 
             else -> {
-                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET.")
+                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET, KORRIGERT, eller ANNULLERT.")
             }
         }
-
-        databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun loggeLivshendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {

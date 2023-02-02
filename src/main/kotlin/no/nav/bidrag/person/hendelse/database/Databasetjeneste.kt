@@ -18,16 +18,29 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
         for (id in ikkeOverførteHendelserSomViserTilTidligereHendelser) {
             var nyHendelse = hendelsemottakDao.findById(id)
             var tidligereHendelse = nyHendelse.tidligereHendelseid?.let { hendelsemottakDao.findByHendelseid(it) }
-            if (Status.MOTTATT.equals(tidligereHendelse?.status)) {
-                if (Livshendelse.Endringstype.ANNULLERT == nyHendelse.endringstype && tidligereHendelse != null) {
-                    nyHendelse.status = Status.KANSELLERT
-                    nyHendelse.statustidspunkt = LocalDateTime.now()
-                    tidligereHendelse.status = Status.KANSELLERT
-                    tidligereHendelse.statustidspunkt = LocalDateTime.now()
-                    log.info(
-                        "Livshendelse med hendelseid {} ble annullert av livshendelse med hendelseid {}. Begge livshendelsene får status KANSELLERT, " +
-                                "og overføres derfor ikke til Bisys.", tidligereHendelse.hendelseid, nyHendelse.hendelseid
-                    )
+            if (tidligereHendelse != null && Status.MOTTATT == tidligereHendelse.status) {
+                when (nyHendelse.endringstype) {
+                    Livshendelse.Endringstype.ANNULLERT, Livshendelse.Endringstype.OPPHOERT -> {
+                        nyHendelse.status = Status.KANSELLERT
+                        nyHendelse.statustidspunkt = LocalDateTime.now()
+                        tidligereHendelse.status = Status.KANSELLERT
+                        tidligereHendelse.statustidspunkt = LocalDateTime.now()
+                        log.info(
+                            "Livshendelse med hendelseid ${tidligereHendelse.hendelseid} ble annullert av livshendelse med hendelseid ${nyHendelse.hendelseid} og endringstype ${nyHendelse.endringstype}. Begge livshendelsene får status KANSELLERT, og overføres derfor ikke til Bisys."
+                        )
+                    }
+
+                    Livshendelse.Endringstype.KORRIGERT -> {
+                        tidligereHendelse.status = Status.KANSELLERT
+                        tidligereHendelse.statustidspunkt = LocalDateTime.now()
+                        log.info(
+                            "Livshendelse med hendelseid ${tidligereHendelse.hendelseid} ble erstattet av livshendelse med hendelseid ${nyHendelse.hendelseid} og endringstype ${nyHendelse.endringstype}."
+                        )
+                    }
+
+                    else -> {
+                        log.warn("Endringstype ${nyHendelse.endringstype} skal normalt ikke referere til tidligere hendelser. Ignorerer denne.")
+                    }
                 }
             }
         }
