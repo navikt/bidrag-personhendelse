@@ -44,9 +44,16 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         log.info("Livshendelse med hendelseid {} mottatt.", personhendelse.hendelseId)
         SECURE_LOGGER.info("Har mottatt leesah-hendelse $cr")
 
+        var opplysningstype = konvertereOpplysningstype(personhendelse.opplysningstype)
+
+        if (Livshendelse.Opplysningstype.IKKE_STØTTET.equals(opplysningstype)) {
+            log.info("Mottok opplysningstype som ikke støttes av løsningen - avbryter videre prosessering.")
+            return
+        }
+
         val livshendelse = Livshendelse(
             personhendelse.hendelseId.toString(),
-            konvertereOpplysningstype(personhendelse.opplysningstype),
+            opplysningstype,
             konvertereEndringstype(personhendelse.endringstype),
             personhendelse.personidenter?.stream()?.map(CharSequence::toString)?.collect(Collectors.toList()),
             personhendelse.tidligereHendelseId?.toString(),
@@ -84,9 +91,8 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             try {
                 return Livshendelse.Opplysningstype.valueOf(pdlOpplysningstype.toString())
             } catch (iae: IllegalArgumentException) {
-                log.warn("Mottok livshendelse med opplysningstype ({}) fra PDL. Denne ignoreres av løsningen.", pdlOpplysningstype.toString())
-                iae.printStackTrace()
-                throw HendelsemottakException("Ukjent opplysningstype: ${pdlOpplysningstype}")
+                log.info("Mottok livshendelse med opplysningstype ({}) fra PDL. Denne ignoreres av løsningen.", pdlOpplysningstype.toString())
+                return Livshendelse.Opplysningstype.IKKE_STØTTET
             }
         }
     }
