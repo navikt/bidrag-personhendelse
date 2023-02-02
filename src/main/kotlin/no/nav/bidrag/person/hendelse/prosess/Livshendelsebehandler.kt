@@ -6,19 +6,13 @@ import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
-import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
-import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class Livshendelsebehandler(
-    val egenskaperWmq: Wmq,
-    val databasetjeneste: Databasetjeneste,
-    val meldingsprodusent: Meldingsprodusent
-) {
+class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     fun prosesserNyHendelse(livshendelse: Livshendelse) {
         when (livshendelse.opplysningstype) {
             Opplysningstype.ADRESSEBESKYTTELSE_V1 -> behandleAdressebeskyttelse(livshendelse)
@@ -56,7 +50,6 @@ class Livshendelsebehandler(
             log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Gradering: ${livshendelse.addressebeskyttelse}")
         }
 
-        meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Livshendelse.tilJson(livshendelse))
         databasetjeneste.lagreHendelse(livshendelse)
     }
 
@@ -82,7 +75,6 @@ class Livshendelsebehandler(
             log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Omfang: ${livshendelse.verge?.vergeEllerFullmektig?.omfang}")
         }
 
-        meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Livshendelse.tilJson(livshendelse))
         databasetjeneste.lagreHendelse(livshendelse)
     }
 
@@ -106,7 +98,6 @@ class Livshendelsebehandler(
             log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Flyttedato: ${livshendelse.flyttedato}")
         }
 
-        meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Livshendelse.tilJson(livshendelse))
         databasetjeneste.lagreHendelse(livshendelse)
     }
 
@@ -127,8 +118,6 @@ class Livshendelsebehandler(
                     tellerDødsfallIgnorert.increment()
                 } else {
                     tellerDødsfall.increment()
-                    var melding = Livshendelse.tilJson(livshendelse)
-                    meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, melding)
                 }
             }
 
@@ -156,8 +145,6 @@ class Livshendelsebehandler(
                 if (livshendelse.folkeregisteridentifikator?.type == null) {
                     log.error("Mangler folkeregisteridentifikator.type. Ignorerer hendelse ${livshendelse.hendelseid}")
                     tellerFolkeregisteridentifikatorIgnorert.increment()
-                } else {
-                    meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Livshendelse.tilJson(livshendelse))
                 }
             }
 
@@ -179,7 +166,6 @@ class Livshendelsebehandler(
         when (livshendelse.endringstype) {
             Endringstype.OPPRETTET -> {
                 loggeLivshendelse(livshendelse, "Fraflyttingsland: ${livshendelse.innflytting?.fraflyttingsland}")
-                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Livshendelse.tilJson(livshendelse))
             }
 
             else -> {
@@ -203,12 +189,10 @@ class Livshendelsebehandler(
 
         when (livshendelse.endringstype) {
             Endringstype.OPPRETTET -> {
-                var manglerFornavn = livshendelse.navn?.fornavn == null
+                val manglerFornavn = livshendelse.navn?.fornavn == null
                 if (manglerFornavn || livshendelse.navn?.etternavn == null) {
-                    var navnedel = if (manglerFornavn) "Fornavn" else "Etternavn"
+                    val navnedel = if (manglerFornavn) "Fornavn" else "Etternavn"
                     log.info("${navnedel} mangler. Ignorerer navnehendelse med id ${livshendelse.hendelseid}")
-                } else {
-                    meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Livshendelse.tilJson(livshendelse))
                 }
             }
 
@@ -239,8 +223,6 @@ class Livshendelsebehandler(
                     tellerFødselIgnorert.increment()
                     if (erUtenforNorge(livshendelse.fødsel.fødeland)) {
                         log.info("Fødeland er ikke Norge. Ignorerer hendelse ${livshendelse.hendelseid}")
-                    } else {
-                        meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Livshendelse.tilJson(livshendelse))
                     }
                 }
             }
@@ -249,8 +231,6 @@ class Livshendelsebehandler(
                 tellerFødselAnnulert.increment()
                 if (livshendelse.tidligereHendelseid == null) {
                     log.warn("Mottatt annullert fødsel uten tidligereHendelseId, hendelseId ${livshendelse.hendelseid}")
-                } else {
-                    meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Livshendelse.tilJson(livshendelse))
                 }
             }
 
@@ -273,7 +253,6 @@ class Livshendelsebehandler(
         when (livshendelse.endringstype) {
             Endringstype.OPPRETTET -> {
                 loggeLivshendelse(livshendelse, "utflyttingsdato: ${livshendelse.utflytting?.utflyttingsdato}")
-                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, Livshendelse.tilJson(livshendelse))
             }
 
             else -> {
@@ -296,8 +275,6 @@ class Livshendelsebehandler(
         when (livshendelse.endringstype) {
             Endringstype.OPPRETTET -> {
                 loggeLivshendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstand?.bekreftelsesdato}")
-                var livshendelseJson = Livshendelse.tilJson(livshendelse)
-                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, livshendelseJson)
             }
 
             else -> {
@@ -364,7 +341,7 @@ class Livshendelsebehandler(
         val tellerVergeOpphørt: Counter = Metrics.counter(tellernavn("verge.opphørt"))
         val tellerVergeOpprettet: Counter = Metrics.counter(tellernavn("verge.opprettet"))
 
-        fun tellernavn(navn: String): String {
+        private fun tellernavn(navn: String): String {
             return "bidrag.personhendelse.$navn"
         }
     }

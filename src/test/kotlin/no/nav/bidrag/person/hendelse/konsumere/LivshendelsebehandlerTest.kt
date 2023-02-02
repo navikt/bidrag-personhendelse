@@ -7,31 +7,24 @@ import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.domene.*
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
-import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
-import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
 import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LivshendelsebehandlerTest {
-    lateinit var mockMeldingsprodusent: Meldingsprodusent
     lateinit var mockDatabasetjeneste: Databasetjeneste
     lateinit var service: Livshendelsebehandler
-    lateinit var egenskaperWmq: Wmq
 
     val personidenter = listOf("12345678901", "1234567890123")
 
     @BeforeEach
     internal fun oppsett() {
-        mockMeldingsprodusent = mockk(relaxed = true)
-        egenskaperWmq = mockk(relaxed = true)
         mockDatabasetjeneste = mockk(relaxed = true)
-        service = Livshendelsebehandler(egenskaperWmq, mockDatabasetjeneste, mockMeldingsprodusent)
+        service = Livshendelsebehandler(mockDatabasetjeneste)
         clearAllMocks()
     }
 
@@ -74,7 +67,7 @@ class LivshendelsebehandlerTest {
         service.prosesserNyHendelse(livshendelse)
 
         verify(exactly = 1) {
-            mockMeldingsprodusent.sendeMelding(any(), any())
+            mockDatabasetjeneste.lagreHendelse(livshendelse)
         }
     }
 
@@ -86,11 +79,11 @@ class LivshendelsebehandlerTest {
             oppretteLivshendelseForFødsel(hendelseId, Opplysningstype.FOEDSEL_V1, Endringstype.OPPRETTET, Fødsel("POL", LocalDate.now()))
 
         service.prosesserNyHendelse(livshendelse)
-        verify(exactly = 0) { mockMeldingsprodusent.sendeMelding(any(), any()) }
+        verify(exactly = 0) { mockDatabasetjeneste.lagreHendelse(livshendelse) }
         service.prosesserNyHendelse(livshendelse.copy(fødsel = Fødsel("NOR")))
-        verify(exactly = 1) { mockMeldingsprodusent.sendeMelding(any(), any()) }
+        verify(exactly = 1) { mockDatabasetjeneste.lagreHendelse(livshendelse) }
         service.prosesserNyHendelse(livshendelse.copy(fødsel = Fødsel(null)))
-        verify(exactly = 2) { mockMeldingsprodusent.sendeMelding(any(), any()) }
+        verify(exactly = 2) { mockDatabasetjeneste.lagreHendelse(livshendelse) }
     }
 
     fun oppretteLivshendelseForFødsel(
