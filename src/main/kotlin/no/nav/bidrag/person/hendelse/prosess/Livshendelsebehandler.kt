@@ -223,6 +223,8 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
                     tellerFødselIgnorert.increment()
                     if (erUtenforNorge(livshendelse.fødsel.fødeland)) {
                         log.info("Fødeland er ikke Norge. Ignorerer hendelse ${livshendelse.hendelseid}")
+                    } else {
+                        databasetjeneste.lagreHendelse(livshendelse)
                     }
                 }
             }
@@ -231,6 +233,8 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
                 tellerFødselAnnulert.increment()
                 if (livshendelse.tidligereHendelseid == null) {
                     log.warn("Mottatt annullert fødsel uten tidligereHendelseId, hendelseId ${livshendelse.hendelseid}")
+                } else {
+                    databasetjeneste.lagreHendelse(livshendelse)
                 }
             }
 
@@ -238,7 +242,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
                 loggeLivshendelse(livshendelse)
             }
         }
-        databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun behandleUtflytting(livshendelse: Livshendelse) {

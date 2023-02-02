@@ -80,10 +80,14 @@ class LivshendelsebehandlerTest {
 
         service.prosesserNyHendelse(livshendelse)
         verify(exactly = 0) { mockDatabasetjeneste.lagreHendelse(livshendelse) }
-        service.prosesserNyHendelse(livshendelse.copy(fødsel = Fødsel("NOR")))
-        verify(exactly = 1) { mockDatabasetjeneste.lagreHendelse(livshendelse) }
-        service.prosesserNyHendelse(livshendelse.copy(fødsel = Fødsel(null)))
-        verify(exactly = 2) { mockDatabasetjeneste.lagreHendelse(livshendelse) }
+
+        var livshendelseMedFødelandNorge = livshendelse.copy(fødsel = Fødsel("NOR"))
+        service.prosesserNyHendelse(livshendelseMedFødelandNorge)
+        verify(exactly = 1) { mockDatabasetjeneste.lagreHendelse(livshendelseMedFødelandNorge) }
+
+        var livshendelseUtenFødeland = livshendelse.copy(fødsel = Fødsel(null))
+        service.prosesserNyHendelse(livshendelseUtenFødeland)
+        verify(exactly = 1) { mockDatabasetjeneste.lagreHendelse(livshendelseUtenFødeland) }
     }
 
     fun oppretteLivshendelseForFødsel(
