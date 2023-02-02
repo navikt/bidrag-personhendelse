@@ -29,7 +29,10 @@ open class OverføreHendelser(
         log.info("Ser etter livshendelser som skal overføres til Bisys")
 
         // Luke bort hendelser som annulleres før de sendes videre
-        databasetjeneste.kansellereIkkeOverførteAnnullerteHendelser()
+        for (id in databasetjeneste.henteIdTilHendelserSomViserTilTidligereHendelser()) {
+            databasetjeneste.kansellereAnnulleringOgTidligereHendelse(id)
+        }
+
         var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
         log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før {}", sisteStatusoppdateringFør)
 

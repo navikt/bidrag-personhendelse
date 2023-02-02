@@ -11,36 +11,36 @@ import java.time.LocalDateTime
 @Service
 open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
 
+    fun henteIdTilHendelserSomViserTilTidligereHendelser(): Set<Int> {
+        return hendelsemottakDao.henteIdTilHendelserSomViserTilTidligereHendelser()
+    }
+
     @Transactional
-    fun kansellereIkkeOverførteAnnullerteHendelser() {
+    fun kansellereAnnulleringOgTidligereHendelse(id: Int) {
+        var nyHendelse = hendelsemottakDao.findById(id)
+        var tidligereHendelse: Hendelsemottak? = hendelsemottakDao.findByHendelseid(nyHendelse.tidligereHendelseid!!)
+        if (tidligereHendelse != null && Status.MOTTATT == tidligereHendelse.status) {
+            when (nyHendelse.endringstype) {
+                Livshendelse.Endringstype.ANNULLERT, Livshendelse.Endringstype.OPPHOERT -> {
+                    nyHendelse.status = Status.KANSELLERT
+                    nyHendelse.statustidspunkt = LocalDateTime.now()
+                    tidligereHendelse.status = Status.KANSELLERT
+                    tidligereHendelse.statustidspunkt = LocalDateTime.now()
+                    log.info(
+                        "Livshendelse med hendelseid ${tidligereHendelse.hendelseid} ble annullert av livshendelse med hendelseid ${nyHendelse.hendelseid} og endringstype ${nyHendelse.endringstype}. Begge livshendelsene får status KANSELLERT, og overføres derfor ikke til Bisys."
+                    )
+                }
 
-        var ikkeOverførteHendelserSomViserTilTidligereHendelser = hendelsemottakDao.henteIdTilHendelserSomViserTilTidligereHendelser()
-        for (id in ikkeOverførteHendelserSomViserTilTidligereHendelser) {
-            var nyHendelse = hendelsemottakDao.findById(id)
-            var tidligereHendelse: Hendelsemottak? = hendelsemottakDao.findByHendelseid(nyHendelse.tidligereHendelseid!!)
-            if (tidligereHendelse != null && Status.MOTTATT == tidligereHendelse.status) {
-                when (nyHendelse.endringstype) {
-                    Livshendelse.Endringstype.ANNULLERT, Livshendelse.Endringstype.OPPHOERT -> {
-                        nyHendelse.status = Status.KANSELLERT
-                        nyHendelse.statustidspunkt = LocalDateTime.now()
-                        tidligereHendelse.status = Status.KANSELLERT
-                        tidligereHendelse.statustidspunkt = LocalDateTime.now()
-                        log.info(
-                            "Livshendelse med hendelseid ${tidligereHendelse.hendelseid} ble annullert av livshendelse med hendelseid ${nyHendelse.hendelseid} og endringstype ${nyHendelse.endringstype}. Begge livshendelsene får status KANSELLERT, og overføres derfor ikke til Bisys."
-                        )
-                    }
+                Livshendelse.Endringstype.KORRIGERT -> {
+                    tidligereHendelse.status = Status.KANSELLERT
+                    tidligereHendelse.statustidspunkt = LocalDateTime.now()
+                    log.info(
+                        "Livshendelse med hendelseid ${tidligereHendelse.hendelseid} ble erstattet av livshendelse med hendelseid ${nyHendelse.hendelseid} og endringstype ${nyHendelse.endringstype}."
+                    )
+                }
 
-                    Livshendelse.Endringstype.KORRIGERT -> {
-                        tidligereHendelse.status = Status.KANSELLERT
-                        tidligereHendelse.statustidspunkt = LocalDateTime.now()
-                        log.info(
-                            "Livshendelse med hendelseid ${tidligereHendelse.hendelseid} ble erstattet av livshendelse med hendelseid ${nyHendelse.hendelseid} og endringstype ${nyHendelse.endringstype}."
-                        )
-                    }
-
-                    else -> {
-                        log.warn("Endringstype ${nyHendelse.endringstype} skal normalt ikke referere til tidligere hendelser. Ignorerer denne.")
-                    }
+                else -> {
+                    log.warn("Endringstype ${nyHendelse.endringstype} skal normalt ikke referere til tidligere hendelser. Ignorerer denne.")
                 }
             }
         }

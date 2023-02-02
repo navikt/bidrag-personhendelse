@@ -53,7 +53,9 @@ open class DatabasetjenesteTest {
         var lagretAnnulleringAvOpprinneligHendelse = databasetjeneste.lagreHendelse(annulleringAvOpprinneligHendelse)
 
         // hvis
-        databasetjeneste.kansellereIkkeOverførteAnnullerteHendelser()
+        for (id in databasetjeneste.henteIdTilHendelserSomViserTilTidligereHendelser()) {
+            databasetjeneste.kansellereAnnulleringOgTidligereHendelse(id)
+        }
 
         // så
         var lagretOpprinneligHendelseEtterKansellering = hendelsemottakDao.findById(lagretOpprinneligHendelse.id)
@@ -85,7 +87,9 @@ open class DatabasetjenesteTest {
         var lagretAnnulleringAvOpprinneligHendelse = databasetjeneste.lagreHendelse(annulleringAvOpprinneligHendelse)
 
         // hvis
-        databasetjeneste.kansellereIkkeOverførteAnnullerteHendelser()
+        for (id in databasetjeneste.henteIdTilHendelserSomViserTilTidligereHendelser()) {
+            databasetjeneste.kansellereAnnulleringOgTidligereHendelse(id)
+        }
 
         // så
         var lagretNyHendelseEtterKansellering = hendelsemottakDao.findById(lagretAnnulleringAvOpprinneligHendelse.id)
