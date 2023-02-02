@@ -17,7 +17,7 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
         var ikkeOverførteHendelserSomViserTilTidligereHendelser = hendelsemottakDao.henteIdTilHendelserSomViserTilTidligereHendelser()
         for (id in ikkeOverførteHendelserSomViserTilTidligereHendelser) {
             var nyHendelse = hendelsemottakDao.findById(id)
-            var tidligereHendelse = nyHendelse.tidligereHendelseid?.let { hendelsemottakDao.findByHendelseid(it) }
+            var tidligereHendelse: Hendelsemottak? = hendelsemottakDao.findByHendelseid(nyHendelse.tidligereHendelseid!!)
             if (tidligereHendelse != null && Status.MOTTATT == tidligereHendelse.status) {
                 when (nyHendelse.endringstype) {
                     Livshendelse.Endringstype.ANNULLERT, Livshendelse.Endringstype.OPPHOERT -> {

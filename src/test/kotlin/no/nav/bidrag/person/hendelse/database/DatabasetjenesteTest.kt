@@ -66,4 +66,33 @@ open class DatabasetjenesteTest {
             lagretNyHendelseEtterKansellering.get().status shouldBe Status.KANSELLERT
         }
     }
+
+    @Test
+    @Transactional
+    fun tidligereHendelseidFinnesIkkeIDatabasen() {
+
+        // gitt
+        var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+
+        var hendelseidAnnulleringshendelse = "38468520-70f2-40c0-b4ae-6c765c307a7d"
+        var annulleringAvOpprinneligHendelse = Livshendelse(
+            hendelseidAnnulleringshendelse,
+            Opplysningstype.BOSTEDSADRESSE_V1,
+            Endringstype.ANNULLERT,
+            personidenter,
+            hendelseidOpprinneligHendelse
+        )
+        var lagretAnnulleringAvOpprinneligHendelse = databasetjeneste.lagreHendelse(annulleringAvOpprinneligHendelse)
+
+        // hvis
+        databasetjeneste.kansellereIkkeOverførteAnnullerteHendelser()
+
+        // så
+        var lagretNyHendelseEtterKansellering = hendelsemottakDao.findById(lagretAnnulleringAvOpprinneligHendelse.id)
+
+        assertSoftly {
+            lagretNyHendelseEtterKansellering.isPresent
+            lagretNyHendelseEtterKansellering.get().status shouldBe Status.MOTTATT
+        }
+    }
 }
