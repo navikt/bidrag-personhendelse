@@ -18,9 +18,9 @@ import java.time.LocalDateTime
 
 @Component
 open class OverføreHendelser(
-    val databasetjeneste: Databasetjeneste,
-    val egenskaper: Egenskaper,
-    val meldingsprodusent: Meldingsprodusent
+    open val databasetjeneste: Databasetjeneste,
+    open val egenskaper: Egenskaper,
+    open val meldingsprodusent: Meldingsprodusent
 ) {
 
     @Scheduled(cron = "\${kjøreplan.overføre_hendelser}")
