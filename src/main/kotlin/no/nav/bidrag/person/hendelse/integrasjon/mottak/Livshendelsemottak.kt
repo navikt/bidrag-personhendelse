@@ -84,7 +84,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             try {
                 return Livshendelse.Opplysningstype.valueOf(pdlOpplysningstype.toString())
             } catch (iae: IllegalArgumentException) {
-                log.error("Mottok ukjent opplysningstype ({}) fra PDL", pdlOpplysningstype.toString())
+                log.warn("Mottok livshendelse med opplysningstype ({}) fra PDL. Denne ignoreres av løsningen.", pdlOpplysningstype.toString())
                 iae.printStackTrace()
                 throw HendelsemottakException("Ukjent opplysningstype: ${pdlOpplysningstype}")
             }

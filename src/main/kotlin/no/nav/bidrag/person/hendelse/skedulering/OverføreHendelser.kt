@@ -14,7 +14,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Component
-class OverføreHendelser(
+open class OverføreHendelser(
     val databasetjeneste: Databasetjeneste,
     val egenskaper: Egenskaper,
     val meldingsprodusent: Meldingsprodusent
