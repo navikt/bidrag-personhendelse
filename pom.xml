@@ -36,6 +36,7 @@
         <spring.cloud.version>4.0.0</spring.cloud.version>
         <spring-cloud-gcp.version>3.4.1</spring-cloud-gcp.version>
         <unleash-client-java.version>4.4.1</unleash-client-java.version>
+        <shedlock.version>5.1.0</shedlock.version>
         <kotest.version>5.5.4</kotest.version>
     </properties>
 
