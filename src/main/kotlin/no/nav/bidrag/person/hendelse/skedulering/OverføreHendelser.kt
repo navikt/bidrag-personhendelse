@@ -24,7 +24,7 @@ open class OverføreHendelser(
 ) {
 
     @Scheduled(cron = "\${kjøreplan.overføre_hendelser}")
-    @SchedulerLock(name = "hendelser_til_bisys", lockAtLeastFor = "PT5M", lockAtMostFor = "PT14M")
+    @SchedulerLock(name = "hendelser_til_bisys", lockAtLeastFor = "PT1M", lockAtMostFor = "PT10M")
     fun overføreHendelserTilBisys() {
         log.info("Ser etter livshendelser som skal overføres til Bisys")
 
@@ -49,8 +49,7 @@ open class OverføreHendelser(
         var gsonbuilder = GsonBuilder()
         gsonbuilder.registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
         gsonbuilder.registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter().nullSafe())
-        var gson = gsonbuilder.create()
-        return gson
+        return gsonbuilder.create()
     }
 
     companion object {

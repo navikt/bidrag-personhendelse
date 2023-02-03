@@ -12,8 +12,9 @@ import java.util.*
 @Service
 open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
 
-    fun henteIdTilHendelserSomSkalOverføresTilBisys(statustidspunktFør: LocalDateTime): Set<Long> {
-        return hendelsemottakDao.henteIdTilHendelserSomSkalSendesVidere(statustidspunktFør)
+    open fun henteIdTilHendelserSomSkalOverføresTilBisys(statustidspunktFør: LocalDateTime): Set<Long> {
+        hendelsemottakDao.oppdatereStatusPåHendelserSomSkalOverføres(statustidspunktFør)
+        return hendelsemottakDao.henteIdTilHendelserSomSkalSendesVidere()
     }
 
     fun henteHendelse(id: Long): Optional<Hendelsemottak> {

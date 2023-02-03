@@ -4,9 +4,11 @@ import jakarta.persistence.LockModeType
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Lock
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.lang.Nullable
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Repository
@@ -24,8 +26,17 @@ open interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
 
     @Query(
         "select ha.id from Hendelsemottak ha " +
-                "where ha.status in (no.nav.bidrag.person.hendelse.database.Status.MOTTATT) " +
-                "and ha.statustidspunkt < :statustidspunktFør"
+                "where ha.status in (no.nav.bidrag.person.hendelse.database.Status.UNDER_PROSESSERING)"
     )
-    fun henteIdTilHendelserSomSkalSendesVidere(statustidspunktFør: LocalDateTime): Set<Long>
+    fun henteIdTilHendelserSomSkalSendesVidere(): Set<Long>
+
+    @Transactional
+    @Modifying
+    @Query(
+        "update Hendelsemottak ha set ha.status = no.nav.bidrag.person.hendelse.database.Status.UNDER_PROSESSERING " +
+                "where ha.id in (select ha.id from Hendelsemottak ha where ha.status " +
+                    "= no.nav.bidrag.person.hendelse.database.Status.MOTTATT " +
+                    "and ha.statustidspunkt < :statustidspunktFør)"
+    )
+    fun oppdatereStatusPåHendelserSomSkalOverføres(statustidspunktFør: LocalDateTime)
 }

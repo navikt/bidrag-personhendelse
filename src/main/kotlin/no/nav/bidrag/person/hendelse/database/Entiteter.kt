@@ -19,7 +19,7 @@ data class Hendelsemottak(
     val hendelse: String = "",
     val master: String = "",
     val offset_pdl: Long = 0L,
-    @Column(length = 10)
+    @Column(length = 20)
     @Enumerated(EnumType.STRING)
     var status: Status = Status.MOTTATT,
     var statustidspunkt: LocalDateTime = LocalDateTime.now(),
@@ -34,7 +34,8 @@ data class Hendelsemottak(
 enum class Status {
     MOTTATT,
     KANSELLERT,
-    OVERFØRT
+    OVERFØRT,
+    UNDER_PROSESSERING
 }
 
 
