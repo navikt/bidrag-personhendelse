@@ -20,7 +20,10 @@ open interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     fun findById(id: Int): Hendelsemottak
 
     @Nullable
-    fun findByHendelseid(tidligereHendelseid: String): Hendelsemottak
+    fun findByHendelseid(hendelseid: String): Hendelsemottak?
+
+    @Nullable
+    fun findByHendelseidAndStatus(hendelseid: String, status: Status): Hendelsemottak?
 
     @Query(
         "select ha.id from Hendelsemottak ha " +

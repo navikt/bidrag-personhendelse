@@ -1,66 +1,30 @@
 package no.nav.bidrag.person.hendelse.database
 
-import jakarta.transaction.Transactional
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
 open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
 
-    fun henteIdTilHendelserSomViserTilTidligereHendelser(): Set<Int> {
-        return hendelsemottakDao.henteIdTilHendelserSomViserTilTidligereHendelser()
-    }
-
-    @Transactional
-    fun kansellereAnnulleringOgTidligereHendelse(id: Int) {
-        var nyHendelse = hendelsemottakDao.findById(id)
-        var tidligereHendelse: Hendelsemottak? = hendelsemottakDao.findByHendelseid(nyHendelse.tidligereHendelseid!!)
-        if (tidligereHendelse != null && Status.MOTTATT == tidligereHendelse.status) {
-            when (nyHendelse.endringstype) {
-                Livshendelse.Endringstype.ANNULLERT, Livshendelse.Endringstype.OPPHOERT -> {
-                    nyHendelse.status = Status.KANSELLERT
-                    nyHendelse.statustidspunkt = LocalDateTime.now()
-                    tidligereHendelse.status = Status.KANSELLERT
-                    tidligereHendelse.statustidspunkt = LocalDateTime.now()
-                    log.info(
-                        "Livshendelse med hendelseid ${tidligereHendelse.hendelseid} ble annullert av livshendelse med hendelseid ${nyHendelse.hendelseid} og endringstype ${nyHendelse.endringstype}. Begge livshendelsene får status KANSELLERT, og overføres derfor ikke til Bisys."
-                    )
-                }
-
-                Livshendelse.Endringstype.KORRIGERT -> {
-                    tidligereHendelse.status = Status.KANSELLERT
-                    tidligereHendelse.statustidspunkt = LocalDateTime.now()
-                    log.info(
-                        "Livshendelse med hendelseid ${tidligereHendelse.hendelseid} ble erstattet av livshendelse med hendelseid ${nyHendelse.hendelseid} og endringstype ${nyHendelse.endringstype}."
-                    )
-                }
-
-                else -> {
-                    log.warn("Endringstype ${nyHendelse.endringstype} skal normalt ikke referere til tidligere hendelser. Ignorerer denne.")
-                }
-            }
-        }
-    }
-
     fun henteIdTilHendelserSomSkalOverføresTilBisys(statustidspunktFør: LocalDateTime): Set<Int> {
         return hendelsemottakDao.henteIdTilHendelserSomSkalSendesVidere(statustidspunktFør)
     }
 
-    @Transactional
     fun henteHendelse(id: Int): Hendelsemottak {
-        var hendelsemottak = hendelsemottakDao.findById(id)
-        return hendelsemottak
+        return hendelsemottakDao.findById(id)
     }
 
     fun hendelseFinnesIDatabasen(hendelseid: String, opplysningstype: Livshendelse.Opplysningstype): Boolean {
         return hendelsemottakDao.existsByHendelseidAndOpplysningstype(hendelseid, opplysningstype)
     }
 
-    fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
+    @Transactional(readOnly = false)
+    open fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
 
         var listeMedPersonidenter = livshendelse.personidenter
 
@@ -72,6 +36,14 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
             )
         }
 
+        // Kansellere eventuell tidligere hendelse som er lagret i databasen med status mottatt
+        var status = kansellereTidligereHendelse(livshendelse)
+
+        // Sørge for at meldinger med endringstype KORRIGERT sendes videre
+        if (Status.KANSELLERT == status && Livshendelse.Endringstype.KORRIGERT == livshendelse.endringstype) {
+            status = Status.MOTTATT
+        }
+
         return hendelsemottakDao.save(
             Hendelsemottak(
                 livshendelse.hendelseid,
@@ -81,9 +53,30 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
                 livshendelse.tidligereHendelseid,
                 Livshendelse.tilJson(livshendelse),
                 livshendelse.master,
-                livshendelse.offset
+                livshendelse.offset,
+                status
             )
         )
+    }
+
+    private fun kansellereTidligereHendelse(livshendelse: Livshendelse): Status {
+        var tidligereHendelseMedStatusMottatt = livshendelse.tidligereHendelseid?.let { hendelsemottakDao.findByHendelseidAndStatus(it, Status.MOTTATT) }
+        tidligereHendelseMedStatusMottatt?.status = Status.KANSELLERT
+        tidligereHendelseMedStatusMottatt?.statustidspunkt = LocalDateTime.now()
+
+        return if (Status.KANSELLERT == tidligereHendelseMedStatusMottatt?.status) {
+            log.info(
+                "Livshendelse med hendelseid ${tidligereHendelseMedStatusMottatt.hendelseid} ble erstattet av livshendelse med hendelseid ${livshendelse.hendelseid} og endringstype ${livshendelse.endringstype}."
+            )
+
+            if (Livshendelse.Endringstype.KORRIGERT != livshendelse.endringstype) {
+                Status.KANSELLERT
+            } else {
+                Status.MOTTATT
+            }
+        } else {
+            Status.MOTTATT
+        }
     }
 
     companion object {
