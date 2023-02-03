@@ -7,20 +7,32 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
 
-    fun henteIdTilHendelserSomSkalOverføresTilBisys(statustidspunktFør: LocalDateTime): Set<Int> {
+    fun henteIdTilHendelserSomSkalOverføresTilBisys(statustidspunktFør: LocalDateTime): Set<Long> {
         return hendelsemottakDao.henteIdTilHendelserSomSkalSendesVidere(statustidspunktFør)
     }
 
-    fun henteHendelse(id: Int): Hendelsemottak {
+    fun henteHendelse(id: Long): Optional<Hendelsemottak> {
         return hendelsemottakDao.findById(id)
     }
 
     fun hendelseFinnesIDatabasen(hendelseid: String, opplysningstype: Livshendelse.Opplysningstype): Boolean {
         return hendelsemottakDao.existsByHendelseidAndOpplysningstype(hendelseid, opplysningstype)
+    }
+
+    @Transactional
+    open fun oppdatereStatus(id: Long, nyStatus: Status) {
+        var hendelse = hendelsemottakDao.findById(id)
+        if (hendelse.isPresent) {
+            var hendelsemottak = hendelse.get()
+            hendelsemottak.status = nyStatus
+            hendelsemottak.statustidspunkt = LocalDateTime.now()
+            hendelsemottakDao.save(hendelsemottak)
+        }
     }
 
     @Transactional(readOnly = false)

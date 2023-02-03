@@ -85,7 +85,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
 
     private fun konvertereOpplysningstype(pdlOpplysningstype: CharSequence?): Livshendelse.Opplysningstype {
         return if (pdlOpplysningstype == null) {
-            log.error("Opplysningstype i mottatt medling var null. Avbryter prosessering.")
+            log.error("Opplysningstype i mottatt melding var null. Avbryter prosessering.")
             throw HendelsemottakException("Opplysningstype i mottatt melding var null!");
         } else {
             try {

@@ -29,19 +29,20 @@ open class OverføreHendelser(
         log.info("Ser etter livshendelser som skal overføres til Bisys")
 
         var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
-        log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før {}", sisteStatusoppdateringFør)
+        log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før ${sisteStatusoppdateringFør}")
 
         var idTilHendelserSomSkalVideresendes = databasetjeneste.henteIdTilHendelserSomSkalOverføresTilBisys(sisteStatusoppdateringFør)
-        log.info("Antall livshendelser som skal overføres: {}", idTilHendelserSomSkalVideresendes.size)
+        log.info("Antall livshendelser som skal overføres: ${idTilHendelserSomSkalVideresendes.size}")
 
         for (id in idTilHendelserSomSkalVideresendes.iterator()) {
             var mottattHendelse = databasetjeneste.henteHendelse(id)
-            meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, oppretteGson().toJson(mottattHendelse.hendelse))
-            mottattHendelse.statustidspunkt = LocalDateTime.now()
-            mottattHendelse.status = Status.OVERFØRT
+            if (mottattHendelse.isPresent) {
+                meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, oppretteGson().toJson(mottattHendelse.get().hendelse))
+                databasetjeneste.oppdatereStatus(id, Status.OVERFØRT)
+            }
         }
 
-        if (idTilHendelserSomSkalVideresendes.size > 0) log.info("Overføring fullført (for antall: {})", idTilHendelserSomSkalVideresendes.size)
+        if (idTilHendelserSomSkalVideresendes.size > 0) log.info("Overføring fullført (for antall: ${idTilHendelserSomSkalVideresendes.size}")
     }
 
     private fun oppretteGson(): Gson {

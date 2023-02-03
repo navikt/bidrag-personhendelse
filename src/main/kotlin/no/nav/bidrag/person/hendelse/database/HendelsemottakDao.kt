@@ -20,9 +20,6 @@ open interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     fun findById(id: Int): Hendelsemottak
 
     @Nullable
-    fun findByHendelseid(hendelseid: String): Hendelsemottak?
-
-    @Nullable
     fun findByHendelseidAndStatus(hendelseid: String, status: Status): Hendelsemottak?
 
     @Query(
@@ -30,12 +27,5 @@ open interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
                 "where ha.status in (no.nav.bidrag.person.hendelse.database.Status.MOTTATT) " +
                 "and ha.statustidspunkt < :statustidspunktFør"
     )
-    fun henteIdTilHendelserSomSkalSendesVidere(statustidspunktFør: LocalDateTime): Set<Int>
-
-    @Query(
-        "select ha.id from Hendelsemottak ha where ha.status not in " +
-                "(no.nav.bidrag.person.hendelse.database.Status.KANSELLERT,no.nav.bidrag.person.hendelse.database.Status.OVERFØRT) " +
-                "and ha.tidligereHendelseid is not null"
-    )
-    fun henteIdTilHendelserSomViserTilTidligereHendelser(): Set<Int>
+    fun henteIdTilHendelserSomSkalSendesVidere(statustidspunktFør: LocalDateTime): Set<Long>
 }
