@@ -2,6 +2,7 @@ package no.nav.bidrag.person.hendelse.skedulering
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import net.javacrumbs.shedlock.core.LockAssert
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.Status
@@ -24,8 +25,9 @@ open class OverføreHendelser(
 ) {
 
     @Scheduled(cron = "\${kjøreplan.overføre_hendelser}")
-    @SchedulerLock(name = "hendelser_til_bisys", lockAtLeastFor = "PT1M", lockAtMostFor = "PT10M")
-    fun overføreHendelserTilBisys() {
+    @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "PT30S", lockAtMostFor = "PT1M")
+    open fun overføreHendelserTilBisys() {
+        LockAssert.assertLocked();
         log.info("Ser etter livshendelser som skal overføres til Bisys")
 
         var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
