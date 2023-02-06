@@ -32,6 +32,8 @@ WMQ_APPLICATION_NAME: bidrag-person-hendelse
 PASSORD_SRVBIDRAG_PERSON_HEN: passw0rd
 KAFKA_BROKERS: http://localhost:9093
 KJØREPLAN_OVERFØRE_HENDELSER: "0 0/1 * * * ?"
+KJØREPLAN_SLETTE_HENDELSER: "0 0/1 * * * ?"
+DAGER_LEVETID_UTGÅTTE_HENDELSER: 2
 
 kjøreplan:
   overføre_hendelser: ${KJØREPLAN_OVERFØRE_HENDELSER}
@@ -39,6 +41,7 @@ kjøreplan:
 egenskaper:
   generelt:
     antall-minutter-forsinket-videresending: 120
+    antallDagerLevetidForUtgåtteHendelser: ${DAGER_LEVETID_UTGÅTTE_HENDELSER}
   wmq:
     host: ${WMQ_HOST}
     port: ${WMQ_PORT}

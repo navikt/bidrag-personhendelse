@@ -81,6 +81,7 @@ prosessering:
 
 kjøreplan:
   overføre_hendelser: ${KJØREPLAN_OVERFØRE_HENDELSER}
+  slette_hendelser: ${KJØREPLAN_SLETTE_HENDELSER}
 
 management:
   endpoint.health.show-details: always
@@ -95,6 +96,8 @@ management:
 egenskaper:
   generelt:
     antallMinutterForsinketVideresending: 120
+    antallDagerLevetidForUtgaatteHendelser: ${DAGER_LEVETID_UTGÅTTE_HENDELSER}
+
   wmq:
     host: ${WMQ_HOST}
     port: ${WMQ_PORT}

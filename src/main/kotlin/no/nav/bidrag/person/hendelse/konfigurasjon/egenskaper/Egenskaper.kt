@@ -8,7 +8,8 @@ data class Egenskaper(val generelt: Generelt, val wmq: Wmq)
 
 @ConfigurationProperties("generelt")
 data class Generelt(
-    val antallMinutterForsinketVideresending: Int = 120
+    val antallMinutterForsinketVideresending: Int = 120,
+    val antallDagerLevetidForUtgaatteHendelser: Int = 7
 )
 
 @ConfigurationProperties("egenskaper.wmq")

@@ -2,7 +2,7 @@ package no.nav.bidrag.person.hendelse.skedulering
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import net.javacrumbs.shedlock.core.LockAssert
+
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.Status

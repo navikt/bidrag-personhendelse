@@ -30,13 +30,22 @@ open interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     )
     fun henteIdTilHendelserSomSkalSendesVidere(): Set<Long>
 
+
     @Transactional
     @Modifying
     @Query(
         "update Hendelsemottak ha set ha.status = no.nav.bidrag.person.hendelse.database.Status.UNDER_PROSESSERING " +
                 "where ha.id in (select ha.id from Hendelsemottak ha where ha.status " +
-                    "= no.nav.bidrag.person.hendelse.database.Status.MOTTATT " +
-                    "and ha.statustidspunkt < :statustidspunktFør)"
+                "= no.nav.bidrag.person.hendelse.database.Status.MOTTATT " +
+                "and ha.statustidspunkt < :statustidspunktFør)"
     )
     fun oppdatereStatusPåHendelserSomSkalOverføres(statustidspunktFør: LocalDateTime)
+
+    @Query("select ha.id from Hendelsemottak ha where ha.status = :status and ha.statustidspunkt < :statustidspunktFør")
+    fun henteIdTilHendelser(status: Status, statustidspunktFør: LocalDateTime): Set<Long>
+
+    @Transactional
+    @Query("delete from Hendelsemottak ha where ha.id in :ider")
+    fun sletteHendelser(ider: Set<Long>
+    )
 }

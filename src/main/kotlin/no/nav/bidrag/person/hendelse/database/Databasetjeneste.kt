@@ -25,6 +25,14 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
         return hendelsemottakDao.existsByHendelseidAndOpplysningstype(hendelseid, opplysningstype)
     }
 
+    fun henteHendelserider(status: Status, statustidspunktFør: LocalDateTime): Set<Long> {
+        return hendelsemottakDao.henteIdTilHendelser(status, statustidspunktFør)
+    }
+
+    fun sletteHendelser(ider: Set<Long>) {
+        hendelsemottakDao.sletteHendelser(ider)
+    }
+
     @Transactional
     open fun oppdatereStatus(id: Long, nyStatus: Status) {
         var hendelse = hendelsemottakDao.findById(id)
