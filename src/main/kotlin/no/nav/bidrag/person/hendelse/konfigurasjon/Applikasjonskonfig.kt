@@ -19,7 +19,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import javax.sql.DataSource
 
 @EnableRetry
-@SpringBootConfiguration
+@Configuration
 @ConfigurationPropertiesScan
 @ComponentScan("no.nav.bidrag.person.hendelse")
 @EntityScan("no.nav.bidrag.person.hendelse.database")
