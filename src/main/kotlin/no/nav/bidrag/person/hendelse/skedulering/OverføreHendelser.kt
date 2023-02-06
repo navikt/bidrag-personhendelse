@@ -27,7 +27,6 @@ open class OverføreHendelser(
     @Scheduled(cron = "\${kjøreplan.overføre_hendelser}")
     @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "PT30S", lockAtMostFor = "PT1M")
     open fun overføreHendelserTilBisys() {
-        LockAssert.assertLocked();
         log.info("Ser etter livshendelser som skal overføres til Bisys")
 
         var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
