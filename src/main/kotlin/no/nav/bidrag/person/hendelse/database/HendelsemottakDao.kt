@@ -45,7 +45,5 @@ open interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     fun henteIdTilHendelser(status: Status, statustidspunktFør: LocalDateTime): Set<Long>
 
     @Transactional
-    @Query("delete from Hendelsemottak ha where ha.id in :ider")
-    fun sletteHendelser(ider: Set<Long>
-    )
+    fun deleteByIdIn(ider: Set<Long>)
 }

@@ -26,7 +26,7 @@ open class SletteUtgåtteHendelser(
         var kansellerteHendelser = databasetjeneste.henteHendelserider(Status.KANSELLERT, statusoppdateringFør)
         var overførteHendelser = databasetjeneste.henteHendelserider(Status.OVERFØRT, statusoppdateringFør)
 
-        log.info("Fant ${kansellerteHendelser.size} kansellerte og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen" )
+        log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen" )
 
         databasetjeneste.sletteHendelser(kansellerteHendelser)
         log.info("Slettet ${kansellerteHendelser.size} kansellerte hendelser")

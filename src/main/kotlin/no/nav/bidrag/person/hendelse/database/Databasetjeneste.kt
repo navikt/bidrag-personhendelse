@@ -30,7 +30,7 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
     }
 
     fun sletteHendelser(ider: Set<Long>) {
-        hendelsemottakDao.sletteHendelser(ider)
+        hendelsemottakDao.deleteByIdIn(ider)
     }
 
     @Transactional
