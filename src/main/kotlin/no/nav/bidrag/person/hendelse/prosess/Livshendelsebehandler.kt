@@ -372,7 +372,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     private fun loggeLivshendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
-        log.info(
+        SECURE_LOGGER.info(
             "Livshendelse mottatt: " +
                     "hendelseId: ${livshendelse.hendelseid} " +
                     "offset: ${livshendelse.offset}, " +
@@ -395,6 +395,8 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
     companion object {
         val log: Logger = LoggerFactory.getLogger(Livshendelsebehandler::class.java)
+        val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
+
         const val MAKS_ANTALL_PERSONIDENTER = 20
 
         val tellerLeesahDuplikat: Counter = Metrics.counter(tellernavn("leesah.duplikat"))
