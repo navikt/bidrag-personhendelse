@@ -38,7 +38,7 @@ open class OverføreHendelser(
         for (id in idTilHendelserSomSkalVideresendes.iterator()) {
             var mottattHendelse = databasetjeneste.henteHendelse(id)
             if (mottattHendelse.isPresent) {
-                meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, oppretteGson().toJson(mottattHendelse.get().hendelse))
+                meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, mottattHendelse.get().hendelse)
                 databasetjeneste.oppdatereStatus(id, Status.OVERFØRT)
             }
         }
