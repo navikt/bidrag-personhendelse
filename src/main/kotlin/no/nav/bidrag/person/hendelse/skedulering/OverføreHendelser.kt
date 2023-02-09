@@ -45,14 +45,6 @@ open class OverføreHendelser(
 
         if (idTilHendelserSomSkalVideresendes.size > 0) log.info("Overføring fullført (for antall: ${idTilHendelserSomSkalVideresendes.size}")
     }
-
-    private fun oppretteGson(): Gson {
-        var gsonbuilder = GsonBuilder()
-        gsonbuilder.registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
-        gsonbuilder.registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter().nullSafe())
-        return gsonbuilder.create()
-    }
-
     companion object {
         val log: Logger = LoggerFactory.getLogger(OverføreHendelser::class.java)
     }
