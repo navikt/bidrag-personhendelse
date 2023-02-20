@@ -22,7 +22,7 @@ data class Livshendelse(
     val utflytting: Utflytting? = null,
     val sivilstand: Sivilstand? = null,
     val verge: VergeEllerFremtidsfullmakt? = null,
-    val addressebeskyttelse: Gradering = Gradering.UGRADERT,
+    val adressebeskyttelse: Gradering = Gradering.UGRADERT,
     val offset: Long = 0L,
     val opprettet: LocalDateTime = LocalDateTime.now(),
     val master: String = "PDL"

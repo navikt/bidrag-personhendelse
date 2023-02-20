@@ -40,7 +40,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             return
         }
 
-        loggeLivshendelse(livshendelse, "Gradering: ${livshendelse.addressebeskyttelse}")
+        loggeLivshendelse(livshendelse, "Gradering: ${livshendelse.adressebeskyttelse}")
 
         when (livshendelse.endringstype) {
             Endringstype.ANNULLERT -> tellerAdressebeskyttelseAnnullert.increment()
@@ -50,7 +50,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
         }
 
         if (Endringstype.OPPRETTET != livshendelse.endringstype) {
-            log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Gradering: ${livshendelse.addressebeskyttelse}")
+            log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Gradering: ${livshendelse.adressebeskyttelse}")
         }
 
         databasetjeneste.lagreHendelse(livshendelse)
