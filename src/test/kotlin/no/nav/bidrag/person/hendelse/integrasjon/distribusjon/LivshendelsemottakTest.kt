@@ -133,8 +133,8 @@ class LivshendelsemottakTest {
         val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
         verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
         assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.FOEDSEL_V1)
-        assertThat(livshendelseSomSendesTilBehandling.captured.fødsel?.fødeland).isEqualTo(personhendelse.foedsel.foedeland)
-        assertThat(livshendelseSomSendesTilBehandling.captured.fødsel?.fødselsdato).isEqualTo(personhendelse.foedsel.foedselsdato)
+        assertThat(livshendelseSomSendesTilBehandling.captured.foedsel?.foedeland).isEqualTo(personhendelse.foedsel.foedeland)
+        assertThat(livshendelseSomSendesTilBehandling.captured.foedsel?.foedselsdato).isEqualTo(personhendelse.foedsel.foedselsdato)
     }
 
     @Test

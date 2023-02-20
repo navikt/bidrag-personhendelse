@@ -62,7 +62,7 @@ class LivshendelsebehandlerTest {
         val hendelseId = UUID.randomUUID().toString()
 
         val livshendelse =
-            oppretteLivshendelseForFødsel(hendelseId, Opplysningstype.FOEDSEL_V1, Endringstype.OPPRETTET, Fødsel("NOR", LocalDate.now()))
+            oppretteLivshendelseForFødsel(hendelseId, Opplysningstype.FOEDSEL_V1, Endringstype.OPPRETTET, Foedsel("NOR", LocalDate.now()))
 
         service.prosesserNyHendelse(livshendelse)
 
@@ -76,16 +76,16 @@ class LivshendelsebehandlerTest {
         val hendelseId = UUID.randomUUID().toString()
 
         val livshendelse =
-            oppretteLivshendelseForFødsel(hendelseId, Opplysningstype.FOEDSEL_V1, Endringstype.OPPRETTET, Fødsel("POL", LocalDate.now()))
+            oppretteLivshendelseForFødsel(hendelseId, Opplysningstype.FOEDSEL_V1, Endringstype.OPPRETTET, Foedsel("POL", LocalDate.now()))
 
         service.prosesserNyHendelse(livshendelse)
         verify(exactly = 0) { mockDatabasetjeneste.lagreHendelse(livshendelse) }
 
-        var livshendelseMedFødelandNorge = livshendelse.copy(fødsel = Fødsel("NOR"))
+        var livshendelseMedFødelandNorge = livshendelse.copy(foedsel = Foedsel("NOR"))
         service.prosesserNyHendelse(livshendelseMedFødelandNorge)
         verify(exactly = 1) { mockDatabasetjeneste.lagreHendelse(livshendelseMedFødelandNorge) }
 
-        var livshendelseUtenFødeland = livshendelse.copy(fødsel = Fødsel(null))
+        var livshendelseUtenFødeland = livshendelse.copy(foedsel = Foedsel(null))
         service.prosesserNyHendelse(livshendelseUtenFødeland)
         verify(exactly = 1) { mockDatabasetjeneste.lagreHendelse(livshendelseUtenFødeland) }
     }
@@ -94,10 +94,10 @@ class LivshendelsebehandlerTest {
         hendelseId: String,
         opplysningstype: Opplysningstype,
         endringstype: Endringstype,
-        fødsel: Fødsel
+        foedsel: Foedsel
     ): Livshendelse {
         return Livshendelse(
-            hendelseId, opplysningstype, endringstype, personidenter, null, null, null, null, fødsel
+            hendelseId, opplysningstype, endringstype, personidenter, null, null, null, null, foedsel
         )
     }
 

@@ -152,11 +152,11 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         }
     }
 
-    private fun henteFødsel(foedsel: no.nav.person.pdl.leesah.foedsel.Foedsel?): Fødsel? {
+    private fun henteFødsel(foedsel: no.nav.person.pdl.leesah.foedsel.Foedsel?): Foedsel? {
         return if (foedsel == null) {
             null
         } else {
-            Fødsel(foedsel.foedeland?.toString(), foedsel.foedselsdato)
+            Foedsel(foedsel.foedeland?.toString(), foedsel.foedselsdato)
         }
     }
 

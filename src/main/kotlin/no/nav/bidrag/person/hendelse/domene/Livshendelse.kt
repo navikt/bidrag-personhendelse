@@ -16,7 +16,7 @@ data class Livshendelse(
     val doedsdato: LocalDate? = null,
     val flyttedato: LocalDate? = LocalDate.now(),
     val folkeregisteridentifikator: Folkeregisteridentifikator? = null,
-    val fødsel: Fødsel? = null,
+    val foedsel: Foedsel? = null,
     val innflytting: Innflytting? = null,
     val navn: Navn? = null,
     val utflytting: Utflytting? = null,

@@ -279,14 +279,14 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         when (livshendelse.endringstype) {
             Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
-                loggeLivshendelse(livshendelse, "fødselsdato: ${livshendelse.fødsel?.fødselsdato}")
-                val fødselsdato = livshendelse.fødsel?.fødselsdato
+                loggeLivshendelse(livshendelse, "fødselsdato: ${livshendelse.foedsel?.foedselsdato}")
+                val fødselsdato = livshendelse.foedsel?.foedselsdato
                 if (fødselsdato == null) {
                     tellerFødselIgnorert.increment()
                     log.warn("Mangler fødselsdato. Ignorerer hendelse ${livshendelse.hendelseid}")
                 } else if (erUnder6mnd(fødselsdato)) {
                     tellerFødselIgnorert.increment()
-                    if (erUtenforNorge(livshendelse.fødsel.fødeland)) {
+                    if (erUtenforNorge(livshendelse.foedsel.foedeland)) {
                         log.info("Fødeland er ikke Norge. Ignorerer hendelse ${livshendelse.hendelseid}")
                     } else {
                         databasetjeneste.lagreHendelse(livshendelse)
