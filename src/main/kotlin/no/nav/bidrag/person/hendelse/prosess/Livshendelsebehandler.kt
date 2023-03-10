@@ -24,7 +24,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Opplysningstype.NAVN_V1 -> behandleNavn(livshendelse)
             Opplysningstype.UTFLYTTING_FRA_NORGE -> behandleUtflytting(livshendelse)
             Opplysningstype.SIVILSTAND_V1 -> behandleSivilstand(livshendelse)
-            Opplysningstype.VERGE_V1 -> behandleVerge(livshendelse)
+            Opplysningstype.VERGEMAAL_ELLER_FREMTIDSFULLMAKT_V1 -> behandleVerge(livshendelse)
             Opplysningstype.IKKE_STØTTET -> log.error("Forsøk på prosessere medling med opplysningstype som ikke støttes av løsningen.")
         }
     }
