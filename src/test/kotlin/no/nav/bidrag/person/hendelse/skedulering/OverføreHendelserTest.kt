@@ -88,6 +88,11 @@ open class OverføreHendelserTest {
         var idTilHendelserSomSkalVideresendes = databasetjeneste.henteIdTilHendelserSomSkalOverføresTilBisys(sisteStatusoppdateringFør)
         OverføreHendelser.log.info("Antall livshendelser som skal overføres: ${idTilHendelserSomSkalVideresendes.size}")
 
+        for(id in idTilHendelserSomSkalVideresendes) {
+            var hendelse = databasetjeneste.henteHendelse(id)
+            log.info("Fant hendelse med hendelseid {} og statustidspunkt {}", hendelse.get().hendelseid, hendelse.get().statustidspunkt)
+        }
+
         // hvis
         overføreHendelser.overføreHendelserTilBisys()
 
