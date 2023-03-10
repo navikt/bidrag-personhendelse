@@ -81,7 +81,13 @@ open class OverføreHendelserTest {
         var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
         var oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedStatusOverført.statustidspunkt)
-        
+
+        var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
+        OverføreHendelser.log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før ${sisteStatusoppdateringFør}")
+
+        var idTilHendelserSomSkalVideresendes = databasetjeneste.henteIdTilHendelserSomSkalOverføresTilBisys(sisteStatusoppdateringFør)
+        OverføreHendelser.log.info("Antall livshendelser som skal overføres: ${idTilHendelserSomSkalVideresendes.size}")
+
         // hvis
         overføreHendelser.overføreHendelserTilBisys()
 
