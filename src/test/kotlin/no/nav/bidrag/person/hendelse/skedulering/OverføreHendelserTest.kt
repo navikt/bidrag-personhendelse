@@ -81,8 +81,8 @@ open class OverføreHendelserTest {
         overføreHendelser.overføreHendelserTilBisys()
 
         // så
-        val meldingTilKø = slot<String>()
-        verify(exactly = 1) { meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, capture(meldingTilKø)) }
-        assertThat(meldingTilKø.captured).contains(hendelseMottattUtenforVenteperiode.hendelseid)
+        val meldingerTilKø = mutableListOf<String>()
+        verify(exactly = 1) { meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, capture(meldingerTilKø)) }
+        assertThat(meldingerTilKø[0]).contains(hendelseMottattUtenforVenteperiode.hendelseid)
     }
 }
