@@ -1,10 +1,4 @@
 version: 2
-registries:
-  familie-felles:
-    type: maven-repository
-    url: https://maven.pkg.github.com/navikt/biodrag-person-hendelse
-    username: x-access-token
-    password: ${{secrets.PAT}}
 
 updates:
   - package-ecosystem: maven
