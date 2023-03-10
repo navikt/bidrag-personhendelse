@@ -41,6 +41,7 @@ open class OverføreHendelserTest {
         MockKAnnotations.init(this)
         clearAllMocks()
         databasetjeneste = Databasetjeneste(hendelsemottakDao)
+        hendelsemottakDao.deleteAll()
         overføreHendelser = OverføreHendelser(databasetjeneste, egenskaper, meldingsprodusent)
         every { meldingsprodusent.sendeMelding(any(), any()) } returns Unit
     }
