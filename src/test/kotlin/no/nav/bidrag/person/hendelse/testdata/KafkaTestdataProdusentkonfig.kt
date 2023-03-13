@@ -27,10 +27,10 @@ open class KafkaTestdataProdusentkonfig(
 
     @Bean
     open fun producerFactory(): ProducerFactory<String, String> {
-        val konfig = HashMap<String, Object>()
-        konfig[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafkaegenskaper.bootstrapServers as Object
-        konfig[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java as Object
-        konfig[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java as Object
+        val konfig = HashMap<String, Any>()
+        konfig[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafkaegenskaper.bootstrapServers as Any
+        konfig[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java as Any
+        konfig[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java as Any
         return DefaultKafkaProducerFactory(konfig as Map<String, Any>?)
     }
 

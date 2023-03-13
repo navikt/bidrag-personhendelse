@@ -14,3 +14,4 @@ fun main(args: Array<String>) {
         .profiles(args[0])
     app.run(*args)
 }
+

@@ -1,8 +1,11 @@
 package no.nav.bidrag.person.hendelse.integrasjon.mottak
 
 import no.nav.bidrag.person.hendelse.domene.*
+import no.nav.bidrag.person.hendelse.exception.HendelsemottakException
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
+import no.nav.person.pdl.leesah.Endringstype
 import no.nav.person.pdl.leesah.Personhendelse
+import no.nav.person.pdl.leesah.adressebeskyttelse.Adressebeskyttelse
 import no.nav.person.pdl.leesah.bostedsadresse.Bostedsadresse
 import no.nav.person.pdl.leesah.doedsfall.Doedsfall
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -14,6 +17,8 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.stream.Collectors
 
 @Service
@@ -39,15 +44,19 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         log.info("Livshendelse med hendelseid {} mottatt.", personhendelse.hendelseId)
         SECURE_LOGGER.info("Har mottatt leesah-hendelse $cr")
 
+        var opplysningstype = konvertereOpplysningstype(personhendelse.opplysningstype)
+
+        if (Livshendelse.Opplysningstype.IKKE_STØTTET.equals(opplysningstype)) {
+            log.info("Mottok opplysningstype som ikke støttes av løsningen - avbryter videre prosessering.")
+            return
+        }
 
         val livshendelse = Livshendelse(
-            personhendelse?.hendelseId.toString(),
-            cr.offset(),
-            personhendelse?.opprettet.toString(),
-            personhendelse?.master.toString(),
-            personhendelse?.opplysningstype.toString(),
-            personhendelse.endringstype.name,
-            personhendelse?.personidenter?.stream()?.map(CharSequence::toString)?.collect(Collectors.toList()),
+            personhendelse.hendelseId.toString(),
+            opplysningstype,
+            konvertereEndringstype(personhendelse.endringstype),
+            personhendelse.personidenter?.stream()?.map(CharSequence::toString)?.collect(Collectors.toList()),
+            personhendelse.tidligereHendelseId?.toString(),
             henteDødsdato(personhendelse.doedsfall),
             henteFlyttedato(personhendelse.bostedsadresse),
             henteFolkeregisteridentifikator(personhendelse.folkeregisteridentifikator),
@@ -55,18 +64,59 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             henteInnflytting(personhendelse.innflyttingTilNorge),
             henteNavn(personhendelse.navn),
             henteUtflytting(personhendelse.utflyttingFraNorge),
-            personhendelse?.tidligereHendelseId?.toString(),
-            henteSivilstand(personhendelse.sivilstand)
+            henteSivilstand(personhendelse.sivilstand),
+            henteVerge(personhendelse.vergemaalEllerFremtidsfullmakt),
+            henteAdressebeskyttelse(personhendelse.adressebeskyttelse),
+            cr.offset(),
+            LocalDateTime.ofInstant(personhendelse.opprettet, ZoneId.systemDefault()),
+            personhendelse.master.toString()
         )
 
         try {
             MDC.put(MdcKonstanter.MDC_KALLID, livshendelse.hendelseid)
             livshendelsebehandler.prosesserNyHendelse(livshendelse)
         } catch (e: RuntimeException) {
-            SECURE_LOGGER.error("Feil i prosessering av leesah-hendelser", e)
-            throw RuntimeException("Feil i prosessering av leesah-hendelser")
+            SECURE_LOGGER.error("Feil i prosessering av leesah-hendelse", e)
+            throw RuntimeException("Feil i prosessering av leesah-hendelse")
         } finally {
             MDC.clear()
+        }
+    }
+
+    private fun konvertereOpplysningstype(pdlOpplysningstype: CharSequence?): Livshendelse.Opplysningstype {
+        return if (pdlOpplysningstype == null) {
+            log.error("Opplysningstype i mottatt melding var null. Avbryter prosessering.")
+            throw HendelsemottakException("Opplysningstype i mottatt melding var null!");
+        } else {
+            try {
+                return Livshendelse.Opplysningstype.valueOf(pdlOpplysningstype.toString())
+            } catch (iae: IllegalArgumentException) {
+                log.info("Mottok livshendelse med opplysningstype ({}) fra PDL. Denne ignoreres av løsningen.", pdlOpplysningstype.toString())
+                return Livshendelse.Opplysningstype.IKKE_STØTTET
+            }
+        }
+    }
+
+    private fun konvertereEndringstype(pdlEndringstype: Endringstype?): Livshendelse.Endringstype {
+        if (pdlEndringstype == null) {
+            log.error("Endringstype i mottatt melding var null. Avbryter prosessering")
+            throw HendelsemottakException("Endringstype i mottatt melding var null!")
+        } else {
+            try {
+                return Livshendelse.Endringstype.valueOf(pdlEndringstype.name)
+            } catch (iae: IllegalArgumentException) {
+                log.error("Mottok ukjent endringstype ({}) fra PDL", pdlEndringstype.name)
+                iae.printStackTrace()
+                throw HendelsemottakException("Ukjent endringstype: ${pdlEndringstype}")
+            }
+        }
+    }
+
+    private fun henteAdressebeskyttelse(adressebeskyttelse: Adressebeskyttelse?): Livshendelse.Gradering {
+        return if (adressebeskyttelse == null) {
+            Livshendelse.Gradering.UGRADERT
+        } else {
+            Livshendelse.Gradering.valueOf(adressebeskyttelse.gradering.name)
         }
     }
 
@@ -92,9 +142,9 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
 
     private fun henteFolkeregisteridentifikator(folkeregisteridentifikator: no.nav.person.pdl.leesah.folkeregisteridentifikator.Folkeregisteridentifikator?): Folkeregisteridentifikator? {
         return if (folkeregisteridentifikator == null) {
-            return null
+            null
         } else {
-            return Folkeregisteridentifikator(
+            Folkeregisteridentifikator(
                 folkeregisteridentifikator.identifikasjonsnummer.toString(),
                 folkeregisteridentifikator.type.toString(),
                 folkeregisteridentifikator.status.toString()
@@ -102,11 +152,11 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         }
     }
 
-    private fun henteFødsel(foedsel: no.nav.person.pdl.leesah.foedsel.Foedsel?): Fødsel? {
+    private fun henteFødsel(foedsel: no.nav.person.pdl.leesah.foedsel.Foedsel?): Foedsel? {
         return if (foedsel == null) {
             null
         } else {
-            Fødsel(foedsel.foedeland?.toString(), foedsel.foedselsdato)
+            Foedsel(foedsel.foedeland?.toString(), foedsel.foedselsdato)
         }
     }
 
@@ -147,8 +197,22 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         }
     }
 
+    private fun henteVerge(verge: no.nav.person.pdl.leesah.verge.VergemaalEllerFremtidsfullmakt?): VergeEllerFremtidsfullmakt? {
+        return if (verge == null) {
+            null
+        } else {
+            var vergeEllerFullmektig = VergeEllerFullmektig(
+                verge.vergeEllerFullmektig.motpartsPersonident.toString(),
+                verge.vergeEllerFullmektig.omfang.toString(),
+                verge.vergeEllerFullmektig.omfangetErInnenPersonligOmraade
+            )
+            VergeEllerFremtidsfullmakt(verge.type.toString(), verge.embete.toString(), vergeEllerFullmektig)
+        }
+    }
+
     companion object {
         val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
         val log: Logger = LoggerFactory.getLogger(Livshendelsemottak::class.java)
     }
 }
+

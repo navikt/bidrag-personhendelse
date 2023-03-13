@@ -1,161 +1,178 @@
 package no.nav.bidrag.person.hendelse.prosess
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
+import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
-import no.nav.bidrag.person.hendelse.database.Hendelsearkiv
-import no.nav.bidrag.person.hendelse.database.HendelsearkivDao
-import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
-import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
+import no.nav.bidrag.person.hendelse.domene.Livshendelse.Endringstype
+import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Service
-class Livshendelsebehandler(
-    val egenskaperWmq: Wmq,
-    val hendelsearkivDao: HendelsearkivDao,
-    val meldingsprodusent: Meldingsprodusent
-) {
+class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     fun prosesserNyHendelse(livshendelse: Livshendelse) {
         when (livshendelse.opplysningstype) {
-            Opplysningstype.ADRESSEBESKYTTELSE_V1.toString() -> behandleAdressebeskyttelse(livshendelse)
-            Opplysningstype.BOSTEDSADRESSE_V1.toString() -> behandleBostedsadresse(livshendelse)
-            Opplysningstype.DOEDSFALL_V1.toString() -> behandleDødsfall(livshendelse)
-            Opplysningstype.FOEDSEL_V1.toString() -> behandleFødsel(livshendelse)
-            Opplysningstype.FOLKEREGISTERIDENTIFIKATOR_V1.toString() -> behandleFolkeregisteridentifikator(livshendelse)
-            Opplysningstype.INNFLYTTING_TIL_NORGE.toString() -> behandleInnflytting(livshendelse)
-            Opplysningstype.NAVN_V1.toString() -> behandleNavn(livshendelse)
-            Opplysningstype.UTFLYTTING_FRA_NORGE.toString() -> behandleUtflytting(livshendelse)
-            Opplysningstype.SIVILSTAND_V1.toString() -> behandleSivilstand(livshendelse)
-            Opplysningstype.VERGE_V1.toString() -> behandleVerge(livshendelse)
+            Opplysningstype.ADRESSEBESKYTTELSE_V1 -> behandleAdressebeskyttelse(livshendelse)
+            Opplysningstype.BOSTEDSADRESSE_V1 -> behandleBostedsadresse(livshendelse)
+            Opplysningstype.DOEDSFALL_V1 -> behandleDødsfall(livshendelse)
+            Opplysningstype.FOEDSEL_V1 -> behandleFødsel(livshendelse)
+            Opplysningstype.FOLKEREGISTERIDENTIFIKATOR_V1 -> behandleFolkeregisteridentifikator(livshendelse)
+            Opplysningstype.INNFLYTTING_TIL_NORGE -> behandleInnflytting(livshendelse)
+            Opplysningstype.NAVN_V1 -> behandleNavn(livshendelse)
+            Opplysningstype.UTFLYTTING_FRA_NORGE -> behandleUtflytting(livshendelse)
+            Opplysningstype.SIVILSTAND_V1 -> behandleSivilstand(livshendelse)
+            Opplysningstype.VERGEMAAL_ELLER_FREMTIDSFULLMAKT_V1 -> behandleVerge(livshendelse)
+            Opplysningstype.IKKE_STØTTET -> log.error("Forsøk på prosessere medling med opplysningstype som ikke støttes av løsningen.")
         }
     }
 
     private fun behandleAdressebeskyttelse(livshendelse: Livshendelse) {
         tellerAdressebeskyttelse.increment()
 
-        if (hendelsearkivDao.existsByHendelseidAndOpplysningstype(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
-        loggeLivshendelse(livshendelse, "Gradering: ${livshendelse.addressebeskyttelse}")
+        loggeLivshendelse(livshendelse, "Gradering: ${livshendelse.adressebeskyttelse}")
 
         when (livshendelse.endringstype) {
-            ANNULLERT -> tellerVergeAnnullert.increment()
-            KORRIGERT -> tellerVergeKorrigert.increment()
-            OPPHOERT -> tellerVergeOpphørt.increment()
+            Endringstype.ANNULLERT -> tellerAdressebeskyttelseAnnullert.increment()
+            Endringstype.KORRIGERT -> tellerAdressebeskyttelseKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerAdressebeskyttelseOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerAdressebeskyttelseOpprettet.increment()
         }
 
-        if (!OPPRETTET.equals(livshendelse.endringstype)) {
-            log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Gradering: ${livshendelse.addressebeskyttelse}")
+        if (Endringstype.OPPRETTET != livshendelse.endringstype) {
+            log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Gradering: ${livshendelse.adressebeskyttelse}")
         }
 
-        meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
-        arkivereHendelse(livshendelse)
+        databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun behandleVerge(livshendelse: Livshendelse) {
 
         tellerVerge.increment()
 
-        if (hendelsearkivDao.existsByHendelseidAndOpplysningstype(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
         loggeLivshendelse(livshendelse, "Type: ${livshendelse.verge?.type}, omfang: ${livshendelse.verge?.vergeEllerFullmektig?.omfang}")
 
         when (livshendelse.endringstype) {
-            ANNULLERT -> tellerVergeAnnullert.increment()
-            KORRIGERT -> tellerVergeKorrigert.increment()
-            OPPHOERT -> tellerVergeOpphørt.increment()
+            Endringstype.ANNULLERT -> tellerVergeAnnullert.increment()
+            Endringstype.KORRIGERT -> tellerVergeKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerVergeOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerVergeOpprettet.increment()
         }
 
-        if (!OPPRETTET.equals(livshendelse.endringstype)) {
+        if (Endringstype.OPPRETTET != livshendelse.endringstype) {
             log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Omfang: ${livshendelse.verge?.vergeEllerFullmektig?.omfang}")
         }
 
-        meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
-        arkivereHendelse(livshendelse)
+        databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun behandleBostedsadresse(livshendelse: Livshendelse) {
 
         tellerBostedsadresse.increment()
 
-        if (hendelsearkivDao.existsByHendelseidAndOpplysningstype(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
         when (livshendelse.endringstype) {
-            ANNULLERT -> tellerBostedsadresseAnnullert.increment()
-            KORRIGERT -> tellerBostedsadresseKorrigert.increment()
-            OPPHOERT -> tellerBostedsadresseOpphørt.increment()
+            Endringstype.ANNULLERT -> tellerBostedsadresseAnnullert.increment()
+            Endringstype.KORRIGERT -> tellerBostedsadresseKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerBostedsadresseOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerBostedsadresseOpprettet.increment()
         }
 
-        if (!OPPRETTET.equals(livshendelse.endringstype)) {
+        if (Endringstype.OPPRETTET != livshendelse.endringstype) {
             log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Flyttedato: ${livshendelse.flyttedato}")
         }
 
-        meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
-        arkivereHendelse(livshendelse)
+        databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun behandleDødsfall(livshendelse: Livshendelse) {
+
         tellerDødsfall.increment()
 
-        if (hendelsearkivDao.existsByHendelseidAndOpplysningstype(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
+        }
+
+        when (livshendelse.endringstype) {
+            Endringstype.ANNULLERT -> tellerDødsfallAnnullert.increment()
+            Endringstype.KORRIGERT -> tellerDødsfallKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerDødsfallOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerDødsfallOpprettet.increment()
         }
 
         loggeLivshendelse(livshendelse, "dødsdato: ${livshendelse.doedsdato}");
 
         when (livshendelse.endringstype) {
-            OPPRETTET -> {
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
                 if (livshendelse.doedsdato == null) {
                     log.error("Mangler dødsdato. Ignorerer hendelse ${livshendelse.hendelseid}")
                     tellerDødsfallIgnorert.increment()
                 } else {
-                    tellerDødsfall.increment()
-                    var melding = oppretteGson().toJson(livshendelse)
-                    meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, melding)
+                    databasetjeneste.lagreHendelse(livshendelse)
                 }
             }
 
             else -> {
-                log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Dødsdato: ${livshendelse.doedsdato}")
+                log.warn("Ignorerer hendelse med id ${livshendelse.hendelseid} og opplysningstype ${livshendelse.opplysningstype}. Dødsdato: ${livshendelse.doedsdato}")
             }
         }
-
-        arkivereHendelse(livshendelse)
     }
 
     private fun behandleFolkeregisteridentifikator(livshendelse: Livshendelse) {
 
         tellerFolkeregisteridentifikator.increment()
 
-        if (hendelsearkivDao.existsByHendelseidAndOpplysningstype(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
+        }
+
+        when (livshendelse.endringstype) {
+            Endringstype.ANNULLERT -> tellerFolkeregisteridentifikatorAnnullert.increment()
+            Endringstype.KORRIGERT -> tellerFolkeregisteridentifikatorKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerFolkeregisteridentifikatorOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerFolkeregisteridentifikatorOpprettet.increment()
         }
 
         loggeLivshendelse(livshendelse);
 
         when (livshendelse.endringstype) {
-            OPPRETTET -> {
+            Endringstype.OPPRETTET -> {
                 if (livshendelse.folkeregisteridentifikator?.type == null) {
                     log.error("Mangler folkeregisteridentifikator.type. Ignorerer hendelse ${livshendelse.hendelseid}")
                     tellerFolkeregisteridentifikatorIgnorert.increment()
-                } else {
-                    meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
                 }
             }
 
@@ -164,91 +181,124 @@ class Livshendelsebehandler(
             }
         }
 
-        arkivereHendelse(livshendelse)
+        databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun behandleInnflytting(livshendelse: Livshendelse) {
+
         tellerInnflytting.increment()
-        if (hendelsearkivDao.existsByHendelseidAndOpplysningstype(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+
+        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.hendelseid}. Ignorerer denne."
+            )
             return
         }
 
         when (livshendelse.endringstype) {
-            OPPRETTET -> {
+            Endringstype.ANNULLERT -> tellerInnflyttingAnnullert.increment()
+            Endringstype.KORRIGERT -> tellerInnflyttingKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerInnflyttingOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerInnflyttingOpprettet.increment()
+        }
+
+        when (livshendelse.endringstype) {
+            Endringstype.OPPRETTET, Endringstype.ANNULLERT -> {
                 loggeLivshendelse(livshendelse, "Fraflyttingsland: ${livshendelse.innflytting?.fraflyttingsland}")
-                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
+                databasetjeneste.lagreHendelse(livshendelse)
             }
 
             else -> {
                 tellerInnflyttingIgnorert.increment()
-                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET.")
+                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET eller ANNULLERT.")
             }
         }
-
-        arkivereHendelse(livshendelse)
     }
 
     private fun behandleNavn(livshendelse: Livshendelse) {
+
         tellerNavn.increment()
 
-        if (hendelsearkivDao.existsByHendelseidAndOpplysningstype(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
         loggeLivshendelse(livshendelse);
 
         when (livshendelse.endringstype) {
-            OPPRETTET -> {
-                var manglerFornavn = livshendelse.navn?.fornavn == null
+            Endringstype.ANNULLERT -> tellerNavnAnnullert.increment()
+            Endringstype.KORRIGERT -> tellerNavnKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerNavnOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerNavnOpprettet.increment()
+        }
+
+        when (livshendelse.endringstype) {
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
+                val manglerFornavn = livshendelse.navn?.fornavn == null
                 if (manglerFornavn || livshendelse.navn?.etternavn == null) {
-                    var navnedel = if (manglerFornavn) "Fornavn" else "Etternavn"
-                    log.info("${navnedel} mangler. Ignorerer navnehendelse med id ${livshendelse.hendelseid}")
+                    val navnedel = if (manglerFornavn) "Fornavn" else "Etternavn"
+                    log.warn("${navnedel} mangler. Ignorerer navnehendelse med id ${livshendelse.hendelseid}")
                 } else {
-                    meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
+                    databasetjeneste.lagreHendelse(livshendelse)
                 }
             }
 
+            Endringstype.ANNULLERT -> {
+                databasetjeneste.lagreHendelse(livshendelse)
+            }
+
             else -> {
-                log.warn("Navnehendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Endringstype: ${livshendelse.endringstype}")
+                log.warn("Ignorerer navnehendelse med id ${livshendelse.hendelseid} av type ${livshendelse.opplysningstype}. Endringstype: ${livshendelse.endringstype}")
             }
         }
-
-        arkivereHendelse(livshendelse)
     }
 
     private fun behandleFødsel(livshendelse: Livshendelse) {
+
         tellerFødsel.increment()
 
-        if (hendelsearkivDao.existsByHendelseidAndOpplysningstype(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
         when (livshendelse.endringstype) {
-            OPPRETTET, KORRIGERT -> {
-                loggeLivshendelse(livshendelse, "fødselsdato: ${livshendelse.fødsel?.fødselsdato}")
-                val fødselsdato = livshendelse.fødsel?.fødselsdato
+            Endringstype.ANNULLERT -> tellerFødselAnnulert.increment()
+            Endringstype.KORRIGERT -> tellerFødselKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerFødselOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerFødselOpprettet.increment()
+        }
+
+        when (livshendelse.endringstype) {
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
+                loggeLivshendelse(livshendelse, "fødselsdato: ${livshendelse.foedsel?.foedselsdato}")
+                val fødselsdato = livshendelse.foedsel?.foedselsdato
                 if (fødselsdato == null) {
                     tellerFødselIgnorert.increment()
                     log.warn("Mangler fødselsdato. Ignorerer hendelse ${livshendelse.hendelseid}")
                 } else if (erUnder6mnd(fødselsdato)) {
                     tellerFødselIgnorert.increment()
-                    if (erUtenforNorge(livshendelse.fødsel.fødeland)) {
+                    if (erUtenforNorge(livshendelse.foedsel.foedeland)) {
                         log.info("Fødeland er ikke Norge. Ignorerer hendelse ${livshendelse.hendelseid}")
                     } else {
-                        meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
+                        databasetjeneste.lagreHendelse(livshendelse)
                     }
                 }
             }
 
-            ANNULLERT -> {
-                tellerFødselAnnulert.increment()
+            Endringstype.ANNULLERT -> {
                 if (livshendelse.tidligereHendelseid == null) {
                     log.warn("Mottatt annullert fødsel uten tidligereHendelseId, hendelseId ${livshendelse.hendelseid}")
                 } else {
-                    meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
+                    databasetjeneste.lagreHendelse(livshendelse)
                 }
             }
 
@@ -256,92 +306,73 @@ class Livshendelsebehandler(
                 loggeLivshendelse(livshendelse)
             }
         }
-        arkivereHendelse(livshendelse)
     }
 
     private fun behandleUtflytting(livshendelse: Livshendelse) {
 
         tellerUtflytting.increment()
 
-        if (hendelsearkivDao.existsByHendelseidAndOpplysningstype(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
         when (livshendelse.endringstype) {
-            OPPRETTET -> {
+            Endringstype.ANNULLERT -> tellerUtflyttingAnnullert.increment()
+            Endringstype.KORRIGERT -> tellerUtflyttingKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerUtflyttingOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerUtflyttingOpprettet.increment()
+        }
+
+        when (livshendelse.endringstype) {
+            Endringstype.OPPRETTET, Endringstype.ANNULLERT -> {
                 loggeLivshendelse(livshendelse, "utflyttingsdato: ${livshendelse.utflytting?.utflyttingsdato}")
-                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, oppretteGson().toJson(livshendelse))
+                databasetjeneste.lagreHendelse(livshendelse)
             }
 
             else -> {
                 tellerUtflyttingIgnorert.increment()
-                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET.")
+                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET eller ANNULLERT.")
             }
         }
-
-        arkivereHendelse(livshendelse)
     }
 
     private fun behandleSivilstand(livshendelse: Livshendelse) {
 
         tellerSivilstand.increment()
-        if (hendelsearkivDao.existsByHendelseidAndOpplysningstype(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+
+        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
             tellerLeesahDuplikat.increment()
+            log.info(
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+            )
             return
         }
 
         when (livshendelse.endringstype) {
-            OPPRETTET -> {
+            Endringstype.ANNULLERT -> tellerSivilstandAnnullert.increment()
+            Endringstype.KORRIGERT -> tellerSivilstandKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerSivilstandOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerSivilstandOpprettet.increment()
+        }
+
+        when (livshendelse.endringstype) {
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT, Endringstype.ANNULLERT -> {
                 loggeLivshendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstand?.bekreftelsesdato}")
-                var livshendelseJson = oppretteGson().toJson(livshendelse)
-                meldingsprodusent.sendeMelding(egenskaperWmq.queueNameLivshendelser, livshendelseJson)
+                databasetjeneste.lagreHendelse(livshendelse)
             }
 
             else -> {
-                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET.")
+                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET, KORRIGERT, eller ANNULLERT.")
             }
         }
-
-        arkivereHendelse(livshendelse)
-    }
-
-    private fun arkivereHendelse(livshendelse: Livshendelse) {
-
-        var listeMedPersonidenter = livshendelse.personidenter
-
-        if (livshendelse.personidenter?.size!! > MAKS_ANTALL_PERSONIDENTER) {
-            listeMedPersonidenter = listeMedPersonidenter?.subList(0, MAKS_ANTALL_PERSONIDENTER)
-            log.warn(
-                "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over ${MAKS_ANTALL_PERSONIDENTER} personidenter. " +
-                        "Kun de ${MAKS_ANTALL_PERSONIDENTER} første arkiveres."
-            )
-        }
-
-        hendelsearkivDao.save(
-            Hendelsearkiv(
-                livshendelse.hendelseid,
-                livshendelse.opplysningstype,
-                livshendelse.endringstype,
-                livshendelse.master,
-                livshendelse.offset,
-                listeMedPersonidenter?.joinToString { it },
-                livshendelse.tidligereHendelseid,
-                oppretteGson().toJson(livshendelse)
-            )
-        )
-    }
-
-    private fun oppretteGson(): Gson {
-        var gsonbuilder = GsonBuilder()
-        gsonbuilder.registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
-        gsonbuilder.registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter().nullSafe())
-        var gson = gsonbuilder.create()
-        return gson
     }
 
     private fun loggeLivshendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
-        log.info(
+        SECURE_LOGGER.info(
             "Livshendelse mottatt: " +
                     "hendelseId: ${livshendelse.hendelseid} " +
                     "offset: ${livshendelse.offset}, " +
@@ -364,46 +395,89 @@ class Livshendelsebehandler(
 
     companion object {
         val log: Logger = LoggerFactory.getLogger(Livshendelsebehandler::class.java)
-        const val OPPRETTET = "OPPRETTET"
-        const val KORRIGERT = "KORRIGERT"
-        const val ANNULLERT = "ANNULLERT"
-        const val OPPHOERT = "OPPHOERT"
+        val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
+
         const val MAKS_ANTALL_PERSONIDENTER = 20
 
-        val tellerAdressebeskyttelse: Counter = Metrics.counter(tellernavn("adressebeskyttelse"))
-        val tellerAdressebeskyttelseAnnullert: Counter = Metrics.counter(tellernavn("adressebeskyttelse.annullert"))
-        val tellerAdressebeskyttelseKorrigert: Counter = Metrics.counter(tellernavn("adressebeskyttelse.korrigert"))
-        val tellerAdressebeskyttelseOpphørt: Counter = Metrics.counter(tellernavn("adressebeskyttelse.opphørt"))
-        val tellerBostedsadresse: Counter = Metrics.counter(tellernavn("bostedsadresse"))
-        val tellerBostedsadresseKorrigert: Counter = Metrics.counter(tellernavn("bostedsadresse.korrigert"))
-        val tellerBostedsadresseAnnullert: Counter = Metrics.counter(tellernavn("bostedsadresse.annullert"))
-        val tellerBostedsadresseOpphørt: Counter = Metrics.counter(tellernavn("bostedsadresse.opphørt"))
-        val tellerDødsfall: Counter = Metrics.counter(tellernavn("dødsfall"))
-        val tellerDødsfallIgnorert: Counter = Metrics.counter(tellernavn("dødsfall.ignorert"))
-        val tellerFolkeregisteridentifikator: Counter = Metrics.counter(tellernavn("folkeregisteridentifikator"))
-        val tellerFolkeregisteridentifikatorIgnorert: Counter = Metrics.counter(tellernavn("folkeregisteridentifikator.ignorert"))
-        val tellerFødsel: Counter = Metrics.counter(tellernavn("fødsel"))
-        val tellerFødselIgnorert: Counter = Metrics.counter(tellernavn("fødsel.ignorert"))
-        val tellerFødselAnnulert: Counter = Metrics.counter(tellernavn("fødsel.annullert"))
-        val tellerInnflytting: Counter = Metrics.counter(tellernavn(("innflytting")))
-        val tellerInnflyttingIgnorert: Counter = Metrics.counter(tellernavn(("innflytting.ignorert")))
-        val tellerNavn: Counter = Metrics.counter(tellernavn("navn"))
-        val tellerSivilstand: Counter = Metrics.counter(tellernavn("sivilstand"))
-        val tellerUtflytting: Counter = Metrics.counter(tellernavn("utflytting"))
-        val tellerUtflyttingIgnorert: Counter = Metrics.counter(tellernavn("utflytting.ignorert"))
         val tellerLeesahDuplikat: Counter = Metrics.counter(tellernavn("leesah.duplikat"))
-        val tellerVerge: Counter = Metrics.counter(tellernavn("verge"))
-        val tellerVergeAnnullert: Counter = Metrics.counter(tellernavn("verge.annullert"))
-        val tellerVergeKorrigert: Counter = Metrics.counter(tellernavn("verge.korrigert"))
-        val tellerVergeOpphørt: Counter = Metrics.counter(tellernavn("verge.opphørt"))
 
-        fun tellernavn(navn: String): String {
+        const val adressebeskyttelse = "adressebeskyttelse"
+        val tellerAdressebeskyttelse: Counter = Metrics.counter(tellernavn(adressebeskyttelse))
+        val tellerAdressebeskyttelseAnnullert: Counter = Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerAdressebeskyttelseKorrigert: Counter = Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerAdressebeskyttelseOpphørt: Counter = Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerAdressebeskyttelseOpprettet: Counter = Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+
+        const val bostedsadresse = "bostedsadresse"
+        val tellerBostedsadresse: Counter = Metrics.counter(tellernavn(bostedsadresse))
+        val tellerBostedsadresseAnnullert: Counter = Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerBostedsadresseKorrigert: Counter = Metrics.counter(tellernavn(bostedsadresse+ ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerBostedsadresseOpphørt: Counter = Metrics.counter(tellernavn(bostedsadresse+ ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerBostedsadresseOpprettet: Counter = Metrics.counter(tellernavn(bostedsadresse+ ".${Endringstype.OPPRETTET.name.lowercase()}"))
+
+        const val dødsfall = "doedsfall"
+        val tellerDødsfall: Counter = Metrics.counter(tellernavn(dødsfall))
+        val tellerDødsfallAnnullert: Counter = Metrics.counter(tellernavn(dødsfall + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerDødsfallKorrigert: Counter = Metrics.counter(tellernavn(dødsfall + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerDødsfallOpphørt: Counter = Metrics.counter(tellernavn(dødsfall + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerDødsfallOpprettet: Counter = Metrics.counter(tellernavn(dødsfall + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerDødsfallIgnorert: Counter = Metrics.counter(tellernavn(dødsfall + ".ignorert"))
+
+        const val folkeregisteridentifikator = "folkeregisteridentifikator"
+        val tellerFolkeregisteridentifikator: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator))
+        val tellerFolkeregisteridentifikatorAnnullert: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerFolkeregisteridentifikatorKorrigert: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerFolkeregisteridentifikatorOpphørt: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerFolkeregisteridentifikatorOpprettet: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerFolkeregisteridentifikatorIgnorert: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator + ".ignorert"))
+
+        const val fødsel = "foedsel"
+        val tellerFødsel: Counter = Metrics.counter(tellernavn(fødsel))
+        val tellerFødselIgnorert: Counter = Metrics.counter(tellernavn(fødsel + ".ignorert"))
+        val tellerFødselAnnulert: Counter = Metrics.counter(tellernavn(fødsel + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerFødselKorrigert: Counter = Metrics.counter(tellernavn(fødsel + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerFødselOpphørt: Counter = Metrics.counter(tellernavn(fødsel + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerFødselOpprettet: Counter = Metrics.counter(tellernavn(fødsel + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+
+        const val innflytting = "innflytting"
+        val tellerInnflytting: Counter = Metrics.counter(tellernavn(innflytting))
+        val tellerInnflyttingAnnullert: Counter = Metrics.counter(tellernavn(innflytting + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerInnflyttingKorrigert: Counter = Metrics.counter(tellernavn(innflytting + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerInnflyttingOpphørt: Counter = Metrics.counter(tellernavn(innflytting + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerInnflyttingOpprettet: Counter = Metrics.counter(tellernavn(innflytting + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerInnflyttingIgnorert: Counter = Metrics.counter(tellernavn((innflytting + ".ignorert")))
+
+        const val navn = "navn"
+        val tellerNavn: Counter = Metrics.counter(tellernavn(navn))
+        val tellerNavnAnnullert: Counter = Metrics.counter(tellernavn(navn + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerNavnKorrigert: Counter = Metrics.counter(tellernavn(navn + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerNavnOpphørt: Counter = Metrics.counter(tellernavn(navn + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerNavnOpprettet: Counter = Metrics.counter(tellernavn(navn + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+
+        const val sivilstand = "sivilstand"
+        val tellerSivilstand: Counter = Metrics.counter(tellernavn(sivilstand))
+        val tellerSivilstandAnnullert: Counter = Metrics.counter(tellernavn(sivilstand + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerSivilstandKorrigert: Counter = Metrics.counter(tellernavn(sivilstand + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerSivilstandOpphørt: Counter = Metrics.counter(tellernavn(sivilstand + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerSivilstandOpprettet: Counter = Metrics.counter(tellernavn(sivilstand + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+
+        const val utflytting = "utflytting"
+        val tellerUtflytting: Counter = Metrics.counter(tellernavn(utflytting))
+        val tellerUtflyttingAnnullert: Counter = Metrics.counter(tellernavn(utflytting + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerUtflyttingKorrigert: Counter = Metrics.counter(tellernavn(utflytting + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerUtflyttingOpphørt: Counter = Metrics.counter(tellernavn(utflytting + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerUtflyttingOpprettet: Counter = Metrics.counter(tellernavn(utflytting + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerUtflyttingIgnorert: Counter = Metrics.counter(tellernavn(utflytting + ".ignorert"))
+
+        const val verge = "verge"
+        val tellerVerge: Counter = Metrics.counter(tellernavn(verge))
+        val tellerVergeAnnullert: Counter = Metrics.counter(tellernavn(verge + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerVergeKorrigert: Counter = Metrics.counter(tellernavn(verge + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerVergeOpphørt: Counter = Metrics.counter(tellernavn(verge + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerVergeOpprettet: Counter = Metrics.counter(tellernavn(verge + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+
+        private fun tellernavn(navn: String): String {
             return "bidrag.personhendelse.$navn"
         }
     }
-
-    enum class Opplysningstype {
-        ADRESSEBESKYTTELSE_V1, BOSTEDSADRESSE_V1, DOEDSFALL_V1, FOEDSEL_V1, FOLKEREGISTERIDENTIFIKATOR_V1, INNFLYTTING_TIL_NORGE, NAVN_V1, UTFLYTTING_FRA_NORGE, SIVILSTAND_V1, VERGE_V1
-    }
-
 }

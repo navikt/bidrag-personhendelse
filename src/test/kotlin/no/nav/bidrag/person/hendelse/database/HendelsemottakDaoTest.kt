@@ -1,12 +1,11 @@
 package no.nav.bidrag.person.hendelse.database
 
 import no.nav.bidrag.person.hendelse.Teststarter
-import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
+import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -18,24 +17,24 @@ import org.springframework.test.context.ActiveProfiles
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-open class HendelsearkivDaoTest {
+open class HendelsemottakDaoTest {
 
     @Autowired
-    lateinit var hendelsearkivDao: HendelsearkivDao
+    lateinit var hendelsemottakDao: HendelsemottakDao
 
     @Test
-    fun skalArkivereHendelse() {
+    fun skalLagreHendelse() {
 
         // gitt
         var hendelseid = "123"
-        var opplysningstype = Livshendelsebehandler.Opplysningstype.SIVILSTAND_V1
-        var hendelsearkiv = Hendelsearkiv(hendelseid, opplysningstype.toString())
+        var opplysningstype = Livshendelse.Opplysningstype.SIVILSTAND_V1
+        var hendelsemottak = Hendelsemottak(hendelseid, opplysningstype)
 
         // hvis
-        hendelsearkivDao.save(hendelsearkiv)
+        hendelsemottakDao.save(hendelsemottak)
 
         // så
-        var eksisterer = hendelsearkivDao.existsByHendelseidAndOpplysningstype(hendelseid, opplysningstype.toString())
-        assertThat(eksisterer).isTrue()
+        var eksisterer = hendelsemottakDao.existsByHendelseidAndOpplysningstype(hendelseid, opplysningstype)
+        assertThat(eksisterer).isTrue
     }
 }

@@ -79,6 +79,10 @@ prosessering:
   pool:
     size: 2
 
+kjøreplan:
+  overføre_hendelser: ${KJØREPLAN_OVERFØRE_HENDELSER}
+  slette_hendelser: ${KJØREPLAN_SLETTE_HENDELSER}
+
 management:
   endpoint.health.show-details: always
   endpoints.web:
@@ -89,14 +93,19 @@ management:
       enabled: true
   prometheus.metrics.export.enabled: true
 
-wmq:
-  host: ${WMQ_HOST}
-  port: ${WMQ_PORT}
-  channel: ${WMQ_CHANNEL}
-  queue-manager: ${WMQ_QUEUEMANAGER}
-  username: srvbidrag-person-hen
-  password: ${PASSORD_SRVBIDRAG_PERSON_HEN}
-  timeout: ${WMQ_TIMEOUT}
-  application-name: ${WMQ_APPLICATION_NAME}
-  queueNameLivshendelser: ${WMQ_QUEUE_NAME_LIVSHENDELSER}
+egenskaper:
+  generelt:
+    antallMinutterForsinketVideresending: 120
+    antallDagerLevetidForUtgaatteHendelser: ${DAGER_LEVETID_UTGÅTTE_HENDELSER}
+
+  wmq:
+    host: ${WMQ_HOST}
+    port: ${WMQ_PORT}
+    channel: ${WMQ_CHANNEL}
+    queue-manager: ${WMQ_QUEUEMANAGER}
+    username: srvbidrag-person-hen
+    password: ${PASSORD_SRVBIDRAG_PERSON_HEN}
+    timeout: ${WMQ_TIMEOUT}
+    application-name: ${WMQ_APPLICATION_NAME}
+    queueNameLivshendelser: ${WMQ_QUEUE_NAME_LIVSHENDELSER}
 
