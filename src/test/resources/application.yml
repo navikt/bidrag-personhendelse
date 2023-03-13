@@ -1,0 +1,95 @@
+spring:
+  config.activate.on-profile: lokal-h2, lokal-postgres, test
+  cloud.gcp:
+    secretmanager.enabled: false
+    sql.enabled: false
+  main.allow-bean-definition-overriding: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS}
+    properties:
+      security.protocol: SASL_PLAINTEXT
+      sasl:
+        jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="igroup" password="itest";
+      schema.registry.url: http://localhost:8081
+    consumer:
+      group-id: srvc01
+
+funksjonsbrytere:
+  kafka.enabled: false
+  enabled: false
+  unleash:
+    uri: http://dummy/api/
+    cluster: localhost
+    applicationName: bidrag-person-hendelse
+
+WMQ_HOST: host.docker.internal
+WMQ_PORT: 1414
+WMQ_CHANNEL: DEV.APP.SVRCONN
+WMQ_QUEUEMANAGER: QM1
+WMQ_QUEUE_NAME_LIVSHENDELSER: DEV.QUEUE.1
+WMQ_TIMEOUT: 15000
+WMQ_APPLICATION_NAME: bidrag-person-hendelse
+PASSORD_SRVBIDRAG_PERSON_HEN: passw0rd
+KAFKA_BROKERS: http://localhost:9093
+KJØREPLAN_OVERFØRE_HENDELSER: "0 0/1 * * * ?"
+KJØREPLAN_SLETTE_HENDELSER: "0 0/1 * * * ?"
+DAGER_LEVETID_UTGÅTTE_HENDELSER: 2
+
+kjøreplan:
+  overføre_hendelser: ${KJØREPLAN_OVERFØRE_HENDELSER}
+
+egenskaper:
+  generelt:
+    antall-minutter-forsinket-videresending: 120
+    antallDagerLevetidForUtgåtteHendelser: ${DAGER_LEVETID_UTGÅTTE_HENDELSER}
+  wmq:
+    host: ${WMQ_HOST}
+    port: ${WMQ_PORT}
+    channel: ${WMQ_CHANNEL}
+    queue-manager: ${WMQ_QUEUEMANAGER}
+    username: srvbidrag-person-hen
+    password: ${PASSORD_SRVBIDRAG_PERSON_HEN}
+    timeout: ${WMQ_TIMEOUT}
+    application-name: ${WMQ_APPLICATION_NAME}
+    queueNameLivshendelser: ${WMQ_QUEUE_NAME_LIVSHENDELSER}
+
+---
+spring:
+  config.activate.on-profile: lokal-h2, test
+
+  ### H2 ###
+  flyway.enabled: false
+  datasource.type: com.zaxxer.hikari.HikariDataSource
+  datasource.url: jdbc:h2:mem:default
+  spring.datasource.initialization-mode: always
+  data.jpa.repositories.bootstrap-mode: default
+  h2.console.enabled: true
+  jpa:
+    hibernate.ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate.dialect: org.hibernate.dialect.H2Dialect
+---
+spring:
+  config.activate.on-profile: lokal-postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5432/personhendelse
+    databaseName: personhendelse
+    portNumber: 5432
+    serverName: localhost
+    username: postgres
+    password: test
+    hikari:
+      idle-timeout: 10001
+      max-lifetime: 30001
+      connectionTimeout: 1000
+      maximum-pool-size: 10
+      minimum-idle: 1
+  flyway:
+    enabled: true
+    locations: classpath:/db/migration
+  jpa:
+    hibernate.connection.provider_class: org.hibernate.hikaricp.internal.HikariCPConnectionProvider
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
