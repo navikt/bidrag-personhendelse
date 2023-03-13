@@ -82,7 +82,7 @@ open class OverføreHendelserTest {
         var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
         var oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedStatusOverført.statustidspunkt)
-        
+
         // hvis
         overføreHendelser.overføreHendelserTilBisys()
 
