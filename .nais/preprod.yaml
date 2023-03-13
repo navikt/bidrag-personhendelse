@@ -1,0 +1,61 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: bidrag-person-hendelse
+  namespace: bidrag
+  labels:
+    team: bidrag
+
+spec:
+  image: {{ image }}
+  port: 8090
+  leaderElection: true
+  azure:
+    application:
+      enabled: true
+  liveness:
+    path: /internal/health
+    initialDelay: 50
+    failureThreshold: 10
+  readiness:
+    path: /internal/health
+    initialDelay: 50
+    failureThreshold: 10
+  prometheus:
+    enabled: true
+    path: /internal/prometheus
+  replicas:
+    min: 2
+    max: 2
+    cpuThresholdPercentage: 50
+  resources:
+    limits:
+      memory: 2048Mi
+      cpu: "2"
+    requests:
+      memory: 1024Mi
+      cpu: 200m
+  ingresses:
+    - https://bidrag-person-hendelse.intern.dev.nav.no
+  envFrom:
+    - secret: bidrag-person-hendelse-passord-systembruker
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: preprod, i-sky
+    - name: JAVA_TOOL_OPTIONS
+      value: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+  secureLogs:
+    enabled: true
+  kafka:
+    pool: nav-dev
+  gcp:
+    permissions:
+      - resource:
+          apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+          kind: Project
+        role: roles/cloudsql.client
+    sqlInstances:
+      - type: POSTGRES_14
+        databases:
+          - name: person-hendelse-preprod
+            envVarPrefix: DB
