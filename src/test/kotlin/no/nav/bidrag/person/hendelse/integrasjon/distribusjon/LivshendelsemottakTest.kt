@@ -320,7 +320,7 @@ class LivshendelsemottakTest {
             return personhendelse
         }
 
-        open fun hentePersonhendelseForSivilstand(): Personhendelse {
+        fun hentePersonhendelseForSivilstand(): Personhendelse {
             var sivilstand = no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now()).setType("GIFT").build()
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.sivilstand = sivilstand

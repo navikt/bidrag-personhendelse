@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Repository
-open interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
+interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_FORCE_INCREMENT)
     fun save(hendelsemottak: Hendelsemottak): Hendelsemottak

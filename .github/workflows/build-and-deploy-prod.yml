@@ -38,7 +38,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
-          RESOURCE: deploy/.nais/preprod.yaml
+          RESOURCE: .nais/preprod.yaml
       - name: Push Docker image med 'latest' tag
         if: github.ref == 'refs/heads/main'
         run: docker push ${IMAGE_LATEST}
@@ -48,4 +48,4 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
-          RESOURCE: deploy/.nais/prod.yaml
+          RESOURCE: .nais/prod.yaml

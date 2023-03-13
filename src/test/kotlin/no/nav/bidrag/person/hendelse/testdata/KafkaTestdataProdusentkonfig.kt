@@ -31,7 +31,7 @@ open class KafkaTestdataProdusentkonfig(
         konfig[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafkaegenskaper.bootstrapServers as Any
         konfig[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java as Any
         konfig[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java as Any
-        return DefaultKafkaProducerFactory(konfig as Map<String, Any>?)
+        return DefaultKafkaProducerFactory((konfig as Map<String, Any>?)!!)
     }
 
     @Bean

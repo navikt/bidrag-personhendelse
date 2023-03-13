@@ -84,16 +84,11 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
     }
 
     private fun konvertereOpplysningstype(pdlOpplysningstype: CharSequence?): Livshendelse.Opplysningstype {
-        return if (pdlOpplysningstype == null) {
-            log.error("Opplysningstype i mottatt melding var null. Avbryter prosessering.")
-            throw HendelsemottakException("Opplysningstype i mottatt melding var null!");
-        } else {
-            try {
-                return Livshendelse.Opplysningstype.valueOf(pdlOpplysningstype.toString())
-            } catch (iae: IllegalArgumentException) {
-                log.info("Mottok livshendelse med opplysningstype ({}) fra PDL. Denne ignoreres av løsningen.", pdlOpplysningstype.toString())
-                return Livshendelse.Opplysningstype.IKKE_STØTTET
-            }
+        return try {
+            Livshendelse.Opplysningstype.valueOf(pdlOpplysningstype.toString())
+        } catch (iae: IllegalArgumentException) {
+            log.info("Mottok livshendelse med opplysningstype ({}) fra PDL. Denne ignoreres av løsningen.", pdlOpplysningstype.toString())
+            Livshendelse.Opplysningstype.IKKE_STØTTET
         }
     }
 
