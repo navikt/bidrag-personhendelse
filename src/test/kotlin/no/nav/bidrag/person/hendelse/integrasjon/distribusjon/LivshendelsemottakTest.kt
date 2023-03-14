@@ -43,6 +43,25 @@ class LivshendelsemottakTest {
         every { livshendelsebehandler.prosesserNyHendelse(any()) } returns Unit
     }
 
+    @Test
+    fun `skal avbryte prossesering av melding med opplysningstype som ikke støttes`() {
+
+        // gitt
+        var personhendelse = henteIkkeStøttetOpplysingstype()
+
+        var cr = ConsumerRecord(
+            "pdl.leesah-v1", 1, 229055,
+            Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
+            personhendelse, RecordHeaders(), Optional.of(0)
+        )
+
+        // hvis
+        livshendelsemottak.listen(personhendelse, cr)
+
+        // så
+        val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
+        verify(exactly = 0) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
+    }
 
     @Test
     fun `skal håndtere dødsfall`() {
@@ -253,6 +272,13 @@ class LivshendelsemottakTest {
     }
 
     companion object {
+        fun henteIkkeStøttetOpplysingstype(): Personhendelse {
+            var personhendelse = henteMetadataTilPersonhendelse()
+            personhendelse.doedsfall = Doedsfall(LocalDate.now())
+            personhendelse.opplysningstype = "TELEFONNUMMER_V1"
+
+            return personhendelse
+        }
         fun hentePersonhendelseForDødsfall(): Personhendelse {
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.doedsfall = Doedsfall(LocalDate.now())
