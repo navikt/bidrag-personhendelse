@@ -1,5 +1,6 @@
 package no.nav.bidrag.person.hendelse.integrasjon.distribusjon
 
+import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.jms.core.JmsTemplate
@@ -13,7 +14,8 @@ class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
         try {
             jmsTemplate.send(mottakerkoe) { s -> s.createTextMessage(melding) }
         } catch(e:Exception) {
-            e.printStackTrace()
+            logger.error("Sending av melding til WMQ feilet med feilmelding '{}'", e.message)
+            e.message?.let { OverføringFeiletException(it) }
         }
     }
 

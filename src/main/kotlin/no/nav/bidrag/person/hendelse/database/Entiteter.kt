@@ -35,6 +35,7 @@ enum class Status {
     MOTTATT,
     KANSELLERT,
     OVERFØRT,
+    OVERFØRING_FEILET,
     UNDER_PROSESSERING
 }
 
