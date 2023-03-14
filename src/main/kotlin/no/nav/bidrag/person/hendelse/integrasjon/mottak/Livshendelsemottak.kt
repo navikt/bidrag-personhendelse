@@ -140,9 +140,9 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             null
         } else {
             Folkeregisteridentifikator(
-                folkeregisteridentifikator.identifikasjonsnummer.toString(),
-                folkeregisteridentifikator.type.toString(),
-                folkeregisteridentifikator.status.toString()
+                folkeregisteridentifikator.identifikasjonsnummer?.toString(),
+                folkeregisteridentifikator.type?.toString(),
+                folkeregisteridentifikator.status?.toString()
             )
         }
     }
@@ -196,12 +196,13 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (verge == null) {
             null
         } else {
+
             var vergeEllerFullmektig = VergeEllerFullmektig(
-                verge.vergeEllerFullmektig.motpartsPersonident.toString(),
-                verge.vergeEllerFullmektig.omfang.toString(),
-                verge.vergeEllerFullmektig.omfangetErInnenPersonligOmraade
+                verge.vergeEllerFullmektig?.motpartsPersonident?.toString(),
+                verge.vergeEllerFullmektig?.omfang.toString(),
+                verge.vergeEllerFullmektig?.omfangetErInnenPersonligOmraade
             )
-            VergeEllerFremtidsfullmakt(verge.type.toString(), verge.embete.toString(), vergeEllerFullmektig)
+            VergeEllerFremtidsfullmakt(verge.type?.toString(), verge.embete?.toString(), vergeEllerFullmektig)
         }
     }
 
