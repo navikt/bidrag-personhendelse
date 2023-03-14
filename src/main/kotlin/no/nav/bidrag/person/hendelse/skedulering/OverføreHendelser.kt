@@ -3,6 +3,7 @@ package no.nav.bidrag.person.hendelse.skedulering
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.Status
+import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
 import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
 import org.slf4j.Logger
@@ -32,8 +33,12 @@ open class OverføreHendelser(
         for (id in idTilHendelserSomSkalVideresendes.iterator()) {
             var mottattHendelse = databasetjeneste.henteHendelse(id)
             if (mottattHendelse.isPresent) {
-                meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, mottattHendelse.get().hendelse)
-                databasetjeneste.oppdatereStatus(id, Status.OVERFØRT)
+                try {
+                    meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, mottattHendelse.get().hendelse)
+                    databasetjeneste.oppdatereStatus(id, Status.OVERFØRT)
+                } catch (ofe: OverføringFeiletException) {
+                    databasetjeneste.oppdatereStatus(id, Status.OVERFØRING_FEILET)
+                }
             }
         }
 
