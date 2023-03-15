@@ -1,11 +1,10 @@
-package no.nav.bidrag.person.hendelse.integrasjon.distribusjon
+package no.nav.bidrag.person.hendelse.integrasjon.mottak
 
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
-import no.nav.bidrag.person.hendelse.integrasjon.mottak.Livshendelsemottak
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import no.nav.person.pdl.leesah.Endringstype
 import no.nav.person.pdl.leesah.Personhendelse

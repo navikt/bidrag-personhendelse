@@ -15,7 +15,7 @@ class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
             jmsTemplate.send(mottakerkoe) { s -> s.createTextMessage(melding) }
         } catch(e:Exception) {
             logger.error("Sending av melding til WMQ feilet med feilmelding '{}'", e.message)
-            e.message?.let { OverføringFeiletException(it) }
+            throw e.message?.let { OverføringFeiletException(it) }!!
         }
     }
 

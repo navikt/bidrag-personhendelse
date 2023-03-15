@@ -37,6 +37,7 @@ DAGER_LEVETID_UTGÅTTE_HENDELSER: 2
 
 kjøreplan:
   overføre_hendelser: ${KJØREPLAN_OVERFØRE_HENDELSER}
+  slette_hendelser: ${KJØREPLAN_SLETTE_HENDELSER}
 
 egenskaper:
   generelt:
