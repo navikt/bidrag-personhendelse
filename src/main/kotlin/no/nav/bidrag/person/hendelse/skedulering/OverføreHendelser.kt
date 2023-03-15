@@ -20,7 +20,7 @@ open class OverføreHendelser(
 ) {
 
     @Scheduled(cron = "\${kjøreplan.overføre_hendelser}")
-    @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "PT10M", lockAtMostFor = "PT60M")
+    @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "PT10M", lockAtMostFor = "PT48H")
     open fun overføreHendelserTilBisys() {
         log.info("Ser etter livshendelser som skal overføres til Bisys")
 
