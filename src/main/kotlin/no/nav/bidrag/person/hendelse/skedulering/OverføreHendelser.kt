@@ -53,7 +53,11 @@ open class OverføreHendelser(
         if (antallIdentifiserteHendelser > maksAntallHendelserPerKjøring) {
             return melding + "Overfører ${maksAntallHendelserPerKjøring} hendelser i denne omgang."
         } else {
-            return melding + "Overfører alle de ${antallIdentifiserteHendelser} identifiserte hendelsene."
+            return if (antallIdentifiserteHendelser > 0) {
+                melding + "Overfører alle de ${antallIdentifiserteHendelser} identifiserte hendelsene."
+            } else {
+                melding + "Ingen hendelser å overføre."
+            }
         }
     }
 
