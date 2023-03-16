@@ -65,6 +65,11 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
             status = Status.MOTTATT
         }
 
+        // Kansellerer hendelser om opphør av bostedsadresse. Endring av eksisterende bostedsadresse fører til utsending av to hendelser. Opprett for ny adresse og opphør for gammel.
+        if (Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1 == livshendelse.opplysningstype && Livshendelse.Endringstype.OPPHOERT == livshendelse.endringstype) {
+            status = Status.KANSELLERT
+        }
+
         return hendelsemottakDao.save(
             Hendelsemottak(
                 livshendelse.hendelseid,
@@ -81,7 +86,8 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
     }
 
     private fun kansellereTidligereHendelse(livshendelse: Livshendelse): Status {
-        var tidligereHendelseMedStatusMottatt = livshendelse.tidligereHendelseid?.let { hendelsemottakDao.findByHendelseidAndStatus(it, Status.MOTTATT) }
+        var tidligereHendelseMedStatusMottatt =
+            livshendelse.tidligereHendelseid?.let { hendelsemottakDao.findByHendelseidAndStatus(it, Status.MOTTATT) }
         tidligereHendelseMedStatusMottatt?.status = Status.KANSELLERT
         tidligereHendelseMedStatusMottatt?.statustidspunkt = LocalDateTime.now()
 

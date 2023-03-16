@@ -67,6 +67,23 @@ open class DatabasetjenesteTest {
     }
 
     @Test
+    fun `skal kansellere opphør av bostedsadresse`() {
+
+        // gitt
+        var hendelseid = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+        var hendelse =
+            Livshendelse(hendelseid, Opplysningstype.BOSTEDSADRESSE_V1, Endringstype.OPPHOERT, personidenter)
+
+        // hvis
+        var lagretHendelse = databasetjeneste.lagreHendelse(hendelse)
+
+        // så
+        assertSoftly {
+            lagretHendelse.status shouldBe Status.KANSELLERT
+        }
+    }
+
+    @Test
     @Transactional
     fun tidligereHendelseidFinnesIkkeIDatabasen() {
 
