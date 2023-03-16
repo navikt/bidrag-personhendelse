@@ -19,27 +19,12 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
 
     fun existsByHendelseidAndOpplysningstype(hendelseid: String, opplysningstype: Livshendelse.Opplysningstype): Boolean
 
-    fun findById(id: Int): Hendelsemottak
-
     @Nullable
     fun findByHendelseidAndStatus(hendelseid: String, status: Status): Hendelsemottak?
 
-    @Query(
-        "select ha.id from Hendelsemottak ha " +
-                "where ha.status in (no.nav.bidrag.person.hendelse.database.Status.UNDER_PROSESSERING)"
-    )
-    fun henteIdTilHendelserSomSkalSendesVidere(): Set<Long>
-
-
-    @Transactional
-    @Modifying
-    @Query(
-        "update Hendelsemottak ha set ha.status = no.nav.bidrag.person.hendelse.database.Status.UNDER_PROSESSERING " +
-                "where ha.id in (select ha.id from Hendelsemottak ha where ha.status " +
-                "= no.nav.bidrag.person.hendelse.database.Status.MOTTATT " +
-                "and ha.statustidspunkt < :statustidspunktFør)"
-    )
-    fun oppdatereStatusPåHendelserSomSkalOverføres(statustidspunktFør: LocalDateTime)
+    @Query("select ha.id from Hendelsemottak ha where ha.status = no.nav.bidrag.person.hendelse.database.Status.MOTTATT " +
+            "and ha.statustidspunkt < :statustidspunktFør")
+    fun idTilHendelserMedStatusMottatMedStatustidspunktFør(statustidspunktFør: LocalDateTime): Set<Long>
 
     @Query("select ha.id from Hendelsemottak ha where ha.status = :status and ha.statustidspunkt < :statustidspunktFør")
     fun henteIdTilHendelser(status: Status, statustidspunktFør: LocalDateTime): Set<Long>
