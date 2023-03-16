@@ -40,7 +40,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             return
         }
 
-        loggeLivshendelse(livshendelse, "Gradering: ${livshendelse.adressebeskyttelse}")
+        sikkerLoggingAvLivshendelse(livshendelse, "Gradering: ${livshendelse.adressebeskyttelse}")
 
         when (livshendelse.endringstype) {
             Endringstype.ANNULLERT -> tellerAdressebeskyttelseAnnullert.increment()
@@ -48,11 +48,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Endringstype.OPPHOERT -> tellerAdressebeskyttelseOpphørt.increment()
             Endringstype.OPPRETTET -> tellerAdressebeskyttelseOpprettet.increment()
         }
-
-        if (Endringstype.OPPRETTET != livshendelse.endringstype) {
-            log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Gradering: ${livshendelse.adressebeskyttelse}")
-        }
-
+        
         databasetjeneste.lagreHendelse(livshendelse)
     }
 
@@ -68,7 +64,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             return
         }
 
-        loggeLivshendelse(livshendelse, "Type: ${livshendelse.verge?.type}, omfang: ${livshendelse.verge?.vergeEllerFullmektig?.omfang}")
+        sikkerLoggingAvLivshendelse(livshendelse, "Type: ${livshendelse.verge?.type}, omfang: ${livshendelse.verge?.vergeEllerFullmektig?.omfang}")
 
         when (livshendelse.endringstype) {
             Endringstype.ANNULLERT -> tellerVergeAnnullert.increment()
@@ -77,11 +73,9 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Endringstype.OPPRETTET -> tellerVergeOpprettet.increment()
         }
 
-        if (Endringstype.OPPRETTET != livshendelse.endringstype) {
-            log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Omfang: ${livshendelse.verge?.vergeEllerFullmektig?.omfang}")
+        if (Endringstype.OPPHOERT != livshendelse.endringstype) {
+            databasetjeneste.lagreHendelse(livshendelse)
         }
-
-        databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun behandleBostedsadresse(livshendelse: Livshendelse) {
@@ -101,10 +95,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Endringstype.KORRIGERT -> tellerBostedsadresseKorrigert.increment()
             Endringstype.OPPHOERT -> tellerBostedsadresseOpphørt.increment()
             Endringstype.OPPRETTET -> tellerBostedsadresseOpprettet.increment()
-        }
-
-        if (Endringstype.OPPRETTET != livshendelse.endringstype) {
-            log.warn("Hendelse med id ${livshendelse.hendelseid} var ikke type OPPRETTET. Flyttedato: ${livshendelse.flyttedato}")
         }
 
         databasetjeneste.lagreHendelse(livshendelse)
@@ -129,10 +119,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Endringstype.OPPRETTET -> tellerDødsfallOpprettet.increment()
         }
 
-        loggeLivshendelse(livshendelse, "dødsdato: ${livshendelse.doedsdato}");
+        sikkerLoggingAvLivshendelse(livshendelse, "dødsdato: ${livshendelse.doedsdato}");
 
         when (livshendelse.endringstype) {
-            Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
+
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT, -> {
                 if (livshendelse.doedsdato == null) {
                     log.error("Mangler dødsdato. Ignorerer hendelse ${livshendelse.hendelseid}")
                     tellerDødsfallIgnorert.increment()
@@ -141,8 +132,16 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
                 }
             }
 
+            Endringstype.ANNULLERT -> {
+                if (livshendelse.tidligereHendelseid == null) {
+                    log.warn("Mottatt annullert fødsel uten tidligereHendelseId, hendelseId ${livshendelse.hendelseid}")
+                } else {
+                    databasetjeneste.lagreHendelse(livshendelse)
+                }
+            }
+
             else -> {
-                log.warn("Ignorerer hendelse med id ${livshendelse.hendelseid} og opplysningstype ${livshendelse.opplysningstype}. Dødsdato: ${livshendelse.doedsdato}")
+                log.info("Ignorerer hendelse med id ${livshendelse.hendelseid} og opplysningstype ${livshendelse.opplysningstype}. Dødsdato: ${livshendelse.doedsdato}")
             }
         }
     }
@@ -166,10 +165,10 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Endringstype.OPPRETTET -> tellerFolkeregisteridentifikatorOpprettet.increment()
         }
 
-        loggeLivshendelse(livshendelse);
+        sikkerLoggingAvLivshendelse(livshendelse);
 
         when (livshendelse.endringstype) {
-            Endringstype.OPPRETTET -> {
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
                 if (livshendelse.folkeregisteridentifikator?.type == null) {
                     log.error("Mangler folkeregisteridentifikator.type. Ignorerer hendelse ${livshendelse.hendelseid}")
                     tellerFolkeregisteridentifikatorIgnorert.increment()
@@ -204,14 +203,19 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
         }
 
         when (livshendelse.endringstype) {
-            Endringstype.OPPRETTET, Endringstype.ANNULLERT -> {
-                loggeLivshendelse(livshendelse, "Fraflyttingsland: ${livshendelse.innflytting?.fraflyttingsland}")
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
+                sikkerLoggingAvLivshendelse(livshendelse, "Fraflyttingsland: ${livshendelse.innflytting?.fraflyttingsland}")
+                databasetjeneste.lagreHendelse(livshendelse)
+            }
+
+            Endringstype.ANNULLERT -> {
+                sikkerLoggingAvLivshendelse(livshendelse)
                 databasetjeneste.lagreHendelse(livshendelse)
             }
 
             else -> {
                 tellerInnflyttingIgnorert.increment()
-                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET eller ANNULLERT.")
+                sikkerLoggingAvLivshendelse(livshendelse, "Ikke av type OPPRETTET, KORRIGERT, eller ANNULLERT.")
             }
         }
     }
@@ -228,7 +232,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             return
         }
 
-        loggeLivshendelse(livshendelse);
+        sikkerLoggingAvLivshendelse(livshendelse);
 
         when (livshendelse.endringstype) {
             Endringstype.ANNULLERT -> tellerNavnAnnullert.increment()
@@ -253,7 +257,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             }
 
             else -> {
-                log.warn("Ignorerer navnehendelse med id ${livshendelse.hendelseid} av type ${livshendelse.opplysningstype}. Endringstype: ${livshendelse.endringstype}")
+                log.info("Ignorerer navnehendelse med id ${livshendelse.hendelseid} av type ${livshendelse.opplysningstype}. Endringstype: ${livshendelse.endringstype}")
             }
         }
     }
@@ -279,7 +283,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         when (livshendelse.endringstype) {
             Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
-                loggeLivshendelse(livshendelse, "fødselsdato: ${livshendelse.foedsel?.foedselsdato}")
+                sikkerLoggingAvLivshendelse(livshendelse, "fødselsdato: ${livshendelse.foedsel?.foedselsdato}")
                 val fødselsdato = livshendelse.foedsel?.foedselsdato
                 if (fødselsdato == null) {
                     tellerFødselIgnorert.increment()
@@ -295,6 +299,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             }
 
             Endringstype.ANNULLERT -> {
+                sikkerLoggingAvLivshendelse(livshendelse)
                 if (livshendelse.tidligereHendelseid == null) {
                     log.warn("Mottatt annullert fødsel uten tidligereHendelseId, hendelseId ${livshendelse.hendelseid}")
                 } else {
@@ -303,7 +308,8 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             }
 
             else -> {
-                loggeLivshendelse(livshendelse)
+                log.info("Ignorerer livshendelse med id ${livshendelse.hendelseid} av type ${livshendelse.opplysningstype}. Endringstype: ${livshendelse.endringstype}")
+                sikkerLoggingAvLivshendelse(livshendelse)
             }
         }
     }
@@ -328,14 +334,20 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
         }
 
         when (livshendelse.endringstype) {
-            Endringstype.OPPRETTET, Endringstype.ANNULLERT -> {
-                loggeLivshendelse(livshendelse, "utflyttingsdato: ${livshendelse.utflytting?.utflyttingsdato}")
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
+                sikkerLoggingAvLivshendelse(livshendelse, "utflyttingsdato: ${livshendelse.utflytting?.utflyttingsdato}")
+                databasetjeneste.lagreHendelse(livshendelse)
+            }
+
+            Endringstype.ANNULLERT -> {
+                sikkerLoggingAvLivshendelse(livshendelse)
                 databasetjeneste.lagreHendelse(livshendelse)
             }
 
             else -> {
                 tellerUtflyttingIgnorert.increment()
-                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET eller ANNULLERT.")
+                log.info("Ignorerer livshendelse med id ${livshendelse.hendelseid} av type ${livshendelse.opplysningstype}. Endringstype: ${livshendelse.endringstype}")
+                sikkerLoggingAvLivshendelse(livshendelse, "Ikke av type OPPRETTET eller ANNULLERT.")
             }
         }
     }
@@ -360,18 +372,24 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
         }
 
         when (livshendelse.endringstype) {
-            Endringstype.OPPRETTET, Endringstype.KORRIGERT, Endringstype.ANNULLERT -> {
-                loggeLivshendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstand?.bekreftelsesdato}")
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
+                sikkerLoggingAvLivshendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstand?.bekreftelsesdato}")
+                databasetjeneste.lagreHendelse(livshendelse)
+            }
+
+            Endringstype.ANNULLERT -> {
+                sikkerLoggingAvLivshendelse(livshendelse)
                 databasetjeneste.lagreHendelse(livshendelse)
             }
 
             else -> {
-                loggeLivshendelse(livshendelse, "Ikke av type OPPRETTET, KORRIGERT, eller ANNULLERT.")
+                log.info("Ignorerer livshendelse med id ${livshendelse.hendelseid} av type ${livshendelse.opplysningstype}. Endringstype: ${livshendelse.endringstype}")
+                sikkerLoggingAvLivshendelse(livshendelse, "Ikke av type OPPRETTET, KORRIGERT, eller ANNULLERT.")
             }
         }
     }
 
-    private fun loggeLivshendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
+    private fun sikkerLoggingAvLivshendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
         SECURE_LOGGER.info(
             "Livshendelse mottatt: " +
                     "hendelseId: ${livshendelse.hendelseid} " +
@@ -403,17 +421,20 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         const val adressebeskyttelse = "adressebeskyttelse"
         val tellerAdressebeskyttelse: Counter = Metrics.counter(tellernavn(adressebeskyttelse))
-        val tellerAdressebeskyttelseAnnullert: Counter = Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.ANNULLERT.name.lowercase()}"))
-        val tellerAdressebeskyttelseKorrigert: Counter = Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerAdressebeskyttelseAnnullert: Counter =
+            Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerAdressebeskyttelseKorrigert: Counter =
+            Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.KORRIGERT.name.lowercase()}"))
         val tellerAdressebeskyttelseOpphørt: Counter = Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.OPPHOERT.name.lowercase()}"))
-        val tellerAdressebeskyttelseOpprettet: Counter = Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerAdressebeskyttelseOpprettet: Counter =
+            Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.OPPRETTET.name.lowercase()}"))
 
         const val bostedsadresse = "bostedsadresse"
         val tellerBostedsadresse: Counter = Metrics.counter(tellernavn(bostedsadresse))
         val tellerBostedsadresseAnnullert: Counter = Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.ANNULLERT.name.lowercase()}"))
-        val tellerBostedsadresseKorrigert: Counter = Metrics.counter(tellernavn(bostedsadresse+ ".${Endringstype.KORRIGERT.name.lowercase()}"))
-        val tellerBostedsadresseOpphørt: Counter = Metrics.counter(tellernavn(bostedsadresse+ ".${Endringstype.OPPHOERT.name.lowercase()}"))
-        val tellerBostedsadresseOpprettet: Counter = Metrics.counter(tellernavn(bostedsadresse+ ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerBostedsadresseKorrigert: Counter = Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerBostedsadresseOpphørt: Counter = Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerBostedsadresseOpprettet: Counter = Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.OPPRETTET.name.lowercase()}"))
 
         const val dødsfall = "doedsfall"
         val tellerDødsfall: Counter = Metrics.counter(tellernavn(dødsfall))
@@ -425,10 +446,14 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         const val folkeregisteridentifikator = "folkeregisteridentifikator"
         val tellerFolkeregisteridentifikator: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator))
-        val tellerFolkeregisteridentifikatorAnnullert: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.ANNULLERT.name.lowercase()}"))
-        val tellerFolkeregisteridentifikatorKorrigert: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.KORRIGERT.name.lowercase()}"))
-        val tellerFolkeregisteridentifikatorOpphørt: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.OPPHOERT.name.lowercase()}"))
-        val tellerFolkeregisteridentifikatorOpprettet: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerFolkeregisteridentifikatorAnnullert: Counter =
+            Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerFolkeregisteridentifikatorKorrigert: Counter =
+            Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerFolkeregisteridentifikatorOpphørt: Counter =
+            Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerFolkeregisteridentifikatorOpprettet: Counter =
+            Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.OPPRETTET.name.lowercase()}"))
         val tellerFolkeregisteridentifikatorIgnorert: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator + ".ignorert"))
 
         const val fødsel = "foedsel"
