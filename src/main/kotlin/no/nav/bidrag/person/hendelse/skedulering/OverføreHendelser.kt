@@ -49,7 +49,7 @@ open class OverføreHendelser(
     }
 
     private fun henteLoggmelding(antallIdentifiserteHendelser: Int, maksAntallHendelserPerKjøring: Int): String {
-        var melding =  "Fant ${antallIdentifiserteHendelser} livshendelser med status MOTTATT. Antall hendelser per kjøring er begrenset til ${maksAntallHendelserPerKjøring}."
+        var melding =  "Fant ${antallIdentifiserteHendelser} livshendelser med status MOTTATT. Antall hendelser per kjøring er begrenset til ${maksAntallHendelserPerKjøring}. "
         if (antallIdentifiserteHendelser > maksAntallHendelserPerKjøring) {
             return melding + "Overfører ${maksAntallHendelserPerKjøring} hendelser i denne omgang."
         } else {
