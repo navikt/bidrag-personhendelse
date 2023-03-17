@@ -4,5 +4,5 @@ import java.time.LocalDate
 
 data class Foedsel (
     val foedeland: String?  = null,
-    val foedselsdato: LocalDate = LocalDate.now()
+    val foedselsdato: LocalDate? = null
 )
