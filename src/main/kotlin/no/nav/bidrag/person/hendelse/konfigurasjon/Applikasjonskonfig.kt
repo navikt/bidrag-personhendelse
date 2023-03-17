@@ -1,12 +1,10 @@
 package no.nav.bidrag.person.hendelse.konfigurasjon
 
-import net.javacrumbs.shedlock.core.LockProvider
-import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider
 //import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider
+import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock
 import no.nav.bidrag.person.hendelse.konfigurasjon.Applikasjonskonfig.Companion.PROFIL_I_SKY
 import no.nav.bidrag.person.hendelse.konfigurasjon.Applikasjonskonfig.Companion.PROFIL_LOKAL_POSTGRES
-import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory
@@ -30,6 +28,7 @@ open class Applikasjonskonfig {
     open fun servletWebServerFactory(): ServletWebServerFactory {
         return JettyServletWebServerFactory()
     }
+
     companion object {
         const val PROFIL_I_SKY = "i-sky"
         const val PROFIL_LOKAL_POSTGRES = "lokal-postgres"
@@ -44,11 +43,12 @@ open class Applikasjonskonfig {
 open class SchedulerConfiguration {
     @Bean
     open fun lockProvider(dataSource: DataSource): JdbcTemplateLockProvider {
-        return JdbcTemplateLockProvider(JdbcTemplateLockProvider.Configuration.builder()
-            .withTableName("shedlock")
-            .withColumnNames(JdbcTemplateLockProvider.ColumnNames("name", "lock_until", "locked_at", "locked_by"))
-            .withJdbcTemplate(JdbcTemplate(dataSource))
-            .build()
+        return JdbcTemplateLockProvider(
+            JdbcTemplateLockProvider.Configuration.builder()
+                .withTableName("shedlock")
+                .withColumnNames(JdbcTemplateLockProvider.ColumnNames("name", "lock_until", "locked_at", "locked_by"))
+                .withJdbcTemplate(JdbcTemplate(dataSource))
+                .build()
         )
     }
 }
