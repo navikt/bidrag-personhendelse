@@ -25,27 +25,30 @@ open class OverføreHendelser(
         var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
         log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før ${sisteStatusoppdateringFør}")
 
-        var idTilHendelserSomSkalVideresendes = databasetjeneste.henteIdTilHendelserMedStatusMottatMedStatustidspunktFør(sisteStatusoppdateringFør)
-        log.info(henteLoggmelding(idTilHendelserSomSkalVideresendes.size, egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen))
+        var hendelserKlarTilOverføring = databasetjeneste.henteIdTilHendelserMedStatusMottatMedStatustidspunktFør(sisteStatusoppdateringFør)
+        log.info(henteLoggmelding(hendelserKlarTilOverføring.size, egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen))
 
         // Begrenser antall, og setter status til UNDER_PROSESSERING for hendelsene som skal videresendes
-        idTilHendelserSomSkalVideresendes.take(egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen).forEach{
+        var hendelserSomOverføresIDenneOmgang = hendelserKlarTilOverføring.take(egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
+        hendelserSomOverføresIDenneOmgang.forEach{
             databasetjeneste.oppdatereStatus(it, Status.UNDER_PROSESSERING)
         }
 
-        for (id in idTilHendelserSomSkalVideresendes.iterator()) {
+        var antallOverført =0
+        for (id in hendelserSomOverføresIDenneOmgang.iterator()) {
             var mottattHendelse = databasetjeneste.henteHendelse(id)
             if (mottattHendelse.isPresent) {
                 try {
                     meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, mottattHendelse.get().hendelse)
                     databasetjeneste.oppdatereStatus(id, Status.OVERFØRT)
+                    antallOverført++
                 } catch (ofe: OverføringFeiletException) {
                     databasetjeneste.oppdatereStatus(id, Status.OVERFØRING_FEILET)
                 }
             }
         }
 
-        if (idTilHendelserSomSkalVideresendes.isNotEmpty()) log.info("Overføring fullført (for antall: ${idTilHendelserSomSkalVideresendes.size}")
+        if (hendelserKlarTilOverføring.isNotEmpty() && antallOverført > 0) log.info("Overføring fullført (for antall: $antallOverført)")
     }
 
     private fun henteLoggmelding(antallIdentifiserteHendelser: Int, maksAntallHendelserPerKjøring: Int): String {

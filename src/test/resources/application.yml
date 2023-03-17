@@ -43,6 +43,7 @@ egenskaper:
   generelt:
     antall-minutter-forsinket-videresending: 120
     antallDagerLevetidForUtgåtteHendelser: ${DAGER_LEVETID_UTGÅTTE_HENDELSER}
+    maksAntallMeldingerSomOverfoeresTilBisysOmGangen: 1
   wmq:
     host: ${WMQ_HOST}
     port: ${WMQ_PORT}

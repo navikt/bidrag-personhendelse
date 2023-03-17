@@ -1,19 +1,15 @@
 package no.nav.bidrag.person.hendelse.integrasjon.distribusjon
 
-import io.kotest.assertions.any
 import io.mockk.MockKAnnotations
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import no.nav.bidrag.person.hendelse.database.HendelsemottakDao
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
-import no.nav.bidrag.person.hendelse.integrasjon.mottak.Livshendelsemottak
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jms.core.JmsTemplate
 
 @ExtendWith(MockKExtension::class)
