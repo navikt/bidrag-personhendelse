@@ -10,6 +10,9 @@ env:
   GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 jobs:
   deploy-to-prod:
+    permissions:
+      contents: "read"
+      id-token: "write"
     name: Bygg app/image, push til github, deploy til prod-gcp
     runs-on: ubuntu-latest
     steps:
