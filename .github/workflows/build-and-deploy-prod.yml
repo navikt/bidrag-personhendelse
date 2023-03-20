@@ -4,8 +4,6 @@ on:
     branches:
       - main
 env:
-  IMAGE: ghcr.io/navikt/bidrag-person-hendelse:${{ github.sha }}
-  IMAGE_LATEST: ghcr.io/navikt/bidrag-person-hendelse:latest
   GITHUB_USERNAME: x-access-token
   GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 jobs:
@@ -36,9 +34,7 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: .nais/preprod.yaml
-      - name: Push Docker image med 'latest' tag
-        if: github.ref == 'refs/heads/main'
-        run: docker push ${IMAGE_LATEST}
+          IMAGE: ${{ steps.docker-push.outputs.image }}
       - name: Deploy til prod-gcp
         if: github.ref == 'refs/heads/main'
         uses: nais/deploy/actions/deploy@v1
@@ -46,3 +42,4 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
           RESOURCE: .nais/prod.yaml
+          IMAGE: ${{ steps.docker-push.outputs.image }}
