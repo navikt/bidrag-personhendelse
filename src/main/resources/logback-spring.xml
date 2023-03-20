@@ -55,6 +55,10 @@
 
     <logger name="no.nav.bidrag.person.hendelse" level="INFO"/>
 
+    <logger name="com.zaxxer.hikari" level="debug" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
     <logger name="secureLogger" level="INFO" additivity="false" >
         <appender-ref ref="secureLog" />
     </logger>
