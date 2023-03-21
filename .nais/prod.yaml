@@ -15,14 +15,14 @@ spec:
       enabled: true
   liveness:
     path: /internal/health
-    initialDelay: 90
+    initialDelay: 50
     failureThreshold: 10
     timeoutSeconds: 10
   readiness:
     path: /internal/health
-    initialDelay: 90
+    initialDelay: 50
     failureThreshold: 10
-    timeoutSeconds: 10
+    timeoutSeconds: 15
   prometheus:
     enabled: true
     path: /internal/prometheus
