@@ -16,17 +16,16 @@ import javax.jms.JMSException
 @Configuration
 open class Jmskonfig(var wmq: Wmq) {
 
-    @Bean
-    open fun cachingConnectionFactory(): CachingConnectionFactory {
+    fun createCachingConnectionFactory(): CachingConnectionFactory {
         var cachingConnectionFactory = CachingConnectionFactory()
-        cachingConnectionFactory().sessionCacheSize = 10
-        cachingConnectionFactory().targetConnectionFactory = forbindelsefabrikk()
+        cachingConnectionFactory.sessionCacheSize = 10
+        cachingConnectionFactory.targetConnectionFactory = forbindelsefabrikk()
         return cachingConnectionFactory
     }
 
     @Bean
     open fun jmsTemplate(): JmsTemplate {
-        return JmsTemplate(cachingConnectionFactory())
+        return JmsTemplate(createCachingConnectionFactory())
     }
 
     @Throws(JMSException::class)
