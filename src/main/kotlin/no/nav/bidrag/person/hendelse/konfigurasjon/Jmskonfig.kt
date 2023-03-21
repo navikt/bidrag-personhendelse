@@ -4,6 +4,7 @@ import com.ibm.msg.client.jms.JmsConnectionFactory
 import com.ibm.msg.client.jms.JmsFactoryFactory
 import com.ibm.msg.client.wmq.WMQConstants
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
+import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jms.annotation.EnableJms
