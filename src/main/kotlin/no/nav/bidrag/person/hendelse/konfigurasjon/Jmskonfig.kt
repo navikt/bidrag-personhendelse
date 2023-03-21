@@ -4,16 +4,30 @@ import com.ibm.msg.client.jms.JmsConnectionFactory
 import com.ibm.msg.client.jms.JmsFactoryFactory
 import com.ibm.msg.client.wmq.WMQConstants
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Wmq
-import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jms.annotation.EnableJms
+import org.springframework.jms.connection.CachingConnectionFactory
 import org.springframework.jms.core.JmsTemplate
 import javax.jms.JMSException
+
 
 @EnableJms
 @Configuration
 open class Jmskonfig(var wmq: Wmq) {
+
+    @Bean
+    open fun cachingConnectionFactory(): CachingConnectionFactory {
+        var cachingConnectionFactory = CachingConnectionFactory()
+        cachingConnectionFactory().sessionCacheSize = 10
+        cachingConnectionFactory().targetConnectionFactory = forbindelsefabrikk()
+        return cachingConnectionFactory
+    }
+
+    @Bean
+    open fun jmsTemplate(): JmsTemplate {
+        return JmsTemplate(cachingConnectionFactory())
+    }
 
     @Throws(JMSException::class)
     fun forbindelsefabrikk(): JmsConnectionFactory {
@@ -32,10 +46,5 @@ open class Jmskonfig(var wmq: Wmq) {
         forbindelsefabrikk.setStringProperty(WMQConstants.PASSWORD, wmq.password)
 
         return forbindelsefabrikk
-    }
-
-    @Bean
-    open fun jmsTemplate(): JmsTemplate {
-        return JmsTemplate(forbindelsefabrikk())
     }
 }
