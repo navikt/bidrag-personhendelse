@@ -11,7 +11,6 @@ import org.springframework.jms.connection.CachingConnectionFactory
 import org.springframework.jms.core.JmsTemplate
 import javax.jms.JMSException
 
-
 @EnableJms
 @Configuration
 open class Jmskonfig(var wmq: Wmq) {
