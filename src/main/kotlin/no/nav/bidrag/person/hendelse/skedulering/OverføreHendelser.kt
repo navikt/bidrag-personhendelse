@@ -3,15 +3,12 @@ package no.nav.bidrag.person.hendelse.skedulering
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.Status
-import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
-import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
 import no.nav.bidrag.person.hendelse.prosess.Meldingstjeneste
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Component
@@ -27,7 +24,7 @@ open class OverføreHendelser(
         var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
         log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før ${sisteStatusoppdateringFør}")
 
-        var hendelserKlarTilOverføring = databasetjeneste.henteIdTilHendelserMedStatusMottatMedStatustidspunktFør(sisteStatusoppdateringFør)
+        var hendelserKlarTilOverføring = databasetjeneste.henteIdTilHendelserSomErKlarTilOverføring(sisteStatusoppdateringFør)
         log.info(henteLoggmelding(hendelserKlarTilOverføring.size, egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen))
 
         // Begrenser antall, og setter status til UNDER_PROSESSERING for hendelsene som skal videresendes

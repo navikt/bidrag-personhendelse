@@ -12,7 +12,7 @@ import java.util.*
 @Service
 open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
 
-    open fun henteIdTilHendelserMedStatusMottatMedStatustidspunktFør(statustidspunktFør: LocalDateTime): Set<Long> {
+    open fun henteIdTilHendelserSomErKlarTilOverføring(statustidspunktFør: LocalDateTime): Set<Long> {
         return hendelsemottakDao.idTilHendelserSomErKlarTilOverføring(statustidspunktFør)
     }
 
