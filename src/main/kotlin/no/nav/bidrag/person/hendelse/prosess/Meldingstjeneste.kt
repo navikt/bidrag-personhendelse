@@ -5,7 +5,6 @@ import no.nav.bidrag.person.hendelse.database.Status
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
 import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
-import no.nav.bidrag.person.hendelse.skedulering.OverføreHendelser
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,7 +16,7 @@ open class Meldingstjeneste(
 ) {
 
     @Transactional
-    open fun sendeMeldinger(meldingsider: List<Long>) {
+    open fun sendeMeldinger(meldingsider: List<Long>): Int {
         var antallOverført = 0
         for (id in meldingsider.iterator()) {
             var mottattHendelse = databasetjeneste.henteHendelse(id)
@@ -32,6 +31,6 @@ open class Meldingstjeneste(
             }
         }
 
-        if (meldingsider.isNotEmpty() && antallOverført > 0) OverføreHendelser.log.info("Overføring fullført (for antall: $antallOverført)")
+        return antallOverført
     }
 }

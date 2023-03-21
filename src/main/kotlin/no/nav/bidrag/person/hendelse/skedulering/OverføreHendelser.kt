@@ -36,7 +36,8 @@ open class OverføreHendelser(
             databasetjeneste.oppdatereStatus(it, Status.UNDER_PROSESSERING)
         }
 
-        meldingstjeneste.sendeMeldinger(hendelserSomOverføresIDenneOmgang)
+        var antallOverført: Int = meldingstjeneste.sendeMeldinger(hendelserSomOverføresIDenneOmgang)
+        log.info("Overføring fullført (for antall: $antallOverført)")
     }
 
     private fun henteLoggmelding(antallIdentifiserteHendelser: Int, maksAntallHendelserPerKjøring: Int): String {
