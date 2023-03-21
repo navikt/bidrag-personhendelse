@@ -17,10 +17,12 @@ spec:
     path: /internal/health
     initialDelay: 90
     failureThreshold: 10
+    timeoutSeconds: 10
   readiness:
     path: /internal/health
     initialDelay: 90
     failureThreshold: 10
+    timeoutSeconds: 10
   prometheus:
     enabled: true
     path: /internal/prometheus
