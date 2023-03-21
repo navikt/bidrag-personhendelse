@@ -10,6 +10,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Component
@@ -34,8 +35,13 @@ open class OverføreHendelser(
             databasetjeneste.oppdatereStatus(it, Status.UNDER_PROSESSERING)
         }
 
+        sendeMeldinger(hendelserSomOverføresIDenneOmgang)
+    }
+
+    @Transactional
+    open fun sendeMeldinger(meldingsider: List<Long>) {
         var antallOverført =0
-        for (id in hendelserSomOverføresIDenneOmgang.iterator()) {
+        for (id in meldingsider.iterator()) {
             var mottattHendelse = databasetjeneste.henteHendelse(id)
             if (mottattHendelse.isPresent) {
                 try {
@@ -48,7 +54,7 @@ open class OverføreHendelser(
             }
         }
 
-        if (hendelserKlarTilOverføring.isNotEmpty() && antallOverført > 0) log.info("Overføring fullført (for antall: $antallOverført)")
+        if (meldingsider.isNotEmpty() && antallOverført > 0) log.info("Overføring fullført (for antall: $antallOverført)")
     }
 
     private fun henteLoggmelding(antallIdentifiserteHendelser: Int, maksAntallHendelserPerKjøring: Int): String {
