@@ -4,18 +4,16 @@ import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.jms.core.JmsTemplate
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
 @Component
 open class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
-    
+
     fun sendeMelding(mottakerkoe: String, melding: String) {
         secureLogger.info("Sender melding til {} med innhold: {}", mottakerkoe, melding)
         try {
-            jmsTemplate.send(mottakerkoe) { s -> s.createTextMessage(melding) }
-        } catch(e:Exception) {
+            jmsTemplate.convertAndSend(mottakerkoe, melding)
+        } catch (e: Exception) {
             logger.error("Sending av melding til WMQ feilet med feilmelding '{}'", e.message)
             throw e.message?.let { OverføringFeiletException(it) }!!
         }
