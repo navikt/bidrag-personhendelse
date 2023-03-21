@@ -11,6 +11,7 @@ import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
 import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
+import no.nav.bidrag.person.hendelse.prosess.Meldingstjeneste
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,6 +37,8 @@ open class OverføreHendelserTest {
 
     @MockK
     lateinit var meldingsprodusent: Meldingsprodusent
+
+    lateinit var meldingstjeneste: Meldingstjeneste
     lateinit var overføreHendelser: OverføreHendelser
 
     @BeforeEach
@@ -44,7 +47,8 @@ open class OverføreHendelserTest {
         clearAllMocks()
         databasetjeneste = Databasetjeneste(hendelsemottakDao)
         hendelsemottakDao.deleteAll()
-        overføreHendelser = OverføreHendelser(databasetjeneste, egenskaper, meldingsprodusent)
+        meldingstjeneste = Meldingstjeneste(databasetjeneste, egenskaper, meldingsprodusent)
+        overføreHendelser = OverføreHendelser(databasetjeneste, egenskaper, meldingstjeneste)
         every { meldingsprodusent.sendeMelding(any(), any()) } returns Unit
     }
 

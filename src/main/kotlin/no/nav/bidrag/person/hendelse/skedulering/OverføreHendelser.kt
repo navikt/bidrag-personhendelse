@@ -6,6 +6,7 @@ import no.nav.bidrag.person.hendelse.database.Status
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
 import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
+import no.nav.bidrag.person.hendelse.prosess.Meldingstjeneste
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
@@ -17,7 +18,7 @@ import java.time.LocalDateTime
 open class OverføreHendelser(
     open val databasetjeneste: Databasetjeneste,
     open val egenskaper: Egenskaper,
-    open val meldingsprodusent: Meldingsprodusent
+    open val meldingstjeneste: Meldingstjeneste
 ) {
 
     @Scheduled(cron = "\${kjøreplan.overføre_hendelser}")
@@ -35,26 +36,7 @@ open class OverføreHendelser(
             databasetjeneste.oppdatereStatus(it, Status.UNDER_PROSESSERING)
         }
 
-        sendeMeldinger(hendelserSomOverføresIDenneOmgang)
-    }
-
-    @Transactional
-    open fun sendeMeldinger(meldingsider: List<Long>) {
-        var antallOverført =0
-        for (id in meldingsider.iterator()) {
-            var mottattHendelse = databasetjeneste.henteHendelse(id)
-            if (mottattHendelse.isPresent) {
-                try {
-                    meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, mottattHendelse.get().hendelse)
-                    databasetjeneste.oppdatereStatus(id, Status.OVERFØRT)
-                    antallOverført++
-                } catch (ofe: OverføringFeiletException) {
-                    databasetjeneste.oppdatereStatus(id, Status.OVERFØRING_FEILET)
-                }
-            }
-        }
-
-        if (meldingsider.isNotEmpty() && antallOverført > 0) log.info("Overføring fullført (for antall: $antallOverført)")
+        meldingstjeneste.sendeMeldinger(hendelserSomOverføresIDenneOmgang)
     }
 
     private fun henteLoggmelding(antallIdentifiserteHendelser: Int, maksAntallHendelserPerKjøring: Int): String {
