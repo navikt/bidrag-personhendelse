@@ -11,7 +11,6 @@ import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
 import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
-import no.nav.bidrag.person.hendelse.prosess.Meldingstjeneste
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,9 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
-import kotlin.test.Ignore
 
-@Ignore
 @ActiveProfiles(Testkonfig.PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
 open class OverføreHendelserTest {
@@ -40,7 +37,6 @@ open class OverføreHendelserTest {
     @MockK
     lateinit var meldingsprodusent: Meldingsprodusent
 
-    lateinit var meldingstjeneste: Meldingstjeneste
     lateinit var overføreHendelser: OverføreHendelser
 
     @BeforeEach
@@ -49,9 +45,8 @@ open class OverføreHendelserTest {
         clearAllMocks()
         databasetjeneste = Databasetjeneste(hendelsemottakDao)
         hendelsemottakDao.deleteAll()
-        meldingstjeneste = Meldingstjeneste(databasetjeneste, egenskaper, meldingsprodusent)
-        overføreHendelser = OverføreHendelser(databasetjeneste, egenskaper, meldingstjeneste)
-        every { meldingsprodusent.sendeMeldingerMedExecute(any(), any()) } returns 1
+        overføreHendelser = OverføreHendelser(databasetjeneste, egenskaper, meldingsprodusent)
+        every { meldingsprodusent.sendeMeldinger(any(), any()) } returns 1
     }
 
     @Test
@@ -91,15 +86,15 @@ open class OverføreHendelserTest {
         var oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedStatusOverført.statustidspunkt)
 
-        every { meldingsprodusent.sendeMeldingerMedExecute(any(), any()) } throws OverføringFeiletException("auda!")
+        every { meldingsprodusent.sendeMeldinger(any(), any()) } throws OverføringFeiletException("auda!")
 
         // hvis
         overføreHendelser.overføreHendelserTilBisys()
 
         // så
-        val meldingTilKø = slot<String>()
-        verify(exactly = 1) { meldingsprodusent.sendeMeldingerMedExecute(egenskaper.wmq.queueNameLivshendelser, listOf(capture(meldingTilKø))) }
-        assertThat(meldingTilKø.captured).contains(hendelseMottattUtenforVenteperiode.hendelseid)
+        val meldingerTilKø = slot<List<String>>()
+        verify(exactly = 1) { meldingsprodusent.sendeMeldinger(egenskaper.wmq.queueNameLivshendelser, capture(meldingerTilKø)) }
+        assertThat(meldingerTilKø.captured[0]).contains(hendelseMottattUtenforVenteperiode.hendelseid)
         assertThat(databasetjeneste.henteHendelse(lagretHendelseVenteperiodeUtløpt.id).get().status).isEqualTo(Status.OVERFØRING_FEILET)
     }
 
@@ -144,9 +139,9 @@ open class OverføreHendelserTest {
         overføreHendelser.overføreHendelserTilBisys()
 
         // så
-        val meldingTilKø = slot<String>()
-        verify(exactly = 1) { meldingsprodusent.sendeMeldingerMedExecute(egenskaper.wmq.queueNameLivshendelser, listOf(capture(meldingTilKø))) }
-        assertThat(meldingTilKø.captured).contains(hendelseMottattUtenforVenteperiode.hendelseid)
+        val meldingerTilKø = slot<List<String>>()
+        verify(exactly = 1) { meldingsprodusent.sendeMeldinger(egenskaper.wmq.queueNameLivshendelser, capture(meldingerTilKø)) }
+        assertThat(meldingerTilKø.captured[0]).contains(hendelseMottattUtenforVenteperiode.hendelseid)
     }
 
     @Test
@@ -178,10 +173,10 @@ open class OverføreHendelserTest {
         overføreHendelser.overføreHendelserTilBisys()
 
         // så
-        val meldingTilKø = slot<String>()
+        val meldingerTilKø =  slot<List<String>>()
         // Maks antall satt i test application.yml (egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
-        verify(exactly = 1) { meldingsprodusent.sendeMeldingerMedExecute(egenskaper.wmq.queueNameLivshendelser, listOf(capture(meldingTilKø))) }
-        assertThat(meldingTilKø.captured).contains(hendelse1.hendelseid)
+        verify(exactly = 1) { meldingsprodusent.sendeMeldinger(egenskaper.wmq.queueNameLivshendelser, capture(meldingerTilKø)) }
+        assertThat(meldingerTilKø.captured[0]).contains(hendelse1.hendelseid)
     }
 
     companion object {

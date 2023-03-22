@@ -31,7 +31,7 @@ class MeldingsprodusentTest {
 
         every { jmsTemplate.send(any())} throws Exception("auda!")
         assertThrows<OverføringFeiletException>{
-            meldingsprodusent.sendeMelding("", "")
+            meldingsprodusent.sendeMeldinger("", listOf(""))
         }
     }
 }

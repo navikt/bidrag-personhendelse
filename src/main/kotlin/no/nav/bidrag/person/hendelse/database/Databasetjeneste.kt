@@ -36,7 +36,6 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
         hendelsemottakDao.deleteByIdIn(ider)
     }
 
-    @Transactional
     open fun oppdatereStatus(id: Long, nyStatus: Status) {
         var hendelse = hendelsemottakDao.findById(id)
         if (hendelse.isPresent) {
@@ -44,6 +43,13 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
             hendelsemottak.status = nyStatus
             hendelsemottak.statustidspunkt = LocalDateTime.now()
             hendelsemottakDao.save(hendelsemottak)
+        }
+    }
+
+    @Transactional
+    open fun oppdatereStatus(ider: List<Long>, nyStatus: Status)  {
+        for(id in ider) {
+            oppdatereStatus(id, nyStatus)
         }
     }
 
