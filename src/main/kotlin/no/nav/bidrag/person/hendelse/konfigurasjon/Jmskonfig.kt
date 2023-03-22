@@ -17,7 +17,7 @@ open class Jmskonfig(var wmq: Wmq) {
 
     fun createCachingConnectionFactory(): CachingConnectionFactory {
         var cachingConnectionFactory = CachingConnectionFactory()
-        cachingConnectionFactory.sessionCacheSize = 10
+        cachingConnectionFactory.sessionCacheSize = 1
         cachingConnectionFactory.targetConnectionFactory = forbindelsefabrikk()
         return cachingConnectionFactory
     }
