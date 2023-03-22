@@ -33,7 +33,7 @@ open class OverføreHendelser(
             databasetjeneste.oppdatereStatus(it, Status.UNDER_PROSESSERING)
         }
 
-        var antallOverført: Int = meldingstjeneste.sendeMeldinger(hendelserSomOverføresIDenneOmgang)
+        var antallOverført: Int = meldingstjeneste.sendeMeldingerMedExecute(hendelserSomOverføresIDenneOmgang)
         log.info("Overføring fullført (for antall: $antallOverført)")
     }
 

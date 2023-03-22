@@ -20,6 +20,10 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
         return hendelsemottakDao.findById(id)
     }
 
+    fun henteHendelser(ider: List<Long>) : MutableList<Hendelsemottak> {
+        return hendelsemottakDao.findAllById(ider)
+    }
+
     fun hendelseFinnesIDatabasen(hendelseid: String, opplysningstype: Livshendelse.Opplysningstype): Boolean {
         return hendelsemottakDao.existsByHendelseidAndOpplysningstype(hendelseid, opplysningstype)
     }

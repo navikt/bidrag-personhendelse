@@ -33,4 +33,10 @@ open class Meldingstjeneste(
 
         return antallOverført
     }
+
+    open fun sendeMeldingerMedExecute(meldingsider: List<Long>): Int {
+        return meldingsprodusent.sendeMeldingerMedExecute(
+            egenskaper.wmq.queueNameLivshendelser,
+            databasetjeneste.henteHendelser(meldingsider).map { it.hendelse })
+    }
 }
