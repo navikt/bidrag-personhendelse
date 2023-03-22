@@ -5,6 +5,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Component
+import javax.jms.Session
 
 @Component
 open class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
@@ -12,6 +13,8 @@ open class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
     fun sendeMelding(mottakerkoe: String, melding: String) {
         secureLogger.info("Sender melding til {} med innhold: {}", mottakerkoe, melding)
         try {
+            jmsTemplate.sessionAcknowledgeMode = Session.AUTO_ACKNOWLEDGE
+            jmsTemplate.isSessionTransacted = false
             jmsTemplate.convertAndSend(mottakerkoe, melding)
         } catch (e: Exception) {
             logger.error("Sending av melding til WMQ feilet med feilmelding '{}'", e.message)
