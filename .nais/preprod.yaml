@@ -32,11 +32,11 @@ spec:
     cpuThresholdPercentage: 70
   resources:
     limits:
-      memory: 4096Mi
-      cpu: "4"
+      memory: 2Gi
+      cpu: 2
     requests:
-      memory: 2048Mi
-      cpu: 1200m
+      memory: 1Gi
+      cpu: 200m
   ingresses:
     - https://bidrag-person-hendelse.intern.dev.nav.no
   envFrom:

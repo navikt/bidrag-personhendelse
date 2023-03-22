@@ -10,6 +10,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Component
@@ -19,6 +20,7 @@ open class OverføreHendelser(
     open val meldingsprodusent: Meldingsprodusent
 ) {
 
+    @Transactional
     @Scheduled(cron = "\${kjøreplan.overføre_hendelser}")
     @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "PT10M", lockAtMostFor = "PT30M")
     open fun overføreHendelserTilBisys() {
@@ -30,9 +32,6 @@ open class OverføreHendelser(
 
         // Begrenser antall, og setter status til UNDER_PROSESSERING for hendelsene som skal videresendes
         var hendelserSomOverføresIDenneOmgang = hendelserKlarTilOverføring.take(egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
-        hendelserSomOverføresIDenneOmgang.forEach {
-            databasetjeneste.oppdatereStatus(it, Status.UNDER_PROSESSERING)
-        }
 
         try {
             var antallOverført: Int = meldingsprodusent.sendeMeldinger(
