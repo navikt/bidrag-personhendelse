@@ -29,14 +29,14 @@ spec:
   replicas:
     min: 2
     max: 2
-    cpuThresholdPercentage: 50
+    cpuThresholdPercentage: 70
   resources:
     limits:
-      memory: 2048Mi
-      cpu: "2"
+      memory: 4096Mi
+      cpu: "4"
     requests:
-      memory: 1024Mi
-      cpu: 200m
+      memory: 2048Mi
+      cpu: 1200m
   ingresses:
     - https://bidrag-person-hendelse.intern.dev.nav.no
   envFrom:
