@@ -30,7 +30,7 @@ open class OverføreHendelser(
         var hendelserKlarTilOverføring = databasetjeneste.henteIdTilHendelserSomErKlarTilOverføring(sisteStatusoppdateringFør)
         log.info(henteLoggmelding(hendelserKlarTilOverføring.size, egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen))
 
-        // Begrenser antall, og setter status til UNDER_PROSESSERING for hendelsene som skal videresendes
+        // Begrenser antall hendelser som skal videresendes
         var hendelserSomOverføresIDenneOmgang = hendelserKlarTilOverføring.take(egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
 
         try {
