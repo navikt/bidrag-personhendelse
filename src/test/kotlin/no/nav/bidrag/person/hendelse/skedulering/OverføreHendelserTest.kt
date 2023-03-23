@@ -36,6 +36,7 @@ open class OverføreHendelserTest {
 
     @MockK
     lateinit var meldingsprodusent: Meldingsprodusent
+
     lateinit var overføreHendelser: OverføreHendelser
 
     @BeforeEach
@@ -45,7 +46,7 @@ open class OverføreHendelserTest {
         databasetjeneste = Databasetjeneste(hendelsemottakDao)
         hendelsemottakDao.deleteAll()
         overføreHendelser = OverføreHendelser(databasetjeneste, egenskaper, meldingsprodusent)
-        every { meldingsprodusent.sendeMelding(any(), any()) } returns Unit
+        every { meldingsprodusent.sendeMeldinger(any(), any()) } returns 1
     }
 
     @Test
@@ -85,15 +86,15 @@ open class OverføreHendelserTest {
         var oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedStatusOverført.statustidspunkt)
 
-        every { meldingsprodusent.sendeMelding(any(), any()) } throws OverføringFeiletException("auda!")
+        every { meldingsprodusent.sendeMeldinger(any(), any()) } throws OverføringFeiletException("auda!")
 
         // hvis
         overføreHendelser.overføreHendelserTilBisys()
 
         // så
-        val meldingTilKø = slot<String>()
-        verify(exactly = 1) { meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, capture(meldingTilKø)) }
-        assertThat(meldingTilKø.captured).contains(hendelseMottattUtenforVenteperiode.hendelseid)
+        val meldingerTilKø = slot<List<String>>()
+        verify(exactly = 1) { meldingsprodusent.sendeMeldinger(egenskaper.wmq.queueNameLivshendelser, capture(meldingerTilKø)) }
+        assertThat(meldingerTilKø.captured[0]).contains(hendelseMottattUtenforVenteperiode.hendelseid)
         assertThat(databasetjeneste.henteHendelse(lagretHendelseVenteperiodeUtløpt.id).get().status).isEqualTo(Status.OVERFØRING_FEILET)
     }
 
@@ -138,9 +139,9 @@ open class OverføreHendelserTest {
         overføreHendelser.overføreHendelserTilBisys()
 
         // så
-        val meldingTilKø = slot<String>()
-        verify(exactly = 1) { meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, capture(meldingTilKø)) }
-        assertThat(meldingTilKø.captured).contains(hendelseMottattUtenforVenteperiode.hendelseid)
+        val meldingerTilKø = slot<List<String>>()
+        verify(exactly = 1) { meldingsprodusent.sendeMeldinger(egenskaper.wmq.queueNameLivshendelser, capture(meldingerTilKø)) }
+        assertThat(meldingerTilKø.captured[0]).contains(hendelseMottattUtenforVenteperiode.hendelseid)
     }
 
     @Test
@@ -172,10 +173,10 @@ open class OverføreHendelserTest {
         overføreHendelser.overføreHendelserTilBisys()
 
         // så
-        val meldingTilKø = slot<String>()
+        val meldingerTilKø =  slot<List<String>>()
         // Maks antall satt i test application.yml (egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
-        verify(exactly = 1) { meldingsprodusent.sendeMelding(egenskaper.wmq.queueNameLivshendelser, capture(meldingTilKø)) }
-        assertThat(meldingTilKø.captured).contains(hendelse1.hendelseid)
+        verify(exactly = 1) { meldingsprodusent.sendeMeldinger(egenskaper.wmq.queueNameLivshendelser, capture(meldingerTilKø)) }
+        assertThat(meldingerTilKø.captured[0]).contains(hendelse1.hendelseid)
     }
 
     companion object {

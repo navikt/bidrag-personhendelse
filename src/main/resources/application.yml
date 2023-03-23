@@ -74,12 +74,6 @@ funksjonsbrytere:
     cluster: ${NAIS_CLUSTER_NAME}
     applicationName: ${NAIS_APP_NAME}
 
-prosessering:
-  queue:
-    capacity: 10
-  pool:
-    size: 2
-
 kjøreplan:
   overføre_hendelser: ${KJØREPLAN_OVERFØRE_HENDELSER}
   slette_hendelser: ${KJØREPLAN_SLETTE_HENDELSER}

@@ -44,7 +44,6 @@ open class SletteUtgåtteHendelserTest {
         var kansellertHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.KANSELLERT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2) )
         var mottattHendelseInnenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2))
         var mottattHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT,LocalDateTime.now())
-        var hendelseUnderProsesseringOgInnenforSlettevindu = oppretteOgLagreHendelse(Status.UNDER_PROSESSERING,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2))
         var overførtHendelse1 = oppretteOgLagreHendelse(Status.OVERFØRT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1) )
         var overførtHendelse2 = oppretteOgLagreHendelse(Status.OVERFØRT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2) )
         var overførtHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.OVERFØRT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2) )
@@ -59,7 +58,6 @@ open class SletteUtgåtteHendelserTest {
             assertThat(hendelsemottakDao.findById(kansellertHendelseUtenforSlettevindu.id)).isPresent
             assertThat(hendelsemottakDao.findById(mottattHendelseInnenforSlettevindu.id)).isPresent
             assertThat(hendelsemottakDao.findById(mottattHendelseUtenforSlettevindu.id)).isPresent
-            assertThat(hendelsemottakDao.findById(hendelseUnderProsesseringOgInnenforSlettevindu.id)).isPresent
             assertThat(hendelsemottakDao.findById(overførtHendelse1.id)).isEmpty
             assertThat(hendelsemottakDao.findById(overførtHendelse2.id)).isEmpty
             assertThat(hendelsemottakDao.findById(overførtHendelseUtenforSlettevindu.id)).isPresent

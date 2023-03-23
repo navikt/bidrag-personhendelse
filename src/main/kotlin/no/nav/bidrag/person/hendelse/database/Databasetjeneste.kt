@@ -12,12 +12,16 @@ import java.util.*
 @Service
 open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
 
-    open fun henteIdTilHendelserMedStatusMottatMedStatustidspunktFør(statustidspunktFør: LocalDateTime): Set<Long> {
-        return hendelsemottakDao.idTilHendelserMedStatusMottatMedStatustidspunktFør(statustidspunktFør)
+    open fun henteIdTilHendelserSomErKlarTilOverføring(statustidspunktFør: LocalDateTime): Set<Long> {
+        return hendelsemottakDao.idTilHendelserSomErKlarTilOverføring(statustidspunktFør)
     }
 
     fun henteHendelse(id: Long): Optional<Hendelsemottak> {
         return hendelsemottakDao.findById(id)
+    }
+
+    fun henteHendelser(ider: List<Long>) : MutableList<Hendelsemottak> {
+        return hendelsemottakDao.findAllById(ider)
     }
 
     fun hendelseFinnesIDatabasen(hendelseid: String, opplysningstype: Livshendelse.Opplysningstype): Boolean {
@@ -32,7 +36,6 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
         hendelsemottakDao.deleteByIdIn(ider)
     }
 
-    @Transactional
     open fun oppdatereStatus(id: Long, nyStatus: Status) {
         var hendelse = hendelsemottakDao.findById(id)
         if (hendelse.isPresent) {
@@ -40,6 +43,13 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
             hendelsemottak.status = nyStatus
             hendelsemottak.statustidspunkt = LocalDateTime.now()
             hendelsemottakDao.save(hendelsemottak)
+        }
+    }
+
+    @Transactional
+    open fun oppdatereStatus(ider: List<Long>, nyStatus: Status)  {
+        for(id in ider) {
+            oppdatereStatus(id, nyStatus)
         }
     }
 

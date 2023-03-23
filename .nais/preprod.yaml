@@ -17,23 +17,25 @@ spec:
     path: /internal/health
     initialDelay: 50
     failureThreshold: 10
+    timeoutSeconds: 15
   readiness:
     path: /internal/health
     initialDelay: 50
     failureThreshold: 10
+    timeoutSeconds: 15
   prometheus:
     enabled: true
     path: /internal/prometheus
   replicas:
     min: 2
     max: 2
-    cpuThresholdPercentage: 50
+    cpuThresholdPercentage: 70
   resources:
     limits:
-      memory: 2048Mi
+      memory: 2Gi
       cpu: "2"
     requests:
-      memory: 1024Mi
+      memory: 1Gi
       cpu: 200m
   ingresses:
     - https://bidrag-person-hendelse.intern.dev.nav.no
