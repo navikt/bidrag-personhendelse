@@ -22,7 +22,7 @@ open class OverføreHendelser(
 
     @Transactional
     @Scheduled(cron = "\${kjøreplan.overføre_hendelser}")
-    @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "PT10M", lockAtMostFor = "PT30M")
+    @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "PT2M", lockAtMostFor = "PT10M")
     open fun overføreHendelserTilBisys() {
         var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
         log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før ${sisteStatusoppdateringFør}")
