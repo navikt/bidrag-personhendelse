@@ -67,7 +67,7 @@ open class SletteUtgåtteHendelserTest {
     private fun oppretteOgLagreHendelse(status: Status, statustidspunkt: LocalDateTime): Hendelsemottak {
         var hendelseid1 = UUID.randomUUID().toString()
         var hendelseMottattUtenforVenteperiode =
-            Livshendelse(hendelseid1, Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1, Livshendelse.Endringstype.OPPRETTET, personidenter)
+            Livshendelse(hendelseid1, Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1, Livshendelse.Endringstype.OPPRETTET, personidenter, LocalDateTime.now())
         var kansellertHendelseSomSkalSlettes = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
         kansellertHendelseSomSkalSlettes.status = status
         kansellertHendelseSomSkalSlettes.statustidspunkt = statustidspunkt

@@ -56,6 +56,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             opplysningstype,
             konvertereEndringstype(personhendelse.endringstype),
             personhendelse.personidenter?.stream()?.map(CharSequence::toString)?.collect(Collectors.toList()),
+            LocalDateTime.ofInstant(personhendelse.opprettet, ZoneId.systemDefault()),
             personhendelse.tidligereHendelseId?.toString(),
             henteDødsdato(personhendelse.doedsfall),
             henteFlyttedato(personhendelse.bostedsadresse),
@@ -68,7 +69,6 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             henteVerge(personhendelse.vergemaalEllerFremtidsfullmakt),
             henteAdressebeskyttelse(personhendelse.adressebeskyttelse),
             cr.offset(),
-            LocalDateTime.ofInstant(personhendelse.opprettet, ZoneId.systemDefault()),
             personhendelse.master.toString()
         )
 
