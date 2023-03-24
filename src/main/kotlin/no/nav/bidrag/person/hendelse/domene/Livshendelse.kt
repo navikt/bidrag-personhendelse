@@ -24,7 +24,7 @@ data class Livshendelse(
     val verge: VergeEllerFremtidsfullmakt? = null,
     val adressebeskyttelse: Gradering? = null,
     val offset: Long = 0L,
-    val opprettet: LocalDateTime = LocalDateTime.now(),
+    val opprettet: LocalDateTime,
     val master: String = "PDL"
 
 ) {
