@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -97,7 +98,7 @@ class LivshendelsebehandlerTest {
         foedsel: Foedsel
     ): Livshendelse {
         return Livshendelse(
-            hendelseId, opplysningstype, endringstype, personidenter, null, null, null, null, foedsel
+            hendelseId, opplysningstype, endringstype, personidenter, LocalDateTime.now(), null, null, null, null, foedsel
         )
     }
 
@@ -107,7 +108,7 @@ class LivshendelsebehandlerTest {
         endringstype: Endringstype,
         dødsdato: LocalDate
     ): Livshendelse {
-        return Livshendelse(hendelseId, opplysningstype, endringstype, personidenter, null, dødsdato)
+        return Livshendelse(hendelseId, opplysningstype, endringstype, personidenter, LocalDateTime.now(), null, dødsdato)
     }
 
     fun oppretteLivshendelseForUtflytting(
@@ -117,7 +118,7 @@ class LivshendelsebehandlerTest {
         utflytting: Utflytting
     ): Livshendelse {
         return Livshendelse(
-            hendelseId, opplysningstype, endringstype, personidenter, null, null, null,
+            hendelseId, opplysningstype, endringstype, personidenter, LocalDateTime.now(), null, null, null,
             null, null, null, null, utflytting
         )
     }
@@ -129,7 +130,7 @@ class LivshendelsebehandlerTest {
         sivilstand: Sivilstand
     ): Livshendelse {
         return Livshendelse(
-            hendelseId, opplysningstype, endringstype, personidenter, null, null, null,
+            hendelseId, opplysningstype, endringstype, personidenter, LocalDateTime.now(), null, null, null,
             null, null, null, null, null, sivilstand
         )
     }

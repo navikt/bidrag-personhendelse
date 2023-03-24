@@ -50,12 +50,18 @@ open class OverføreHendelserTest {
     }
 
     @Test
-    fun `skal sette status til OVERFØRING_FEILET dersom exception oppstår under sending`(){
+    fun `skal sette status til OVERFØRING_FEILET dersom exception oppstår under sending`() {
 
         // gitt
         var hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
         var hendelseMottattUtenforVenteperiode =
-            Livshendelse(hendelseid1, Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1, Livshendelse.Endringstype.OPPRETTET, personidenter)
+            Livshendelse(
+                hendelseid1,
+                Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
+                Livshendelse.Endringstype.OPPRETTET,
+                personidenter,
+                LocalDateTime.now()
+            )
         var lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
         lagretHendelseVenteperiodeUtløpt.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
@@ -67,11 +73,12 @@ open class OverføreHendelserTest {
             hendelseid2,
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
-            personidenter
+            personidenter,
+            LocalDateTime.now()
         )
         var lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
         lagretHendelserVenteperiodeIkkeUtløpt.statustidspunkt =
-            LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() -5)
+            LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 5)
         var oppdatertHendelseVenteperiodeIkkeUtløpt = hendelsemottakDao.save(lagretHendelserVenteperiodeIkkeUtløpt)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseVenteperiodeIkkeUtløpt.statustidspunkt)
 
@@ -80,7 +87,8 @@ open class OverføreHendelserTest {
             hendelseid3,
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
-            personidenter
+            personidenter,
+            LocalDateTime.now()
         )
         var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
         var oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
@@ -104,7 +112,13 @@ open class OverføreHendelserTest {
         // gitt
         var hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
         var hendelseMottattUtenforVenteperiode =
-            Livshendelse(hendelseid1, Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1, Livshendelse.Endringstype.OPPRETTET, personidenter)
+            Livshendelse(
+                hendelseid1,
+                Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
+                Livshendelse.Endringstype.OPPRETTET,
+                personidenter,
+                LocalDateTime.now()
+            )
         var lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
         lagretHendelseVenteperiodeUtløpt.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
@@ -116,11 +130,12 @@ open class OverføreHendelserTest {
             hendelseid2,
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
-            personidenter
+            personidenter,
+            LocalDateTime.now()
         )
         var lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
         lagretHendelserVenteperiodeIkkeUtløpt.statustidspunkt =
-            LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() -5)
+            LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 5)
         var oppdatertHendelseVenteperiodeIkkeUtløpt = hendelsemottakDao.save(lagretHendelserVenteperiodeIkkeUtløpt)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseVenteperiodeIkkeUtløpt.statustidspunkt)
 
@@ -129,7 +144,8 @@ open class OverføreHendelserTest {
             hendelseid3,
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
-            personidenter
+            personidenter,
+            LocalDateTime.now()
         )
         var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
         var oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
@@ -150,7 +166,13 @@ open class OverføreHendelserTest {
         // gitt
         var hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
         var hendelse1 =
-            Livshendelse(hendelseid1, Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1, Livshendelse.Endringstype.OPPRETTET, personidenter)
+            Livshendelse(
+                hendelseid1,
+                Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
+                Livshendelse.Endringstype.OPPRETTET,
+                personidenter,
+                LocalDateTime.now()
+            )
         var lagretHendelse1 = databasetjeneste.lagreHendelse(hendelse1)
         lagretHendelse1.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
@@ -162,18 +184,19 @@ open class OverføreHendelserTest {
             hendelseid2,
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
-            personidenter
+            personidenter,
+            LocalDateTime.now()
         )
         var lagretHendelse2 = databasetjeneste.lagreHendelse(hendelse2)
         lagretHendelse2.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 2)
-         hendelsemottakDao.save(lagretHendelse2)
+        hendelsemottakDao.save(lagretHendelse2)
 
         // hvis
         overføreHendelser.overføreHendelserTilBisys()
 
         // så
-        val meldingerTilKø =  slot<List<String>>()
+        val meldingerTilKø = slot<List<String>>()
         // Maks antall satt i test application.yml (egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
         verify(exactly = 1) { meldingsprodusent.sendeMeldinger(egenskaper.wmq.queueNameLivshendelser, capture(meldingerTilKø)) }
         assertThat(meldingerTilKø.captured[0]).contains(hendelse1.hendelseid)

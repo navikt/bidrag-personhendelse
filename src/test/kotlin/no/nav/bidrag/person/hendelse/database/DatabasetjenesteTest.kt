@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import java.time.LocalDateTime
 
 @ActiveProfiles(PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
@@ -38,7 +39,13 @@ open class DatabasetjenesteTest {
         // gitt
         var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
         var opprinneligHendelse =
-            Livshendelse(hendelseidOpprinneligHendelse, Opplysningstype.BOSTEDSADRESSE_V1, Endringstype.OPPRETTET, personidenter)
+            Livshendelse(
+                hendelseidOpprinneligHendelse,
+                Opplysningstype.BOSTEDSADRESSE_V1,
+                Endringstype.OPPRETTET,
+                personidenter,
+                LocalDateTime.now(),
+            )
         var lagretOpprinneligHendelse = databasetjeneste.lagreHendelse(opprinneligHendelse)
 
         var hendelseidAnnulleringshendelse = "38468520-70f2-40c0-b4ae-6c765c307a7d"
@@ -47,6 +54,7 @@ open class DatabasetjenesteTest {
             Opplysningstype.BOSTEDSADRESSE_V1,
             Endringstype.ANNULLERT,
             personidenter,
+            LocalDateTime.now(),
             hendelseidOpprinneligHendelse
         )
 
@@ -71,7 +79,7 @@ open class DatabasetjenesteTest {
         // gitt
         var hendelseid = "c096ca6f-9801-4543-9a44-116f4ed806ce"
         var hendelse =
-            Livshendelse(hendelseid, Opplysningstype.BOSTEDSADRESSE_V1, Endringstype.OPPHOERT, personidenter)
+            Livshendelse(hendelseid, Opplysningstype.BOSTEDSADRESSE_V1, Endringstype.OPPHOERT, personidenter, LocalDateTime.now())
 
         // hvis
         var lagretHendelse = databasetjeneste.lagreHendelse(hendelse)
@@ -95,6 +103,7 @@ open class DatabasetjenesteTest {
             Opplysningstype.BOSTEDSADRESSE_V1,
             Endringstype.ANNULLERT,
             personidenter,
+            LocalDateTime.now(),
             hendelseidOpprinneligHendelse
         )
 

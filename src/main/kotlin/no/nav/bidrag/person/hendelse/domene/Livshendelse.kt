@@ -12,6 +12,7 @@ data class Livshendelse(
     val opplysningstype: Opplysningstype,
     val endringstype: Endringstype,
     val personidenter: List<String>?,
+    val opprettet: LocalDateTime,
     val tidligereHendelseid: String? = null,
     val doedsdato: LocalDate? = null,
     val flyttedato: LocalDate? = LocalDate.now(),
@@ -24,7 +25,6 @@ data class Livshendelse(
     val verge: VergeEllerFremtidsfullmakt? = null,
     val adressebeskyttelse: Gradering? = null,
     val offset: Long = 0L,
-    val opprettet: LocalDateTime = LocalDateTime.now(),
     val master: String = "PDL"
 
 ) {
