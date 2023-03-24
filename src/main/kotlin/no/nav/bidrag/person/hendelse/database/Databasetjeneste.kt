@@ -84,6 +84,7 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
                 livshendelse.hendelseid,
                 livshendelse.opplysningstype,
                 livshendelse.endringstype,
+                livshendelse.opprettet,
                 listeMedPersonidenter?.joinToString { it },
                 livshendelse.tidligereHendelseid,
                 Livshendelse.tilJson(livshendelse),

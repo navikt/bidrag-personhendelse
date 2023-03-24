@@ -12,6 +12,8 @@ data class Hendelsemottak(
     val opplysningstype: Livshendelse.Opplysningstype? = null,
     @Enumerated(EnumType.STRING)
     val endringstype: Livshendelse.Endringstype? = null,
+    @Column(name = "opprettet", nullable = false, updatable = false)
+    val opprettet: LocalDateTime = LocalDateTime.now(),
     @Column(name = "personidenter", nullable = true)
     val personidenter: String? = null,
     val tidligereHendelseid: String? = null,
@@ -23,9 +25,6 @@ data class Hendelsemottak(
     @Enumerated(EnumType.STRING)
     var status: Status = Status.MOTTATT,
     var statustidspunkt: LocalDateTime = LocalDateTime.now(),
-
-    @Column(name = "opprettet", nullable = false, updatable = false)
-    val opprettet: LocalDateTime = LocalDateTime.now(),
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
