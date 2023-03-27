@@ -74,9 +74,16 @@ funksjonsbrytere:
     cluster: ${NAIS_CLUSTER_NAME}
     applicationName: ${NAIS_APP_NAME}
 
-kjøreplan:
-  overføre_hendelser: ${KJØREPLAN_OVERFØRE_HENDELSER}
-  slette_hendelser: ${KJØREPLAN_SLETTE_HENDELSER}
+overføre_hendelser:
+  kjøreplan: ${OVERFØRE_HENDELSER_KJØREPLAN}
+  låse_jobb:
+      min: ${OVERFØRE_HENDELSER_LÅS_MIN}
+      max: ${OVERFØRE_HENDELSER_LÅS_MAX}
+slette_hendelser:
+  kjøreplan: ${KJØREPLAN_SLETTE_HENDELSER}
+  låse_jobb:
+    min: ${SLETTE_HENDELSER_LÅS_MIN}
+    max: ${SLETTE_HENDELSER_LÅS_MAX}
 
 management:
   endpoint.health.show-details: always

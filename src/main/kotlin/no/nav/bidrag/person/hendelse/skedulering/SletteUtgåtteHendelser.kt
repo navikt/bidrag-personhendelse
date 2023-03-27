@@ -15,8 +15,12 @@ open class SletteUtgåtteHendelser(
     open val databasetjeneste: Databasetjeneste,
     open val egenskaper: Egenskaper
 ) {
-    @Scheduled(cron = "\${kjøreplan.slette_hendelser}")
-    @SchedulerLock(name = "slette_hendelser", lockAtLeastFor = "PT30S", lockAtMostFor = "PT1M")
+    @Scheduled(cron = "\${slette_hendelser.kjøreplan}")
+    @SchedulerLock(
+        name = "slette_hendelser",
+        lockAtLeastFor = "\${slette_hendelser.låse_jobb.min}",
+        lockAtMostFor = "\${slette_hendelser.låse_jobb.max}"
+    )
     open fun sletteUtgåtteHendelserFraDatabase() {
 
         var statusoppdateringFør = LocalDate.now().atStartOfDay().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong())
@@ -26,7 +30,7 @@ open class SletteUtgåtteHendelser(
         var kansellerteHendelser = databasetjeneste.henteHendelserider(Status.KANSELLERT, statusoppdateringFør)
         var overførteHendelser = databasetjeneste.henteHendelserider(Status.OVERFØRT, statusoppdateringFør)
 
-        log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen" )
+        log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen")
 
         databasetjeneste.sletteHendelser(kansellerteHendelser)
         log.info("Slettet ${kansellerteHendelser.size} kansellerte hendelser")

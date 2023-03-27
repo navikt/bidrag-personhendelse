@@ -8,7 +8,7 @@ import no.nav.bidrag.person.hendelse.database.HendelsemottakDao
 import no.nav.bidrag.person.hendelse.database.Status
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
-import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
+import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.BisysMeldingsprodusjon
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
 import org.assertj.core.api.Assertions.assertThat
@@ -35,7 +35,7 @@ open class OverføreHendelserTest {
     lateinit var egenskaper: Egenskaper
 
     @MockK
-    lateinit var meldingsprodusent: Meldingsprodusent
+    lateinit var meldingsprodusent: BisysMeldingsprodusjon
 
     lateinit var overføreHendelser: OverføreHendelser
 

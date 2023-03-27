@@ -17,13 +17,13 @@ class MeldingsprodusentTest {
 
     @MockK
     lateinit var jmsTemplate: JmsTemplate
-    lateinit var meldingsprodusent: Meldingsprodusent
+    lateinit var meldingsprodusent: BisysMeldingsprodusjon
 
     @BeforeEach
     internal fun oppsett() {
         MockKAnnotations.init(this)
         clearAllMocks()
-        meldingsprodusent = Meldingsprodusent(jmsTemplate)
+        meldingsprodusent = BisysMeldingsprodusjon(jmsTemplate)
     }
 
     @Test

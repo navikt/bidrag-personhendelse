@@ -4,7 +4,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.Status
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
-import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
+import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.BisysMeldingsprodusjon
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,12 +17,12 @@ import java.time.LocalDateTime
 open class OverføreHendelser(
     open val databasetjeneste: Databasetjeneste,
     open val egenskaper: Egenskaper,
-    open val meldingsprodusent: Meldingsprodusent
+    open val meldingsprodusent: BisysMeldingsprodusjon
 ) {
 
     @Transactional
-    @Scheduled(cron = "\${kjøreplan.overføre_hendelser}")
-    @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "PT2M", lockAtMostFor = "PT10M")
+    @Scheduled(cron = "\${overføre_hendelser.kjøreplan}")
+    @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "\${overføre_hendelser.lås.min}", lockAtMostFor = "\${overføre_hendelser.lås.max}")
     open fun overføreHendelserTilBisys() {
         var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
         log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før ${sisteStatusoppdateringFør}")

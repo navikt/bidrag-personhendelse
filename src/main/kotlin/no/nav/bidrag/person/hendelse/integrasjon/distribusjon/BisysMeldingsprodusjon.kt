@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import javax.jms.Queue
 
 @Component
-open class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
+open class BisysMeldingsprodusjon(private val jmsTemplate: JmsTemplate) {
 
     fun sendeMeldinger(mottakerkoe: String, hendelser: List<String>) : Int {
 
@@ -34,7 +34,7 @@ open class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
     }
 
     companion object {
-        private val logger: Logger = LoggerFactory.getLogger(Meldingsprodusent::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(BisysMeldingsprodusjon::class.java)
         private val secureLogger: Logger = LoggerFactory.getLogger("secureLogger")
     }
 }
