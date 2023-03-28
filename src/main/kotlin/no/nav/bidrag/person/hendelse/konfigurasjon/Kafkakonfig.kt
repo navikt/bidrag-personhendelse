@@ -35,7 +35,6 @@ import java.time.Duration
 open class Kafkakonfig(val kafka: Kafka) {
 
     @Primary
-    @ConfigurationPropertiesScan
     @ConfigurationProperties("spring.kafka")
     data class Kafka(
         val bootstrapServers: String
