@@ -1,12 +1,10 @@
 name: Deploy Bidrag kafka topics to dev
-
 on:
   push:
     branches-ignore:
       - main
     paths:
       - '.nais/kafka/personhendelse.v1/topic_preprod.yml'
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
