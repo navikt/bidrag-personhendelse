@@ -5,7 +5,7 @@ on:
     branches-ignore:
       - main
     paths:
-      - .nais/kafka/personhendelse.v1/topic_preprod.yml
+      - '.nais/kafka/personhendelse.v1/topic_preprod.yml'
 
 jobs:
   deploy:
