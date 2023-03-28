@@ -16,7 +16,6 @@ import org.springframework.kafka.core.ProducerFactory
 
 @Configuration
 @Profile("lokal")
-@ConfigurationPropertiesScan
 open class KafkaTestdataProdusentkonfig(val kafka: Kafkakonfig.Kafka) {
 
     @Bean

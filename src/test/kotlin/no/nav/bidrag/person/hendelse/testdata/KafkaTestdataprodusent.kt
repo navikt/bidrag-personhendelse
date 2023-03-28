@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.kafka.core.KafkaTemplate
 
 @Profile("lokal")
-class KafkaTestdataprodusent(
+class  KafkaTestdataprodusent(
     @Qualifier("testdata") val kafkaTemplateTestdata: KafkaTemplate<String, String>
 ) {
 

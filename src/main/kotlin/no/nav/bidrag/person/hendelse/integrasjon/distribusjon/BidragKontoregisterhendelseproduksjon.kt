@@ -12,7 +12,7 @@ class BidragKontoregisterhendelseproduksjon(val kafkaTemplate: KafkaTemplate<Str
 
     fun publisereEndringsmeldingTilBidragTopic(endringsmelding: Endringsmelding) {
         kafkaTemplate.send(BIDRAG_PERSONHENDELSE_TOPIC, endringsmelding.kontohaver.toString()).get(30, TimeUnit.SECONDS)
-        LOG.debug("Endringsmelding sendt til ${BIDRAG_PERSONHENDELSE_TOPIC}")
+        LOG.info("Endringsmelding sendt til ${BIDRAG_PERSONHENDELSE_TOPIC}")
     }
 
     companion object {

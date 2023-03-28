@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 import org.springframework.core.env.Environment
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
@@ -33,6 +34,7 @@ import java.time.Duration
 )
 open class Kafkakonfig(val kafka: Kafka) {
 
+    @Primary
     @ConfigurationPropertiesScan
     @ConfigurationProperties("spring.kafka")
     data class Kafka(
