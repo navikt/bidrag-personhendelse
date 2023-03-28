@@ -16,5 +16,5 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
-          RESOURCE: .nais/kafka/personhendelse.v1/topic_prod.yaml
+          RESOURCE: .nais/kafka/personhendelse.v1/topic_prod.yml
           PRINT_PAYLOAD: true

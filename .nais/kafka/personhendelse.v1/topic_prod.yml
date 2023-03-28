@@ -9,7 +9,7 @@ metadata:
     dcat.data.nav.no/title: "Personhendelser for Bidrag"
     dcat.data.nav.no/description: "Personhendelser av interesser for Bidrag"
     kafka.nais.io/removeDataWhenResourceIsDeleted: "true"
-    
+
 spec:
   pool: nav-prod
   config: # optional; all fields are optional too; defaults shown
