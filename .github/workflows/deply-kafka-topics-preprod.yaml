@@ -1,0 +1,22 @@
+name: Deploy Bidrag kafka topics to dev
+
+on:
+  push:
+    branches:
+      - '!main'
+    paths:
+      - .nais/kafka/personhendelse.v1/topic_preprod.yaml
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: deploy Bidrag personhendelse Kafka topic to dev
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/kafka/personhendelse.v1/topic_preprod.yaml
+          PRINT_PAYLOAD: true

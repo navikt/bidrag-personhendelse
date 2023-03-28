@@ -1,20 +1,28 @@
 package no.nav.bidrag.person.hendelse.konfigurasjon
 
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
-import no.nav.person.pdl.aktor.v2.Aktor
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.OffsetResetStrategy
+import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.kafka.core.DefaultKafkaProducerFactory
+import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.listener.ContainerProperties
+import org.springframework.kafka.support.serializer.JsonSerializer
 import java.time.Duration
+
 
 @EnableKafka
 @Configuration
@@ -23,7 +31,13 @@ import java.time.Duration
     havingValue = "true",
     matchIfMissing = true
 )
-open class Kafkakonfig {
+open class Kafkakonfig(val kafka: Kafka) {
+
+    @ConfigurationPropertiesScan
+    @ConfigurationProperties("spring.kafka")
+    data class Kafka(
+        val bootstrapServers: String
+    )
 
     @Bean
     open fun kafkaLeesahListenerContainerFactory(
@@ -42,5 +56,19 @@ open class Kafkakonfig {
         )
         factory.setCommonErrorHandler(kafkaOmstartFeilhåndterer)
         return factory
+    }
+
+    @Bean
+    open fun producerFactory(): ProducerFactory<String, String> {
+        val configProps: MutableMap<String, Any> = HashMap()
+        configProps[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafka.bootstrapServers
+        configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
+        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
+        return DefaultKafkaProducerFactory(configProps)
+    }
+
+    @Bean
+    open fun kafkaTemplate(): KafkaTemplate<String, String> {
+        return KafkaTemplate(producerFactory())
     }
 }

@@ -99,7 +99,6 @@ egenskaper:
   generelt:
     antallMinutterForsinketVideresending: 120
     antallDagerLevetidForUtgaatteHendelser: ${DAGER_LEVETID_UTGÅTTE_HENDELSER}
-
   wmq:
     host: ${WMQ_HOST}
     port: ${WMQ_PORT}
