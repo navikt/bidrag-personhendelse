@@ -26,3 +26,6 @@ spec:
     - team: bidrag
       application: bidrag-aktoerregister
       access: read
+    - team: bidrag
+      application: bidrag-kafka-manager
+      access: read
