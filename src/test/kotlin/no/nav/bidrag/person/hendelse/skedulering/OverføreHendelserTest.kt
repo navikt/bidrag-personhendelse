@@ -1,7 +1,11 @@
 package no.nav.bidrag.person.hendelse.skedulering
 
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.clearAllMocks
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
+import io.mockk.verify
 import no.nav.bidrag.person.hendelse.Teststarter
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.HendelsemottakDao
@@ -51,7 +55,6 @@ open class OverføreHendelserTest {
 
     @Test
     fun `skal sette status til OVERFØRING_FEILET dersom exception oppstår under sending`() {
-
         // gitt
         var hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
         var hendelseMottattUtenforVenteperiode =
@@ -108,7 +111,6 @@ open class OverføreHendelserTest {
 
     @Test
     fun skalOverføreHendelserMedStatusMottattOgUtløptVentetid() {
-
         // gitt
         var hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
         var hendelseMottattUtenforVenteperiode =
@@ -162,7 +164,6 @@ open class OverføreHendelserTest {
 
     @Test
     fun `skal ikke overføre flere hendelser enn maks antall om gangen`() {
-
         // gitt
         var hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
         var hendelse1 =
@@ -177,7 +178,6 @@ open class OverføreHendelserTest {
         lagretHendelse1.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
         hendelsemottakDao.save(lagretHendelse1)
-
 
         var hendelseid2 = "38468520-70f2-40c0-b4ae-6c765c307a7d"
         var hendelse2 = Livshendelse(

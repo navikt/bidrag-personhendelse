@@ -1,7 +1,6 @@
 package no.nav.bidrag.person.hendelse.konfigurasjon
 
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
-import no.nav.person.pdl.aktor.v2.Aktor
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.OffsetResetStrategy

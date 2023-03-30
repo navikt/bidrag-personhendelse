@@ -1,6 +1,15 @@
 package no.nav.bidrag.person.hendelse.integrasjon.mottak
 
-import no.nav.bidrag.person.hendelse.domene.*
+import no.nav.bidrag.person.hendelse.domene.Foedsel
+import no.nav.bidrag.person.hendelse.domene.Folkeregisteridentifikator
+import no.nav.bidrag.person.hendelse.domene.Innflytting
+import no.nav.bidrag.person.hendelse.domene.Livshendelse
+import no.nav.bidrag.person.hendelse.domene.Navn
+import no.nav.bidrag.person.hendelse.domene.OriginaltNavn
+import no.nav.bidrag.person.hendelse.domene.Sivilstand
+import no.nav.bidrag.person.hendelse.domene.Utflytting
+import no.nav.bidrag.person.hendelse.domene.VergeEllerFremtidsfullmakt
+import no.nav.bidrag.person.hendelse.domene.VergeEllerFullmektig
 import no.nav.bidrag.person.hendelse.exception.HendelsemottakException
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import no.nav.person.pdl.leesah.Endringstype
@@ -102,7 +111,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             } catch (iae: IllegalArgumentException) {
                 log.error("Mottok ukjent endringstype ({}) fra PDL", pdlEndringstype.name)
                 iae.printStackTrace()
-                throw HendelsemottakException("Ukjent endringstype: ${pdlEndringstype}")
+                throw HendelsemottakException("Ukjent endringstype: $pdlEndringstype")
             }
         }
     }
@@ -117,9 +126,9 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
 
     private fun henteDødsdato(doedsfall: Doedsfall?): LocalDate? {
         return if (doedsfall == null) {
-            null;
+            null
         } else {
-            doedsfall.doedsdato;
+            doedsfall.doedsdato
         }
     }
 
@@ -170,7 +179,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             var originaltNavn = OriginaltNavn(
                 navn.originaltNavn?.fornavn?.toString(),
                 navn.originaltNavn?.mellomnavn?.toString(),
-                navn.originaltNavn?.etternavn?.toString(),
+                navn.originaltNavn?.etternavn?.toString()
             )
             Navn(navn.fornavn?.toString(), navn.mellomnavn?.toString(), navn.etternavn?.toString(), originaltNavn, navn.gyldigFraOgMed)
         }
@@ -196,7 +205,6 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (verge == null) {
             null
         } else {
-
             var vergeEllerFullmektig = VergeEllerFullmektig(
                 verge.vergeEllerFullmektig?.motpartsPersonident?.toString(),
                 verge.vergeEllerFullmektig?.omfang.toString(),
@@ -211,4 +219,3 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         val log: Logger = LoggerFactory.getLogger(Livshendelsemottak::class.java)
     }
 }
-

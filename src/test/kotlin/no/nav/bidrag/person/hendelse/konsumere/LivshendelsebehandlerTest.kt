@@ -4,16 +4,19 @@ import io.mockk.clearAllMocks
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
-import no.nav.bidrag.person.hendelse.domene.*
+import no.nav.bidrag.person.hendelse.domene.Foedsel
+import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
+import no.nav.bidrag.person.hendelse.domene.Sivilstand
+import no.nav.bidrag.person.hendelse.domene.Utflytting
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LivshendelsebehandlerTest {
@@ -41,7 +44,10 @@ class LivshendelsebehandlerTest {
         val hendelseId = UUID.randomUUID().toString()
         val livshendelse =
             oppretteLivshendelseForUtflytting(
-                hendelseId, Opplysningstype.UTFLYTTING_FRA_NORGE, Endringstype.OPPRETTET, Utflytting("SWE", null, LocalDate.now())
+                hendelseId,
+                Opplysningstype.UTFLYTTING_FRA_NORGE,
+                Endringstype.OPPRETTET,
+                Utflytting("SWE", null, LocalDate.now())
             )
 
         service.prosesserNyHendelse(livshendelse)

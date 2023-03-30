@@ -11,6 +11,6 @@ class KafkaTestdataprodusent(
 
     val topicLivshendelser: String = "aapen-person-pdl-leesah-v1"
     fun sendeMelding(melding: String) {
-        kafkaTemplateTestdata.send(topicLivshendelser, melding);
+        kafkaTemplateTestdata.send(topicLivshendelser, melding)
     }
 }
