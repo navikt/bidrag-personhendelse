@@ -23,7 +23,7 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
 
     @Query(
         "select ha.id from Hendelsemottak ha " +
-                "where ha.status = no.nav.bidrag.person.hendelse.database.Status.MOTTATT and ha.statustidspunkt < :statustidspunktFør"
+            "where ha.status = no.nav.bidrag.person.hendelse.database.Status.MOTTATT and ha.statustidspunkt < :statustidspunktFør"
     )
     fun idTilHendelserSomErKlarTilOverføring(statustidspunktFør: LocalDateTime): Set<Long>
 

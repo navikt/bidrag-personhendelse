@@ -2,7 +2,6 @@ package no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-
 @ConfigurationProperties(prefix = "egenskaper")
 data class Egenskaper(val generelt: Generelt, val wmq: Wmq)
 

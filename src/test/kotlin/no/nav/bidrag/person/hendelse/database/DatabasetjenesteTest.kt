@@ -35,7 +35,6 @@ open class DatabasetjenesteTest {
     @Test
     @Transactional
     fun skalKansellereTidligereOgNyHendelseVedAnnulleringDersomTidligereHendelseIkkeErOverført() {
-
         // gitt
         var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
         var opprinneligHendelse =
@@ -44,7 +43,7 @@ open class DatabasetjenesteTest {
                 Opplysningstype.BOSTEDSADRESSE_V1,
                 Endringstype.OPPRETTET,
                 personidenter,
-                LocalDateTime.now(),
+                LocalDateTime.now()
             )
         var lagretOpprinneligHendelse = databasetjeneste.lagreHendelse(opprinneligHendelse)
 
@@ -75,7 +74,6 @@ open class DatabasetjenesteTest {
 
     @Test
     fun `skal kansellere opphør av bostedsadresse`() {
-
         // gitt
         var hendelseid = "c096ca6f-9801-4543-9a44-116f4ed806ce"
         var hendelse =
@@ -93,7 +91,6 @@ open class DatabasetjenesteTest {
     @Test
     @Transactional
     fun tidligereHendelseidFinnesIkkeIDatabasen() {
-
         // gitt
         var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
 

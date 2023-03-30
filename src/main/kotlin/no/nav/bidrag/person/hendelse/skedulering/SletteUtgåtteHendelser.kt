@@ -18,15 +18,14 @@ open class SletteUtgåtteHendelser(
     @Scheduled(cron = "\${kjøreplan.slette_hendelser}")
     @SchedulerLock(name = "slette_hendelser", lockAtLeastFor = "PT30S", lockAtMostFor = "PT1M")
     open fun sletteUtgåtteHendelserFraDatabase() {
-
         var statusoppdateringFør = LocalDate.now().atStartOfDay().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong())
 
-        log.info("Ser etter utgåtte livshendelser med siste statusoppdatering før ${statusoppdateringFør} som skal slettes fra databasen.")
+        log.info("Ser etter utgåtte livshendelser med siste statusoppdatering før $statusoppdateringFør som skal slettes fra databasen.")
 
         var kansellerteHendelser = databasetjeneste.henteHendelserider(Status.KANSELLERT, statusoppdateringFør)
         var overførteHendelser = databasetjeneste.henteHendelserider(Status.OVERFØRT, statusoppdateringFør)
 
-        log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen" )
+        log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen")
 
         databasetjeneste.sletteHendelser(kansellerteHendelser)
         log.info("Slettet ${kansellerteHendelser.size} kansellerte hendelser")

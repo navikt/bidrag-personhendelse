@@ -11,8 +11,7 @@ import javax.jms.Queue
 @Component
 open class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
 
-    fun sendeMeldinger(mottakerkoe: String, hendelser: List<String>) : Int {
-
+    fun sendeMeldinger(mottakerkoe: String, hendelser: List<String>): Int {
         var antallOverført = 0
 
         val producerCallback = ProducerCallback { session, producer ->

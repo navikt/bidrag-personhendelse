@@ -25,7 +25,7 @@ open class OverføreHendelser(
     @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "PT2M", lockAtMostFor = "PT10M")
     open fun overføreHendelserTilBisys() {
         var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
-        log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før ${sisteStatusoppdateringFør}")
+        log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før $sisteStatusoppdateringFør")
 
         var hendelserKlarTilOverføring = databasetjeneste.henteIdTilHendelserSomErKlarTilOverføring(sisteStatusoppdateringFør)
         log.info(henteLoggmelding(hendelserKlarTilOverføring.size, egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen))
@@ -36,23 +36,24 @@ open class OverføreHendelser(
         try {
             var antallOverført: Int = meldingsprodusent.sendeMeldinger(
                 egenskaper.wmq.queueNameLivshendelser,
-                databasetjeneste.henteHendelser(hendelserSomOverføresIDenneOmgang).map { it.hendelse })
+                databasetjeneste.henteHendelser(hendelserSomOverføresIDenneOmgang).map { it.hendelse }
+            )
             databasetjeneste.oppdatereStatus(hendelserSomOverføresIDenneOmgang, Status.OVERFØRT)
             log.info("Overføring fullført (for antall: $antallOverført)")
         } catch (ofe: OverføringFeiletException) {
             databasetjeneste.oppdatereStatus(hendelserSomOverføresIDenneOmgang, Status.OVERFØRING_FEILET)
-            log.error("Overføring av $hendelserSomOverføresIDenneOmgang meldinger feilet");
+            log.error("Overføring av $hendelserSomOverføresIDenneOmgang meldinger feilet")
         }
     }
 
     private fun henteLoggmelding(antallIdentifiserteHendelser: Int, maksAntallHendelserPerKjøring: Int): String {
         var melding =
-            "Fant ${antallIdentifiserteHendelser} livshendelser med status MOTTATT. Antall hendelser per kjøring er begrenset til ${maksAntallHendelserPerKjøring}. "
+            "Fant $antallIdentifiserteHendelser livshendelser med status MOTTATT. Antall hendelser per kjøring er begrenset til $maksAntallHendelserPerKjøring. "
         if (antallIdentifiserteHendelser > maksAntallHendelserPerKjøring) {
-            return melding + "Overfører ${maksAntallHendelserPerKjøring} hendelser i denne omgang."
+            return melding + "Overfører $maksAntallHendelserPerKjøring hendelser i denne omgang."
         } else {
             return if (antallIdentifiserteHendelser > 0) {
-                melding + "Overfører alle de ${antallIdentifiserteHendelser} identifiserte hendelsene."
+                melding + "Overfører alle de $antallIdentifiserteHendelser identifiserte hendelsene."
             } else {
                 melding + "Ingen hendelser å overføre."
             }

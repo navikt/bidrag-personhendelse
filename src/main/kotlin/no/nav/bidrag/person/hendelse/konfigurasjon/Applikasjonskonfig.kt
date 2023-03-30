@@ -34,7 +34,6 @@ open class Applikasjonskonfig {
     }
 }
 
-
 @Configuration
 @Profile(PROFIL_I_SKY, PROFIL_LOKAL_POSTGRES)
 @EnableScheduling
@@ -51,8 +50,3 @@ open class SchedulerConfiguration {
         )
     }
 }
-
-
-
-
-

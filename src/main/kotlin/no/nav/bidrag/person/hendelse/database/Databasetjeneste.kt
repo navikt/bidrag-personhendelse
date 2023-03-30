@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
 
 @Service
 open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
@@ -20,7 +20,7 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
         return hendelsemottakDao.findById(id)
     }
 
-    fun henteHendelser(ider: List<Long>) : MutableList<Hendelsemottak> {
+    fun henteHendelser(ider: List<Long>): MutableList<Hendelsemottak> {
         return hendelsemottakDao.findAllById(ider)
     }
 
@@ -47,22 +47,21 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
     }
 
     @Transactional
-    open fun oppdatereStatus(ider: List<Long>, nyStatus: Status)  {
-        for(id in ider) {
+    open fun oppdatereStatus(ider: List<Long>, nyStatus: Status) {
+        for (id in ider) {
             oppdatereStatus(id, nyStatus)
         }
     }
 
     @Transactional(readOnly = false)
     open fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
-
         var listeMedPersonidenter = livshendelse.personidenter
 
         if (livshendelse.personidenter?.size!! > Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER) {
             listeMedPersonidenter = listeMedPersonidenter?.subList(0, Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER)
             Livshendelsebehandler.log.warn(
                 "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} personidenter. " +
-                        "Kun de ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} første arkiveres."
+                    "Kun de ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} første arkiveres."
             )
         }
 

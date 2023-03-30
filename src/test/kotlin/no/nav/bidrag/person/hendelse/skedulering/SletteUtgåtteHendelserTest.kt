@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ActiveProfiles(Testkonfig.PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
@@ -37,16 +37,15 @@ open class SletteUtgåtteHendelserTest {
 
     @Test
     fun skalSletteKansellerteOgOverførteHendelser() {
-
         // gitt
-        var kansellertHendelse1 = oppretteOgLagreHendelse(Status.KANSELLERT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1) )
-        var kansellertHendelse2 = oppretteOgLagreHendelse(Status.KANSELLERT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2) )
-        var kansellertHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.KANSELLERT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2) )
-        var mottattHendelseInnenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2))
-        var mottattHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT,LocalDateTime.now())
-        var overførtHendelse1 = oppretteOgLagreHendelse(Status.OVERFØRT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1) )
-        var overførtHendelse2 = oppretteOgLagreHendelse(Status.OVERFØRT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2) )
-        var overførtHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.OVERFØRT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2) )
+        var kansellertHendelse1 = oppretteOgLagreHendelse(Status.KANSELLERT, LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1))
+        var kansellertHendelse2 = oppretteOgLagreHendelse(Status.KANSELLERT, LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2))
+        var kansellertHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.KANSELLERT, LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2))
+        var mottattHendelseInnenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT, LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2))
+        var mottattHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT, LocalDateTime.now())
+        var overførtHendelse1 = oppretteOgLagreHendelse(Status.OVERFØRT, LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1))
+        var overførtHendelse2 = oppretteOgLagreHendelse(Status.OVERFØRT, LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2))
+        var overførtHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.OVERFØRT, LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2))
 
         // hvis
         sletteUtgåtteHendelser.sletteUtgåtteHendelserFraDatabase()
