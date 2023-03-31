@@ -62,8 +62,8 @@ spec:
   accessPolicy:
     outbound:
       external:
-        - host: {{ WMQ_HOST }}
+        - host: mpls04.adeo.no
           ports:
             - name: mq
-              port: {{ WMQ_PORT }}
+              port: 1414
               protocol: TCP
