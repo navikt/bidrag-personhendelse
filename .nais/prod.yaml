@@ -59,3 +59,11 @@ spec:
         databases:
           - name: person-hendelse-prod
             envVarPrefix: DB
+  accessPolicy:
+    outbound:
+      external:
+        - host: {{ WMQ_HOST }}
+          ports:
+            - name: mq
+              port: {{ WMQ_PORT }}
+              protocol: TCP
