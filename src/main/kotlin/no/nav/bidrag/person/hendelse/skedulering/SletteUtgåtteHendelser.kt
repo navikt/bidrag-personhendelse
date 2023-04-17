@@ -14,9 +14,12 @@ import java.time.LocalDate
 open class SletteUtgåtteHendelser(
     open val databasetjeneste: Databasetjeneste,
     open val egenskaper: Egenskaper
+
 ) {
+    private val MAKS_SETTSTØRRELSE: Int = 65000
+
     @Scheduled(cron = "\${kjøreplan.slette_hendelser}")
-    @SchedulerLock(name = "slette_hendelser", lockAtLeastFor = "PT30S", lockAtMostFor = "PT1M")
+    @SchedulerLock(name = "slette_hendelser", lockAtLeastFor = "PT30S", lockAtMostFor = "PT5M")
     open fun sletteUtgåtteHendelserFraDatabase() {
         var statusoppdateringFør = LocalDate.now().atStartOfDay().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong())
 
@@ -27,7 +30,14 @@ open class SletteUtgåtteHendelser(
 
         log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen")
 
-        databasetjeneste.sletteHendelser(kansellerteHendelser)
+        if (kansellerteHendelser.size > MAKS_SETTSTØRRELSE) {
+            log.info("Antall hendelser identifisert for sletting oversteg grensen på $MAKS_SETTSTØRRELSE.")
+            var listeMedListeAvHendelseider = kansellerteHendelser.chunked(MAKS_SETTSTØRRELSE)
+            listeMedListeAvHendelseider.forEach { databasetjeneste.sletteHendelser(it.toSet()) }
+        } else {
+            databasetjeneste.sletteHendelser(kansellerteHendelser)
+        }
+
         log.info("Slettet ${kansellerteHendelser.size} kansellerte hendelser")
 
         databasetjeneste.sletteHendelser(overførteHendelser)
