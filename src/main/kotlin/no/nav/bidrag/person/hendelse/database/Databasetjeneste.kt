@@ -32,8 +32,8 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
         return hendelsemottakDao.henteIdTilHendelser(status, statustidspunktFør)
     }
 
-    fun sletteHendelser(ider: Set<Long>) {
-        hendelsemottakDao.deleteByIdIn(ider)
+    fun sletteHendelser(ider: Set<Long>): Long {
+        return hendelsemottakDao.deleteByIdIn(ider)
     }
 
     open fun oppdatereStatus(id: Long, nyStatus: Status) {

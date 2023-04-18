@@ -31,5 +31,5 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     fun henteIdTilHendelser(status: Status, statustidspunktFør: LocalDateTime): Set<Long>
 
     @Transactional
-    fun deleteByIdIn(ider: Set<Long>)
+    fun deleteByIdIn(ider: Set<Long>): Long
 }
