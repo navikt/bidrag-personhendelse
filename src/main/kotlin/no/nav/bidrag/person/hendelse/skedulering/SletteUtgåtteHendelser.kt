@@ -33,7 +33,9 @@ open class SletteUtgåtteHendelser(
         if (kansellerteHendelser.size > MAKS_SETTSTØRRELSE) {
             log.info("Antall hendelser identifisert for sletting oversteg grensen på $MAKS_SETTSTØRRELSE.")
             var listeMedListeAvHendelseider = kansellerteHendelser.chunked(MAKS_SETTSTØRRELSE)
-            listeMedListeAvHendelseider.forEach { databasetjeneste.sletteHendelser(it.toSet()) }
+            listeMedListeAvHendelseider.forEach {
+                log.info("Sletter bolk på ${it.size} hendelser.")
+                databasetjeneste.sletteHendelser(it.toSet()) }
         } else {
             databasetjeneste.sletteHendelser(kansellerteHendelser)
         }
