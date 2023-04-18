@@ -19,7 +19,8 @@ open class SletteUtgåtteHendelser(
     @Scheduled(cron = "\${kjøreplan.slette_hendelser}")
     @SchedulerLock(name = "slette_hendelser", lockAtLeastFor = "PT30S", lockAtMostFor = "PT5M")
     open fun sletteUtgåtteHendelserFraDatabase() {
-        var statusoppdateringFør = LocalDate.now().atStartOfDay().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong())
+        var statusoppdateringFør = LocalDate.now().atStartOfDay()
+            .minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong())
 
         log.info("Ser etter utgåtte livshendelser med siste statusoppdatering før $statusoppdateringFør som skal slettes fra databasen.")
 
@@ -28,21 +29,39 @@ open class SletteUtgåtteHendelser(
 
         log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen")
 
-        if (kansellerteHendelser.size > egenskaper.generelt.bolkstoerrelseVedSletting) {
-            log.info("Antall hendelser identifisert for sletting oversteg grensen på ${egenskaper.generelt.bolkstoerrelseVedSletting}.")
-            var listeMedListeAvHendelseider = kansellerteHendelser.chunked(egenskaper.generelt.bolkstoerrelseVedSletting)
-            listeMedListeAvHendelseider.forEach {
-                log.info("Sletter bolk på ${it.size} hendelser.")
-                databasetjeneste.sletteHendelser(it.toSet())
-            }
+        var antallSlettedeKansellerteHendelser = sletteHendelser(kansellerteHendelser, "kansellerte")
+        log.info("Totalt ble $antallSlettedeKansellerteHendelser av ${kansellerteHendelser.size} identifiserte kansellerte hendelser slettet")
+
+        var antallSLettedeOverførteHendelser = sletteHendelser(overførteHendelser, "overførte")
+        log.info("Totalt ble $antallSLettedeOverførteHendelser av ${overførteHendelser.size} identifiserte overførteHendelser hendelser slettet")
+
+        if (kansellerteHendelser.size.toLong() + overførteHendelser.size.toLong() == antallSlettedeKansellerteHendelser + antallSLettedeOverførteHendelser) {
+            log.info("Alle de identifiserte hendelsene ble slettet.")
         } else {
-            databasetjeneste.sletteHendelser(kansellerteHendelser)
+            log.warn("Ikke alle de identifiserte hendelsene ble slettet.")
+        }
+    }
+
+    private fun sletteHendelser(ider: Set<Long>, hendelsebeskrivelse: String): Long {
+        if (ider.size > egenskaper.generelt.bolkstoerrelseVedSletting) {
+            log.info("Antall $hendelsebeskrivelse-hendelser identifisert for sletting oversteg grensen på ${egenskaper.generelt.bolkstoerrelseVedSletting}.")
+            var listeMedListeAvHendelseider = ider.chunked(egenskaper.generelt.bolkstoerrelseVedSletting)
+
+            var totaltAntallHendelserSomBleSlettet: Long = 0
+            var bolknummer: Int = 1
+            listeMedListeAvHendelseider.forEach {
+                log.info("Sletter bolk-$bolknummer med ${it.size} $hendelsebeskrivelse-hendelser.")
+                var antallHendelserSomBleSlettet = databasetjeneste.sletteHendelser(it.toSet())
+                log.info("$antallHendelserSomBleSlettet av ${it.size} $hendelsebeskrivelse-hendelser i bolk-$bolknummer ble slettet.")
+                totaltAntallHendelserSomBleSlettet += antallHendelserSomBleSlettet
+                bolknummer++
+            }
+
+            return totaltAntallHendelserSomBleSlettet
+        } else {
+            return databasetjeneste.sletteHendelser(ider)
         }
 
-        log.info("Slettet ${kansellerteHendelser.size} kansellerte hendelser")
-
-        databasetjeneste.sletteHendelser(overførteHendelser)
-        log.info("Slettet ${overførteHendelser.size} overførte hendelser")
     }
 
     companion object {
