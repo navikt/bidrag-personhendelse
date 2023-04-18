@@ -16,8 +16,6 @@ open class SletteUtgåtteHendelser(
     open val egenskaper: Egenskaper
 
 ) {
-    private val MAKS_SETTSTØRRELSE: Int = 65000
-
     @Scheduled(cron = "\${kjøreplan.slette_hendelser}")
     @SchedulerLock(name = "slette_hendelser", lockAtLeastFor = "PT30S", lockAtMostFor = "PT5M")
     open fun sletteUtgåtteHendelserFraDatabase() {
@@ -30,12 +28,13 @@ open class SletteUtgåtteHendelser(
 
         log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen")
 
-        if (kansellerteHendelser.size > MAKS_SETTSTØRRELSE) {
-            log.info("Antall hendelser identifisert for sletting oversteg grensen på $MAKS_SETTSTØRRELSE.")
-            var listeMedListeAvHendelseider = kansellerteHendelser.chunked(MAKS_SETTSTØRRELSE)
+        if (kansellerteHendelser.size > egenskaper.generelt.bolkstoerrelseVedSletting) {
+            log.info("Antall hendelser identifisert for sletting oversteg grensen på ${egenskaper.generelt.bolkstoerrelseVedSletting}.")
+            var listeMedListeAvHendelseider = kansellerteHendelser.chunked(egenskaper.generelt.bolkstoerrelseVedSletting)
             listeMedListeAvHendelseider.forEach {
                 log.info("Sletter bolk på ${it.size} hendelser.")
-                databasetjeneste.sletteHendelser(it.toSet()) }
+                databasetjeneste.sletteHendelser(it.toSet())
+            }
         } else {
             databasetjeneste.sletteHendelser(kansellerteHendelser)
         }

@@ -9,7 +9,8 @@ data class Egenskaper(val generelt: Generelt, val wmq: Wmq)
 data class Generelt(
     val antallMinutterForsinketVideresending: Int = 120,
     val antallDagerLevetidForUtgaatteHendelser: Int = 7,
-    val maksAntallMeldingerSomOverfoeresTilBisysOmGangen: Int = 6500
+    val maksAntallMeldingerSomOverfoeresTilBisysOmGangen: Int = 6500,
+    val bolkstoerrelseVedSletting: Int = 65000
 )
 
 @ConfigurationProperties("egenskaper.wmq")
