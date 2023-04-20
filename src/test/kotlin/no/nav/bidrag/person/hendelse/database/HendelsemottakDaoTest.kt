@@ -2,7 +2,6 @@ package no.nav.bidrag.person.hendelse.database
 
 import no.nav.bidrag.person.hendelse.Teststarter
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
-import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -18,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
- class HendelsemottakDaoTest {
+class HendelsemottakDaoTest {
 
     @Autowired
     lateinit var hendelsemottakDao: HendelsemottakDao

@@ -2,7 +2,7 @@
 
 CREATE TABLE kontoendring
 (
-    kontoeier varchar(255),
+    aktorid varchar(255),
     mottatt timestamp without time zone,
     publisert timestamp without time zone,
     status varchar(20),
@@ -13,7 +13,7 @@ CREATE TABLE kontoendring
 
 TABLESPACE pg_default;
 
-CREATE INDEX IF NOT EXISTS INDEX_KONTOENDRING_KONTOEIER ON KONTOENDRING(KONTOEIER)
+CREATE INDEX INDEX_KONTOENDRING_KONTOEIER ON KONTOENDRING(AKTORID)
 
 /*** Rulle tilbake ***
 

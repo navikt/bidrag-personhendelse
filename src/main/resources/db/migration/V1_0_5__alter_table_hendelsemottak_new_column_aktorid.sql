@@ -1,12 +1,12 @@
 -- Table: hendelsemottak
 
-ALTER TABLE hendelsemottak
-    ADD COLUMN aktorid varchar(13);
+ALTER TABLE HENDELSEMOTTAK ADD COLUMN AKTORID VARCHAR(13);
+CREATE INDEX IF NOT EXISTS INDEX_HENDELSEMOTTAK_AKTORID ON HENDELSEMOTTAK(AKTORID)
 
 /*** Rulle tilbake ***
 
-ALTER TABLE hendelsemottak
-    DROP COLUMN aktorid
+ALTER TABLE hendelsemottak DROP COLUMN aktorid;
+DROP INDEX INDEX_HENDELSEMOTTAK_AKTORID;
 
 delete from flyway_schema_history where version = '1.0.5';
 

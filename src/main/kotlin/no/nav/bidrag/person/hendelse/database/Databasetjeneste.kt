@@ -131,7 +131,7 @@ class Databasetjeneste(
     }
 
     private fun trekkeTidligereMottatteKontoendringerForPerson(personident: String) {
-        var kontoendringerForPersonMedStatusMottatt = kontoendringDao.findByKontoeierAndStatus(personident, StatusKontoendring.MOTTATT)
+        var kontoendringerForPersonMedStatusMottatt = kontoendringDao.findByAktoridAndStatus(personident, StatusKontoendring.MOTTATT)
         kontoendringerForPersonMedStatusMottatt.forEach {
             it.status = StatusKontoendring.TRUKKET
             it.statustidspunkt = LocalDateTime.now()

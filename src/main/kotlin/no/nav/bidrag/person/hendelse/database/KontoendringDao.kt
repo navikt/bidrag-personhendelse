@@ -10,8 +10,8 @@ interface KontoendringDao : JpaRepository<Kontoendring, Long> {
     @Lock(LockModeType.PESSIMISTIC_FORCE_INCREMENT)
     fun save(kontoendring: Kontoendring): Kontoendring
 
-    @Query("select ke.kontoeier from Kontoendring ke where ke.status = :status")
+    @Query("select ke.aktorid from Kontoendring ke where ke.status = :status")
     fun henteKontoeiere(status: StatusKontoendring): Set<String>
 
-    fun findByKontoeierAndStatus(kontoeier: String, status: StatusKontoendring): List<Kontoendring>
+    fun findByAktoridAndStatus(kontoeier: String, status: StatusKontoendring): List<Kontoendring>
 }

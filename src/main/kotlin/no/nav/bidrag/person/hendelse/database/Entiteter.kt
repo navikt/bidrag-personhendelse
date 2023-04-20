@@ -40,10 +40,10 @@ class Hendelsemottak(
 )
 
 @Entity
-@Table(indexes = [Index(name = "index_kontoendring_kontoeier", columnList = "kontoeier", unique = false)])
+@Table(indexes = [Index(name = "index_kontoendring_kontoeier", columnList = "aktorid", unique = false)])
 class Kontoendring(
-    @Column(name = "kontoeier", nullable = false)
-    val kontoeier: String = "",
+    @Column(name = "aktorid", nullable = false)
+    val aktorid: String = "",
     @Column(name = "mottatt", nullable = false)
     val mottatt: LocalDateTime = LocalDateTime.now(),
     @Column(name = "publisert", nullable = true)

@@ -3,6 +3,7 @@ package no.nav.bidrag.person.hendelse.database
 import io.kotest.matchers.shouldBe
 import no.nav.bidrag.person.hendelse.Teststarter
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import org.assertj.core.api.SoftAssertions.assertSoftly
 
 @SpringBootTest(
     classes = [Teststarter::class],
@@ -31,9 +31,8 @@ class KontoendringDaoTest {
 
     @Test
     fun skalLagreNyKontoendring() {
-
         // gitt
-        var nyKontoendring = Kontoendring("Ole Brum")
+        var nyKontoendring = Kontoendring("1231234567891")
 
         // hvis
         var lagretKontoendring = kontoendringDao.save(nyKontoendring)
@@ -45,17 +44,17 @@ class KontoendringDaoTest {
 
     @Test
     fun skalHenteKontoendringMedStatusMottatt() {
-
         // gitt
-        kontoendringDao.save(Kontoendring("Ole Brum"))
+        var aktøridKontoeier = "1231234567891"
+        kontoendringDao.save(Kontoendring(aktøridKontoeier))
 
         // hvis
         var kontoeiere = kontoendringDao.henteKontoeiere(StatusKontoendring.MOTTATT)
 
         // så
-        assertSoftly{
+        assertSoftly {
             kontoeiere.size shouldBe 1
-            kontoeiere.first() shouldBe "Ole Brum"
+            kontoeiere.first() shouldBe aktøridKontoeier
         }
     }
 }
