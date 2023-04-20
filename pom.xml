@@ -45,6 +45,16 @@
         <token-support.version>3.0.10</token-support.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>no.nav.security</groupId>
+                <artifactId>token-validation-spring</artifactId>
+                <version>${token-support.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <!-- Spring Boot -->
         <dependency>
@@ -174,20 +184,6 @@
             <groupId>no.nav.bidrag</groupId>
             <artifactId>bidrag-commons</artifactId>
             <version>${bidrag-commons.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>no.nav.security</groupId>
-                    <artifactId>token-client-spring</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>no.nav.security</groupId>
-                    <artifactId>token-validation-spring</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>no.nav.security</groupId>
-                    <artifactId>token-validation-filter</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>no.nav.security</groupId>
