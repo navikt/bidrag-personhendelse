@@ -62,13 +62,13 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
 
         if (personhendelse.personidenter.isNullOrEmpty()) {
             log.warn("Mottok hendelse uten personidenter - avbryter videre prosessering")
-            return;
+            return
         }
 
         if (personhendelse.personidenter?.first { it.length == 13 }.isNullOrEmpty()) {
             log.warn("Mottok hendelse uten aktørid - avbryter videre prosessering")
             SECURE_LOGGER.warn("Fant ikke aktørid i hendelse med hendelseid: ${personhendelse.hendelseId} og personidenter: {${personhendelse.personidenter}}")
-            return;
+            return
         }
 
         val livshendelse = Livshendelse(

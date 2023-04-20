@@ -22,7 +22,8 @@ class Kontoendringsmottak(val databasetjeneste: Databasetjeneste) {
         topics = ["okonomi.kontoregister-person-endringsmelding.v2"],
         id = "bidrag-person-hendelse-kontoregister-person-endringsmelding-v2",
         idIsGroup = false
-    ) fun listen(@Payload endringsmelding: Endringsmelding, cr: ConsumerRecord<String, Endringsmelding>) {
+    )
+    fun listen(@Payload endringsmelding: Endringsmelding, cr: ConsumerRecord<String, Endringsmelding>) {
         SECURE_LOGGER.info("Kontoregisterendringsmelding mottatt: Record key={}, value={}, value={}", cr.key(), cr.value(), cr.offset())
         databasetjeneste.lagreKontoendring(endringsmelding.kontohaver.toString())
         SECURE_LOGGER.info("Kontoendring lagret for kontoeier {}", endringsmelding.kontohaver)

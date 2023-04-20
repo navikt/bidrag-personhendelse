@@ -61,7 +61,6 @@ class SletteUtgåtteHendelser(
         } else {
             return databasetjeneste.sletteHendelser(ider)
         }
-
     }
 
     companion object {

@@ -37,7 +37,6 @@ open class SletteUtgåtteHendelserTest {
 
     @Test
     fun skalSletteKansellerteOgOverførteHendelser() {
-
         // gitt
         var kansellertHendelse1 = oppretteOgLagreHendelse(
             Status.KANSELLERT,

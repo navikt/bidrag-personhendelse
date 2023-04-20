@@ -9,9 +9,5 @@ class Persondataendringsbehandler(val databasetjeneste: Databasetjeneste) {
 
     var kontoeiereMedOppdatertKontoinformasjon = databasetjeneste.henteKontoeiere(StatusKontoendring.MOTTATT)
 
-    //var t = databasetjeneste.hentePersonerIOverførteLivshendelser()
-
-
-
-
+    // var t = databasetjeneste.hentePersonerIOverførteLivshendelser()
 }

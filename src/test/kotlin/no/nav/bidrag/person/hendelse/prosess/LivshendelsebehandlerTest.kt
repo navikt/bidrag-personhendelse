@@ -8,12 +8,14 @@ import no.nav.bidrag.person.hendelse.domene.Foedsel
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
+import no.nav.bidrag.person.hendelse.domene.Sivilstand
+import no.nav.bidrag.person.hendelse.domene.Utflytting
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LivshendelsebehandlerTest {

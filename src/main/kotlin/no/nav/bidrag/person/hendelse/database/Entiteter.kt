@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
+import jakarta.persistence.Table
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import java.time.LocalDateTime
 
@@ -57,7 +59,7 @@ class Kontoendring(
 
 @Entity
 class BidragPersonhendelse(
-    @Column(nullable= false)
+    @Column(nullable = false)
     val aktorid: String,
     @Column
     val publisert: LocalDateTime = LocalDateTime.now(),

@@ -11,9 +11,6 @@ class PubliserePersonhendelser {
     @Scheduled(cron = "\${publisere_personhendelser.kjøreplan}")
     @SchedulerLock(name = "publisere_personhendelser", lockAtLeastFor = "\${publisere_personhendelser.lås.min}", lockAtMostFor = "\${publisere_personhendelser.lås.max}")
     fun publiserePersonhendelser() {
-
         //
-
     }
 }
-

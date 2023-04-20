@@ -6,7 +6,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
-import no.nav.bidrag.person.hendelse.integrasjon.bidrag.bisys.BisysMeldingsprodusjon
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

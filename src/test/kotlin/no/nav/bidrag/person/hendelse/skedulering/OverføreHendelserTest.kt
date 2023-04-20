@@ -34,6 +34,7 @@ open class OverføreHendelserTest {
 
     @Autowired
     lateinit var hendelsemottakDao: HendelsemottakDao
+
     @Autowired
     lateinit var kontoendringDao: KontoendringDao
     lateinit var databasetjeneste: Databasetjeneste
@@ -66,7 +67,7 @@ open class OverføreHendelserTest {
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
                 Livshendelse.Endringstype.OPPRETTET,
                 personidenter,
-                personidenter.first{it.length == 13},
+                personidenter.first { it.length == 13 },
                 LocalDateTime.now()
             )
         var lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
@@ -81,7 +82,7 @@ open class OverføreHendelserTest {
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
-            personidenter.first{it.length == 13},
+            personidenter.first { it.length == 13 },
             LocalDateTime.now()
         )
         var lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
@@ -96,7 +97,7 @@ open class OverføreHendelserTest {
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
-            personidenter.first{it.length == 13},
+            personidenter.first { it.length == 13 },
             LocalDateTime.now()
         )
         var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
@@ -125,7 +126,7 @@ open class OverføreHendelserTest {
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
                 Livshendelse.Endringstype.OPPRETTET,
                 personidenter,
-                personidenter.first{it.length == 13},
+                personidenter.first { it.length == 13 },
                 LocalDateTime.now()
             )
         var lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
@@ -140,7 +141,7 @@ open class OverføreHendelserTest {
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
-            personidenter.first{it.length == 13},
+            personidenter.first { it.length == 13 },
             LocalDateTime.now()
         )
         var lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
@@ -155,7 +156,7 @@ open class OverføreHendelserTest {
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
-            personidenter.first{it.length == 13},
+            personidenter.first { it.length == 13 },
             LocalDateTime.now()
         )
         var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
@@ -181,7 +182,7 @@ open class OverføreHendelserTest {
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
                 Livshendelse.Endringstype.OPPRETTET,
                 personidenter,
-                personidenter.first{it.length == 13},
+                personidenter.first { it.length == 13 },
                 LocalDateTime.now()
             )
         var lagretHendelse1 = databasetjeneste.lagreHendelse(hendelse1)
@@ -195,7 +196,7 @@ open class OverføreHendelserTest {
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
-            personidenter.first{it.length == 13},
+            personidenter.first { it.length == 13 },
             LocalDateTime.now()
         )
         var lagretHendelse2 = databasetjeneste.lagreHendelse(hendelse2)

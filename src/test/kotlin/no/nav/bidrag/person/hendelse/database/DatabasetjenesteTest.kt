@@ -42,7 +42,6 @@ class DatabasetjenesteTest {
         @Test
         @Transactional
         open fun skalKansellereTidligereOgNyHendelseVedAnnulleringDersomTidligereHendelseIkkeErOverført() {
-
             // gitt
             var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
             var opprinneligHendelse =
@@ -52,7 +51,7 @@ class DatabasetjenesteTest {
                     Endringstype.OPPRETTET,
                     personidenter,
                     personidenter.first { it.length == 13 },
-                    LocalDateTime.now(),
+                    LocalDateTime.now()
                 )
             var lagretOpprinneligHendelse = databasetjeneste.lagreHendelse(opprinneligHendelse)
 
@@ -64,7 +63,8 @@ class DatabasetjenesteTest {
                 personidenter,
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
-                hendelseidOpprinneligHendelse)
+                hendelseidOpprinneligHendelse
+            )
 
             // hvis
             var lagretAnnulleringAvOpprinneligHendelse =
@@ -85,7 +85,6 @@ class DatabasetjenesteTest {
 
         @Test
         fun `skal kansellere opphør av bostedsadresse`() {
-
             // gitt
             var hendelseid = "c096ca6f-9801-4543-9a44-116f4ed806ce"
             var hendelse =
@@ -94,7 +93,7 @@ class DatabasetjenesteTest {
                     Opplysningstype.BOSTEDSADRESSE_V1,
                     Endringstype.OPPHOERT,
                     personidenter,
-                    personidenter.first{it.length == 13},
+                    personidenter.first { it.length == 13 },
                     LocalDateTime.now()
                 )
 
@@ -110,7 +109,6 @@ class DatabasetjenesteTest {
         @Test
         @Transactional
         open fun tidligereHendelseidFinnesIkkeIDatabasen() {
-
             // gitt
             var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
 
@@ -150,7 +148,6 @@ class DatabasetjenesteTest {
 
         @Test
         fun `lagre kontoendring for ny kontoeier`() {
-
             // gitt
             var kontoeier = "123456"
             var tidspunktFørLagring = LocalDateTime.now()
@@ -173,7 +170,6 @@ class DatabasetjenesteTest {
 
         @Test
         fun `lagre kontoendring for kontoeier med eksisterende mottatt-innslag i databasen`() {
-
             // gitt
             var kontoeier = "123456"
             var tidspunktFørLagring = LocalDateTime.now()

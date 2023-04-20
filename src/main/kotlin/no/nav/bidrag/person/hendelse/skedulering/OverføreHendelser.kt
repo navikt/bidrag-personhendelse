@@ -36,12 +36,13 @@ class OverføreHendelser(
         try {
             var antallOverført: Int = meldingsprodusent.sendeMeldinger(
                 egenskaper.integrasjon.wmq.queueNameLivshendelser,
-                databasetjeneste.henteHendelser(hendelserSomOverføresIDenneOmgang).map { it.hendelse })
+                databasetjeneste.henteHendelser(hendelserSomOverføresIDenneOmgang).map { it.hendelse }
+            )
             databasetjeneste.oppdatereStatusPåHendelser(hendelserSomOverføresIDenneOmgang, Status.OVERFØRT)
             log.info("Overføring fullført (for antall: $antallOverført)")
         } catch (ofe: OverføringFeiletException) {
             databasetjeneste.oppdatereStatusPåHendelser(hendelserSomOverføresIDenneOmgang, Status.OVERFØRING_FEILET)
-            log.error("Overføring av $hendelserSomOverføresIDenneOmgang meldinger feilet");
+            log.error("Overføring av $hendelserSomOverføresIDenneOmgang meldinger feilet")
         }
     }
 

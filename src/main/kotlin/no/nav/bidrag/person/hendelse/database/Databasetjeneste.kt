@@ -40,7 +40,7 @@ class Databasetjeneste(
     }
 
     fun henteKontoeiere(status: StatusKontoendring): Set<String> {
-        return kontoendringDao.henteKontoeiere(status);
+        return kontoendringDao.henteKontoeiere(status)
     }
 
     fun oppdatereStatusPåHendelse(id: Long, nyStatus: Status) {
@@ -62,7 +62,6 @@ class Databasetjeneste(
 
     @Transactional(readOnly = false)
     fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
-
         var listeMedPersonidenter = livshendelse.personidenter
 
         if (livshendelse.personidenter?.size!! > Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER) {
@@ -105,7 +104,6 @@ class Databasetjeneste(
 
     @Transactional(readOnly = false)
     open fun lagreKontoendring(kontoeier: String): Kontoendring {
-
         trekkeTidligereMottatteKontoendringerForPerson(kontoeier)
 
         return kontoendringDao.save(Kontoendring(kontoeier))
@@ -134,7 +132,7 @@ class Databasetjeneste(
 
     private fun trekkeTidligereMottatteKontoendringerForPerson(personident: String) {
         var kontoendringerForPersonMedStatusMottatt = kontoendringDao.findByKontoeierAndStatus(personident, StatusKontoendring.MOTTATT)
-        kontoendringerForPersonMedStatusMottatt.forEach{
+        kontoendringerForPersonMedStatusMottatt.forEach {
             it.status = StatusKontoendring.TRUKKET
             it.statustidspunkt = LocalDateTime.now()
         }
