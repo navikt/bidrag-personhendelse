@@ -48,6 +48,7 @@ class Kontoendring(
     val mottatt: LocalDateTime = LocalDateTime.now(),
     @Column(name = "publisert", nullable = true)
     val publisert: LocalDateTime? = null,
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: StatusKontoendring = StatusKontoendring.MOTTATT,
     @Column(name = "statustidspunkt", nullable = false)
