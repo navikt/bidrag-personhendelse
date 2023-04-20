@@ -91,6 +91,11 @@ overføre_hendelser:
   låse_jobb:
       min: ${OVERFØRE_HENDELSER_LÅS_MIN}
       max: ${OVERFØRE_HENDELSER_LÅS_MAX}
+publisere_personhendelser:
+  kjøreplan: ${PUBLISERE_PERSONHENDELSER_KJØREPLAN}
+  låse_jobb:
+    min: ${PUBLISERE_PERSONHENDELSER_LÅS_MIN}
+    max: ${PUBLISERE_PERSONHENDELSER_LÅS_MAX}
 slette_hendelser:
   kjøreplan: ${KJØREPLAN_SLETTE_HENDELSER}
   låse_jobb:
