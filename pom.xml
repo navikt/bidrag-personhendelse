@@ -430,6 +430,10 @@
                 </dependencies>
                 <configuration>
                     <jvmTarget>17</jvmTarget>
+                    <compilerPlugins>
+                        <plugin>spring</plugin>
+                        <plugin>jpa</plugin>
+                    </compilerPlugins>
                 </configuration>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -483,41 +487,53 @@
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <version>${kotlin.version}</version>
-                <configuration>
-                    <compilerPlugins>
-                        <plugin>spring</plugin>
-                        <plugin>jpa</plugin>
-                    </compilerPlugins>
-                    <jvmTarget>1.8</jvmTarget>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
+                        <id>ktlint</id>
+                        <phase>verify</phase>
+                        <configuration>
+                            <target name="ktlint">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                    <arg value="src/**/*.kt"/>
+                                </java>
+                            </target>
+                        </configuration>
                         <goals>
-                            <goal>compile</goal>
+                            <goal>run</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
+                        <id>ktlint-format</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <target name="ktlint">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                    <jvmarg value="--add-opens"/>
+                                    <jvmarg value="java.base/java.lang=ALL-UNNAMED"/>
+                                    <arg value="-F"/>
+                                    <arg value="src/**/*.kt"/>
+                                </java>
+                            </target>
+                        </configuration>
                         <goals>
-                            <goal>test-compile</goal>
+                            <goal>run</goal>
                         </goals>
                     </execution>
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>org.jetbrains.kotlin</groupId>
-                        <artifactId>kotlin-maven-allopen</artifactId>
-                        <version>${kotlin.version}</version>
+                        <groupId>com.pinterest</groupId>
+                        <artifactId>ktlint</artifactId>
+                        <version>0.47.1</version>
                     </dependency>
+                    <!-- additional 3rd party ruleset(s) can be specified here -->
                 </dependencies>
             </plugin>
         </plugins>
     </build>
-
 </project>

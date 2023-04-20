@@ -1,8 +1,12 @@
 package no.nav.bidrag.person.hendelse.integrasjon.pdl
 
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.clearAllMocks
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
+import io.mockk.verify
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
@@ -25,7 +29,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Instant
 import java.time.LocalDate
-import java.util.*
+import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
 class LivshendelsemottakTest {
@@ -44,7 +48,6 @@ class LivshendelsemottakTest {
 
     @Test
     fun `skal avbryte prossesering av melding med opplysningstype som ikke støttes`() {
-
         // gitt
         var personhendelse = henteIkkeStøttetOpplysingstype()
 
@@ -64,7 +67,6 @@ class LivshendelsemottakTest {
 
     @Test
     fun `skal håndtere dødsfall`() {
-
         // gitt
         var personhendelse = hentePersonhendelseForDødsfall()
 
@@ -86,7 +88,6 @@ class LivshendelsemottakTest {
 
     @Test
     fun `skal håndtere bostedsadresse`() {
-
         // gitt
         var personhendelse = hentePersonhendelseForBostedsadresse()
 
@@ -108,7 +109,6 @@ class LivshendelsemottakTest {
 
     @Test
     fun `skal håndtere folkeregisteridentifikator`() {
-
         // gitt
         var personhendelse = hentePersonhendelseForFolkeregisteridentifikator()
 
@@ -134,7 +134,6 @@ class LivshendelsemottakTest {
 
     @Test
     fun `skal håndtere fødsel`() {
-
         // gitt
         var personhendelse = hentePersonhendelseForFødsel()
 
@@ -157,7 +156,6 @@ class LivshendelsemottakTest {
 
     @Test
     fun `skal håndtere innflytting`() {
-
         // gitt
         var personhendelse = hentePersonhendelseForInnflytting()
 
@@ -179,7 +177,6 @@ class LivshendelsemottakTest {
 
     @Test
     fun `skal håndtere navn`() {
-
         // gitt
         var personhendelse = hentePersonhendelseForNavn()
 
@@ -201,7 +198,6 @@ class LivshendelsemottakTest {
 
     @Test
     fun `skal håndtere utflytting`() {
-
         // gitt
         var personhendelse = hentePersonhendelseForUtflytting()
 
@@ -224,7 +220,6 @@ class LivshendelsemottakTest {
 
     @Test
     fun `skal håndtere sivilstand`() {
-
         // gitt
         var personhendelse = hentePersonhendelseForSivilstand()
 
@@ -247,7 +242,6 @@ class LivshendelsemottakTest {
 
     @Test
     fun `skal håndtere korrigering av sivilstandendring`() {
-
         // gitt
         var personhendelse = hentePersonhendelseForSivilstandKorrigering()
 

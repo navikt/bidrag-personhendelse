@@ -59,3 +59,11 @@ spec:
         databases:
           - name: person-hendelse-prod
             envVarPrefix: DB
+  accessPolicy:
+    outbound:
+      external:
+        - host: mpls04.adeo.no
+          ports:
+            - name: mq
+              port: 1414
+              protocol: TCP

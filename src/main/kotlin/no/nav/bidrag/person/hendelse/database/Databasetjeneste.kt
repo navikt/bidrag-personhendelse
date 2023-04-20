@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
 
 @Service
 class Databasetjeneste(
@@ -35,8 +35,8 @@ class Databasetjeneste(
         return hendelsemottakDao.henteIdTilHendelser(status, statustidspunktFør)
     }
 
-    fun sletteHendelser(ider: Set<Long>) {
-        hendelsemottakDao.deleteByIdIn(ider)
+    fun sletteHendelser(ider: Set<Long>): Long {
+        return hendelsemottakDao.deleteByIdIn(ider)
     }
 
     fun henteKontoeiere(status: StatusKontoendring): Set<String> {
@@ -69,7 +69,7 @@ class Databasetjeneste(
             listeMedPersonidenter = listeMedPersonidenter.subList(0, Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER)
             Livshendelsebehandler.log.warn(
                 "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} personidenter. " +
-                        "Kun de ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} første arkiveres."
+                    "Kun de ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} første arkiveres."
             )
         }
 

@@ -29,9 +29,8 @@ class MeldingsprodusentTest {
 
     @Test
     fun `skal kaste OverføringFeiletException dersom det oppstår en feil ved sending`() {
-
-        every { jmsTemplate.send(any())} throws Exception("auda!")
-        assertThrows<OverføringFeiletException>{
+        every { jmsTemplate.send(any()) } throws Exception("auda!")
+        assertThrows<OverføringFeiletException> {
             meldingsprodusent.sendeMeldinger("", listOf(""))
         }
     }

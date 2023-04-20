@@ -25,7 +25,6 @@ import org.springframework.test.context.ActiveProfiles
 
     @Test
     fun skalLagreHendelse() {
-
         // gitt
         var hendelseid = "123"
         var opplysningstype = Livshendelse.Opplysningstype.SIVILSTAND_V1

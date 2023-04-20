@@ -11,32 +11,57 @@ import org.springframework.stereotype.Component
 import java.time.LocalDate
 
 @Component
-open class SletteUtgåtteHendelser(
+class SletteUtgåtteHendelser(
     open val databasetjeneste: Databasetjeneste,
     open val egenskaper: Egenskaper
+
 ) {
-    @Scheduled(cron = "\${slette_hendelser.kjøreplan}")
-    @SchedulerLock(
-        name = "slette_hendelser",
-        lockAtLeastFor = "\${slette_hendelser.låse_jobb.min}",
-        lockAtMostFor = "\${slette_hendelser.låse_jobb.max}"
-    )
-    open fun sletteUtgåtteHendelserFraDatabase() {
+    @Scheduled(cron = "\${kjøreplan.slette_hendelser}")
+    @SchedulerLock(name = "slette_hendelser", lockAtLeastFor = "\${slette_hendelser.låse_jobb.min}", lockAtMostFor = "\${slette_hendelser.låse_jobb.max}")
+    fun sletteUtgåtteHendelserFraDatabase() {
+        var statusoppdateringFør = LocalDate.now().atStartOfDay()
+            .minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong())
 
-        var statusoppdateringFør = LocalDate.now().atStartOfDay().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong())
-
-        log.info("Ser etter utgåtte livshendelser med siste statusoppdatering før ${statusoppdateringFør} som skal slettes fra databasen.")
+        log.info("Ser etter utgåtte livshendelser med siste statusoppdatering før $statusoppdateringFør som skal slettes fra databasen.")
 
         var kansellerteHendelser = databasetjeneste.henteHendelserider(Status.KANSELLERT, statusoppdateringFør)
         var overførteHendelser = databasetjeneste.henteHendelserider(Status.OVERFØRT, statusoppdateringFør)
 
         log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen")
 
-        databasetjeneste.sletteHendelser(kansellerteHendelser)
-        log.info("Slettet ${kansellerteHendelser.size} kansellerte hendelser")
+        var antallSlettedeKansellerteHendelser = sletteHendelser(kansellerteHendelser, "kansellerte")
+        log.info("Totalt ble $antallSlettedeKansellerteHendelser av ${kansellerteHendelser.size} identifiserte kansellerte hendelser slettet")
 
-        databasetjeneste.sletteHendelser(overførteHendelser)
-        log.info("Slettet ${overførteHendelser.size} overførte hendelser")
+        var antallSLettedeOverførteHendelser = sletteHendelser(overførteHendelser, "overførte")
+        log.info("Totalt ble $antallSLettedeOverførteHendelser av ${overførteHendelser.size} identifiserte overførteHendelser hendelser slettet")
+
+        if (kansellerteHendelser.size.toLong() + overførteHendelser.size.toLong() == antallSlettedeKansellerteHendelser + antallSLettedeOverførteHendelser) {
+            log.info("Alle de identifiserte hendelsene ble slettet.")
+        } else {
+            log.warn("Ikke alle de identifiserte hendelsene ble slettet.")
+        }
+    }
+
+    private fun sletteHendelser(ider: Set<Long>, hendelsebeskrivelse: String): Long {
+        if (ider.size > egenskaper.generelt.bolkstoerrelseVedSletting) {
+            log.info("Antall $hendelsebeskrivelse-hendelser identifisert for sletting oversteg grensen på ${egenskaper.generelt.bolkstoerrelseVedSletting}.")
+            var listeMedListeAvHendelseider = ider.chunked(egenskaper.generelt.bolkstoerrelseVedSletting)
+
+            var totaltAntallHendelserSomBleSlettet: Long = 0
+            var bolknummer: Int = 1
+            listeMedListeAvHendelseider.forEach {
+                log.info("Sletter bolk-$bolknummer med ${it.size} $hendelsebeskrivelse-hendelser.")
+                var antallHendelserSomBleSlettet = databasetjeneste.sletteHendelser(it.toSet())
+                log.info("$antallHendelserSomBleSlettet av ${it.size} $hendelsebeskrivelse-hendelser i bolk-$bolknummer ble slettet.")
+                totaltAntallHendelserSomBleSlettet += antallHendelserSomBleSlettet
+                bolknummer++
+            }
+
+            return totaltAntallHendelserSomBleSlettet
+        } else {
+            return databasetjeneste.sletteHendelser(ider)
+        }
+
     }
 
     companion object {

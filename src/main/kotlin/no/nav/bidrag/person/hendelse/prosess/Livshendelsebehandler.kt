@@ -48,12 +48,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Endringstype.OPPHOERT -> tellerAdressebeskyttelseOpphørt.increment()
             Endringstype.OPPRETTET -> tellerAdressebeskyttelseOpprettet.increment()
         }
-        
+
         databasetjeneste.lagreHendelse(livshendelse)
     }
 
     private fun behandleVerge(livshendelse: Livshendelse) {
-
         tellerVerge.increment()
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
@@ -79,7 +78,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     private fun behandleBostedsadresse(livshendelse: Livshendelse) {
-
         tellerBostedsadresse.increment()
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
@@ -101,7 +99,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     private fun behandleDødsfall(livshendelse: Livshendelse) {
-
         tellerDødsfall.increment()
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
@@ -119,11 +116,10 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Endringstype.OPPRETTET -> tellerDødsfallOpprettet.increment()
         }
 
-        sikkerLoggingAvLivshendelse(livshendelse, "dødsdato: ${livshendelse.doedsdato}");
+        sikkerLoggingAvLivshendelse(livshendelse, "dødsdato: ${livshendelse.doedsdato}")
 
         when (livshendelse.endringstype) {
-
-            Endringstype.OPPRETTET, Endringstype.KORRIGERT, -> {
+            Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
                 if (livshendelse.doedsdato == null) {
                     log.error("Mangler dødsdato. Ignorerer hendelse ${livshendelse.hendelseid}")
                     tellerDødsfallIgnorert.increment()
@@ -147,7 +143,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     private fun behandleFolkeregisteridentifikator(livshendelse: Livshendelse) {
-
         tellerFolkeregisteridentifikator.increment()
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
@@ -165,7 +160,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Endringstype.OPPRETTET -> tellerFolkeregisteridentifikatorOpprettet.increment()
         }
 
-        sikkerLoggingAvLivshendelse(livshendelse);
+        sikkerLoggingAvLivshendelse(livshendelse)
 
         when (livshendelse.endringstype) {
             Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
@@ -184,7 +179,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     private fun behandleInnflytting(livshendelse: Livshendelse) {
-
         tellerInnflytting.increment()
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
@@ -221,7 +215,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     private fun behandleNavn(livshendelse: Livshendelse) {
-
         tellerNavn.increment()
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
@@ -232,7 +225,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             return
         }
 
-        sikkerLoggingAvLivshendelse(livshendelse);
+        sikkerLoggingAvLivshendelse(livshendelse)
 
         when (livshendelse.endringstype) {
             Endringstype.ANNULLERT -> tellerNavnAnnullert.increment()
@@ -246,7 +239,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
                 val manglerFornavn = livshendelse.navn?.fornavn == null
                 if (manglerFornavn || livshendelse.navn?.etternavn == null) {
                     val navnedel = if (manglerFornavn) "Fornavn" else "Etternavn"
-                    log.warn("${navnedel} mangler. Ignorerer navnehendelse med id ${livshendelse.hendelseid}")
+                    log.warn("$navnedel mangler. Ignorerer navnehendelse med id ${livshendelse.hendelseid}")
                 } else {
                     databasetjeneste.lagreHendelse(livshendelse)
                 }
@@ -263,7 +256,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     private fun behandleFødsel(livshendelse: Livshendelse) {
-
         tellerFødsel.increment()
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
@@ -315,7 +307,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     private fun behandleUtflytting(livshendelse: Livshendelse) {
-
         tellerUtflytting.increment()
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
@@ -353,7 +344,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     private fun behandleSivilstand(livshendelse: Livshendelse) {
-
         tellerSivilstand.increment()
 
         if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
@@ -392,11 +382,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun sikkerLoggingAvLivshendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
         SECURE_LOGGER.info(
             "Livshendelse mottatt: " +
-                    "hendelseId: ${livshendelse.hendelseid} " +
-                    "offset: ${livshendelse.offset}, " +
-                    "opplysningstype: ${livshendelse.opplysningstype}, " +
-                    "aktørid: ${livshendelse.hentGjeldendeAktørid()}, " +
-                    "endringstype: ${livshendelse.endringstype}, $ekstraInfo"
+                "hendelseId: ${livshendelse.hendelseid} " +
+                "offset: ${livshendelse.offset}, " +
+                "opplysningstype: ${livshendelse.opplysningstype}, " +
+                "aktørid: ${livshendelse.hentGjeldendeAktørid()}, " +
+                "endringstype: ${livshendelse.endringstype}, $ekstraInfo"
         )
     }
 

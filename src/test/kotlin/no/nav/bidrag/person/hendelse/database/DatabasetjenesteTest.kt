@@ -64,8 +64,7 @@ class DatabasetjenesteTest {
                 personidenter,
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
-                hendelseidOpprinneligHendelse
-            )
+                hendelseidOpprinneligHendelse)
 
             // hvis
             var lagretAnnulleringAvOpprinneligHendelse =

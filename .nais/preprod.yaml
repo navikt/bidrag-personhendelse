@@ -61,3 +61,11 @@ spec:
         databases:
           - name: person-hendelse-preprod
             envVarPrefix: DB
+  accessPolicy:
+    outbound:
+      external:
+        - host: b27apvl222.preprod.local
+          ports:
+            - name: mq
+              port: 1413
+              protocol: TCP

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Component
-open class OverføreHendelser(
+class OverføreHendelser(
     open val databasetjeneste: Databasetjeneste,
     open val egenskaper: Egenskaper,
     open val meldingsprodusent: BisysMeldingsprodusjon
@@ -23,9 +23,9 @@ open class OverføreHendelser(
     @Transactional
     @Scheduled(cron = "\${overføre_hendelser.kjøreplan}")
     @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "\${overføre_hendelser.lås.min}", lockAtMostFor = "\${overføre_hendelser.lås.max}")
-    open fun overføreHendelserTilBisys() {
+    fun overføreHendelserTilBisys() {
         var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
-        log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før ${sisteStatusoppdateringFør}")
+        log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før $sisteStatusoppdateringFør")
 
         var hendelserKlarTilOverføring = databasetjeneste.henteIdTilHendelserSomErKlarTilOverføring(sisteStatusoppdateringFør)
         log.info(henteLoggmelding(hendelserKlarTilOverføring.size, egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen))
@@ -47,12 +47,12 @@ open class OverføreHendelser(
 
     private fun henteLoggmelding(antallIdentifiserteHendelser: Int, maksAntallHendelserPerKjøring: Int): String {
         var melding =
-            "Fant ${antallIdentifiserteHendelser} livshendelser med status MOTTATT. Antall hendelser per kjøring er begrenset til ${maksAntallHendelserPerKjøring}. "
+            "Fant $antallIdentifiserteHendelser livshendelser med status MOTTATT. Antall hendelser per kjøring er begrenset til $maksAntallHendelserPerKjøring. "
         if (antallIdentifiserteHendelser > maksAntallHendelserPerKjøring) {
-            return melding + "Overfører ${maksAntallHendelserPerKjøring} hendelser i denne omgang."
+            return melding + "Overfører $maksAntallHendelserPerKjøring hendelser i denne omgang."
         } else {
             return if (antallIdentifiserteHendelser > 0) {
-                melding + "Overfører alle de ${antallIdentifiserteHendelser} identifiserte hendelsene."
+                melding + "Overfører alle de $antallIdentifiserteHendelser identifiserte hendelsene."
             } else {
                 melding + "Ingen hendelser å overføre."
             }

@@ -2,7 +2,6 @@ package no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-
 @ConfigurationProperties(prefix = "egenskaper")
 data class Egenskaper(val generelt: Generelt, val integrasjon: Integrasjon)
 
@@ -10,7 +9,8 @@ data class Egenskaper(val generelt: Generelt, val integrasjon: Integrasjon)
 data class Generelt(
     val antallMinutterForsinketVideresending: Int = 120,
     val antallDagerLevetidForUtgaatteHendelser: Int = 7,
-    val maksAntallMeldingerSomOverfoeresTilBisysOmGangen: Int = 6500
+    val maksAntallMeldingerSomOverfoeresTilBisysOmGangen: Int = 6500,
+    val bolkstoerrelseVedSletting: Int = 65000
 )
 
 @ConfigurationProperties("egenskaper.integrasjon")

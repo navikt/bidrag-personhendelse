@@ -29,7 +29,6 @@ import javax.jms.JMSException
 
     @Throws(JMSException::class)
     fun forbindelsefabrikk(): JmsConnectionFactory {
-
         val fabrikkfabrikk = JmsFactoryFactory.getInstance(WMQConstants.WMQ_PROVIDER)
         val forbindelsefabrikk = fabrikkfabrikk.createConnectionFactory()
 
