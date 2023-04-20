@@ -16,7 +16,7 @@ class SletteUtgåtteHendelser(
     open val egenskaper: Egenskaper
 
 ) {
-    @Scheduled(cron = "\${kjøreplan.slette_hendelser}")
+    @Scheduled(cron = "\${slette_hendelser.kjøreplan}")
     @SchedulerLock(name = "slette_hendelser", lockAtLeastFor = "\${slette_hendelser.låse_jobb.min}", lockAtMostFor = "\${slette_hendelser.låse_jobb.max}")
     fun sletteUtgåtteHendelserFraDatabase() {
         var statusoppdateringFør = LocalDate.now().atStartOfDay()
