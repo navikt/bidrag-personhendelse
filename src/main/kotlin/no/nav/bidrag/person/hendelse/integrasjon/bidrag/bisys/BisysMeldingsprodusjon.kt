@@ -1,4 +1,4 @@
-package no.nav.bidrag.person.hendelse.integrasjon.distribusjon
+package no.nav.bidrag.person.hendelse.integrasjon.bidrag.bisys
 
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
 import org.slf4j.Logger

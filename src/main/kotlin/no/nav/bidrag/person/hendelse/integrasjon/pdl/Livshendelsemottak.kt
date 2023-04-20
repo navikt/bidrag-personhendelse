@@ -1,4 +1,4 @@
-package no.nav.bidrag.person.hendelse.integrasjon.mottak
+package no.nav.bidrag.person.hendelse.integrasjon.pdl
 
 import no.nav.bidrag.person.hendelse.domene.*
 import no.nav.bidrag.person.hendelse.exception.HendelsemottakException
@@ -51,11 +51,23 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             return
         }
 
+        if (personhendelse.personidenter.isNullOrEmpty()) {
+            log.warn("Mottok hendelse uten personidenter - avbryter videre prosessering")
+            return;
+        }
+
+        if (personhendelse.personidenter?.first { it.length == 13 }.isNullOrEmpty()) {
+            log.warn("Mottok hendelse uten aktørid - avbryter videre prosessering")
+            SECURE_LOGGER.warn("Fant ikke aktørid i hendelse med hendelseid: ${personhendelse.hendelseId} og personidenter: {${personhendelse.personidenter}}")
+            return;
+        }
+
         val livshendelse = Livshendelse(
             personhendelse.hendelseId.toString(),
             opplysningstype,
             konvertereEndringstype(personhendelse.endringstype),
-            personhendelse.personidenter?.stream()?.map(CharSequence::toString)?.collect(Collectors.toList()),
+            personhendelse.personidenter?.stream()?.map(CharSequence::toString)!!.collect(Collectors.toList()),
+            personhendelse.personidenter.first { it.length == 13 }.toString(),
             LocalDateTime.ofInstant(personhendelse.opprettet, ZoneId.systemDefault()),
             personhendelse.tidligereHendelseId?.toString(),
             henteDødsdato(personhendelse.doedsfall),

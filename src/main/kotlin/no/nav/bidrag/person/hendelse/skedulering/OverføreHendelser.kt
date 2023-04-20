@@ -4,7 +4,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.Status
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
-import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.BisysMeldingsprodusjon
+import no.nav.bidrag.person.hendelse.integrasjon.bidrag.bisys.BisysMeldingsprodusjon
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -35,12 +35,12 @@ open class OverføreHendelser(
 
         try {
             var antallOverført: Int = meldingsprodusent.sendeMeldinger(
-                egenskaper.wmq.queueNameLivshendelser,
+                egenskaper.integrasjon.wmq.queueNameLivshendelser,
                 databasetjeneste.henteHendelser(hendelserSomOverføresIDenneOmgang).map { it.hendelse })
-            databasetjeneste.oppdatereStatus(hendelserSomOverføresIDenneOmgang, Status.OVERFØRT)
+            databasetjeneste.oppdatereStatusPåHendelser(hendelserSomOverføresIDenneOmgang, Status.OVERFØRT)
             log.info("Overføring fullført (for antall: $antallOverført)")
         } catch (ofe: OverføringFeiletException) {
-            databasetjeneste.oppdatereStatus(hendelserSomOverføresIDenneOmgang, Status.OVERFØRING_FEILET)
+            databasetjeneste.oppdatereStatusPåHendelser(hendelserSomOverføresIDenneOmgang, Status.OVERFØRING_FEILET)
             log.error("Overføring av $hendelserSomOverføresIDenneOmgang meldinger feilet");
         }
     }

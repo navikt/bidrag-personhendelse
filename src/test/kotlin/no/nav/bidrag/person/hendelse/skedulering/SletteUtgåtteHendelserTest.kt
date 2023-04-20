@@ -39,14 +39,35 @@ open class SletteUtgåtteHendelserTest {
     fun skalSletteKansellerteOgOverførteHendelser() {
 
         // gitt
-        var kansellertHendelse1 = oppretteOgLagreHendelse(Status.KANSELLERT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1) )
-        var kansellertHendelse2 = oppretteOgLagreHendelse(Status.KANSELLERT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2) )
-        var kansellertHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.KANSELLERT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2) )
-        var mottattHendelseInnenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2))
-        var mottattHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT,LocalDateTime.now())
-        var overførtHendelse1 = oppretteOgLagreHendelse(Status.OVERFØRT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1) )
-        var overførtHendelse2 = oppretteOgLagreHendelse(Status.OVERFØRT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2) )
-        var overførtHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.OVERFØRT,LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2) )
+        var kansellertHendelse1 = oppretteOgLagreHendelse(
+            Status.KANSELLERT,
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1)
+        )
+        var kansellertHendelse2 = oppretteOgLagreHendelse(
+            Status.KANSELLERT,
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2)
+        )
+        var kansellertHendelseUtenforSlettevindu = oppretteOgLagreHendelse(
+            Status.KANSELLERT,
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2)
+        )
+        var mottattHendelseInnenforSlettevindu = oppretteOgLagreHendelse(
+            Status.MOTTATT,
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2)
+        )
+        var mottattHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT, LocalDateTime.now())
+        var overførtHendelse1 = oppretteOgLagreHendelse(
+            Status.OVERFØRT,
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1)
+        )
+        var overførtHendelse2 = oppretteOgLagreHendelse(
+            Status.OVERFØRT,
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2)
+        )
+        var overførtHendelseUtenforSlettevindu = oppretteOgLagreHendelse(
+            Status.OVERFØRT,
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2)
+        )
 
         // hvis
         sletteUtgåtteHendelser.sletteUtgåtteHendelserFraDatabase()
@@ -67,7 +88,14 @@ open class SletteUtgåtteHendelserTest {
     private fun oppretteOgLagreHendelse(status: Status, statustidspunkt: LocalDateTime): Hendelsemottak {
         var hendelseid1 = UUID.randomUUID().toString()
         var hendelseMottattUtenforVenteperiode =
-            Livshendelse(hendelseid1, Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1, Livshendelse.Endringstype.OPPRETTET, personidenter, LocalDateTime.now())
+            Livshendelse(
+                hendelseid1,
+                Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
+                Livshendelse.Endringstype.OPPRETTET,
+                personidenter,
+                personidenter.first { it.length == 13 },
+                LocalDateTime.now()
+            )
         var kansellertHendelseSomSkalSlettes = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
         kansellertHendelseSomSkalSlettes.status = status
         kansellertHendelseSomSkalSlettes.statustidspunkt = statustidspunkt

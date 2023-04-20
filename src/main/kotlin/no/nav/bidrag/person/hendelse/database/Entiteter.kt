@@ -6,7 +6,7 @@ import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import java.time.LocalDateTime
 
 @Entity
-data class Hendelsemottak(
+class Hendelsemottak(
     val hendelseid: String = "",
     @Enumerated(EnumType.STRING)
     val opplysningstype: Livshendelse.Opplysningstype? = null,
@@ -16,6 +16,8 @@ data class Hendelsemottak(
     val opprettet: LocalDateTime = LocalDateTime.now(),
     @Column(name = "personidenter", nullable = true)
     val personidenter: String? = null,
+    @Column(name = "aktorid")
+    val aktorid: String? = null,
     val tidligereHendelseid: String? = null,
     @Column(length = 5000)
     val hendelse: String = "",
@@ -30,11 +32,49 @@ data class Hendelsemottak(
     val id: Long = 0L
 )
 
+@Entity
+@Table(indexes = [Index(name = "index_kontoendring_kontoeier", columnList = "kontoeier", unique = false)])
+class Kontoendring(
+    @Column(name = "kontoeier", nullable = false)
+    val kontoeier: String = "",
+    @Column(name = "mottatt", nullable = false)
+    val mottatt: LocalDateTime = LocalDateTime.now(),
+    @Column(name = "publisert", nullable = true)
+    val publisert: LocalDateTime? = null,
+    @Column(name = "status", nullable = false)
+    var status: StatusKontoendring = StatusKontoendring.MOTTATT,
+    @Column(name = "statustidspunkt", nullable = false)
+    var statustidspunkt: LocalDateTime = LocalDateTime.now(),
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0L
+)
+
+@Entity
+class BidragPersonhendelse(
+    @Column(nullable= false)
+    val aktorid: String,
+    @Column
+    val publisert: LocalDateTime = LocalDateTime.now(),
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = 0
+)
+
 enum class Status {
     MOTTATT,
     KANSELLERT,
     OVERFØRT,
-    OVERFØRING_FEILET
+    OVERFØRING_FEILET,
+    PUBLISERT,
+    PUBLISERING_FEILET
+}
+
+enum class StatusKontoendring {
+    MOTTATT,
+    TRUKKET,
+    PUBLISERT,
+    PUBLISERING_FEILET
 }
 
 

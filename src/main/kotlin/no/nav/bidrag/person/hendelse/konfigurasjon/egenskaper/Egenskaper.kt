@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 
 @ConfigurationProperties(prefix = "egenskaper")
-data class Egenskaper(val generelt: Generelt, val wmq: Wmq)
+data class Egenskaper(val generelt: Generelt, val integrasjon: Integrasjon)
 
 @ConfigurationProperties("generelt")
 data class Generelt(
@@ -13,7 +13,10 @@ data class Generelt(
     val maksAntallMeldingerSomOverfoeresTilBisysOmGangen: Int = 6500
 )
 
-@ConfigurationProperties("egenskaper.wmq")
+@ConfigurationProperties("egenskaper.integrasjon")
+data class Integrasjon(val wmq: Wmq, val bidragPerson: BidragPerson)
+
+@ConfigurationProperties("egenskaper.integrasjon.wmq")
 data class Wmq(
     var host: String,
     val port: Int,
@@ -25,3 +28,6 @@ data class Wmq(
     val applicationName: String,
     val queueNameLivshendelser: String
 )
+
+@ConfigurationProperties("egenskaper.integrasjon.bidrag-person")
+data class BidragPerson(val url: String)

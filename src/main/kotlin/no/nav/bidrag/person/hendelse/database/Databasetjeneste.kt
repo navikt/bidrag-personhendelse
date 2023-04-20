@@ -10,9 +10,12 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Service
-open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
+class Databasetjeneste(
+    open val hendelsemottakDao: HendelsemottakDao,
+    open val kontoendringDao: KontoendringDao
+) {
 
-    open fun henteIdTilHendelserSomErKlarTilOverføring(statustidspunktFør: LocalDateTime): Set<Long> {
+    fun henteIdTilHendelserSomErKlarTilOverføring(statustidspunktFør: LocalDateTime): Set<Long> {
         return hendelsemottakDao.idTilHendelserSomErKlarTilOverføring(statustidspunktFør)
     }
 
@@ -20,7 +23,7 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
         return hendelsemottakDao.findById(id)
     }
 
-    fun henteHendelser(ider: List<Long>) : MutableList<Hendelsemottak> {
+    fun henteHendelser(ider: List<Long>): MutableList<Hendelsemottak> {
         return hendelsemottakDao.findAllById(ider)
     }
 
@@ -36,7 +39,11 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
         hendelsemottakDao.deleteByIdIn(ider)
     }
 
-    open fun oppdatereStatus(id: Long, nyStatus: Status) {
+    fun henteKontoeiere(status: StatusKontoendring): Set<String> {
+        return kontoendringDao.henteKontoeiere(status);
+    }
+
+    fun oppdatereStatusPåHendelse(id: Long, nyStatus: Status) {
         var hendelse = hendelsemottakDao.findById(id)
         if (hendelse.isPresent) {
             var hendelsemottak = hendelse.get()
@@ -47,19 +54,19 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
     }
 
     @Transactional
-    open fun oppdatereStatus(ider: List<Long>, nyStatus: Status)  {
-        for(id in ider) {
-            oppdatereStatus(id, nyStatus)
+    fun oppdatereStatusPåHendelser(ider: List<Long>, nyStatus: Status) {
+        for (id in ider) {
+            oppdatereStatusPåHendelse(id, nyStatus)
         }
     }
 
     @Transactional(readOnly = false)
-    open fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
+    fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
 
         var listeMedPersonidenter = livshendelse.personidenter
 
         if (livshendelse.personidenter?.size!! > Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER) {
-            listeMedPersonidenter = listeMedPersonidenter?.subList(0, Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER)
+            listeMedPersonidenter = listeMedPersonidenter.subList(0, Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER)
             Livshendelsebehandler.log.warn(
                 "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} personidenter. " +
                         "Kun de ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} første arkiveres."
@@ -86,6 +93,7 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
                 livshendelse.endringstype,
                 livshendelse.opprettet,
                 listeMedPersonidenter?.joinToString { it },
+                livshendelse.aktorid,
                 livshendelse.tidligereHendelseid,
                 Livshendelse.tilJson(livshendelse),
                 livshendelse.master,
@@ -93,6 +101,14 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
                 status
             )
         )
+    }
+
+    @Transactional(readOnly = false)
+    open fun lagreKontoendring(kontoeier: String): Kontoendring {
+
+        trekkeTidligereMottatteKontoendringerForPerson(kontoeier)
+
+        return kontoendringDao.save(Kontoendring(kontoeier))
     }
 
     private fun kansellereTidligereHendelse(livshendelse: Livshendelse): Status {
@@ -113,6 +129,14 @@ open class Databasetjeneste(open val hendelsemottakDao: HendelsemottakDao) {
             }
         } else {
             Status.MOTTATT
+        }
+    }
+
+    private fun trekkeTidligereMottatteKontoendringerForPerson(personident: String) {
+        var kontoendringerForPersonMedStatusMottatt = kontoendringDao.findByKontoeierAndStatus(personident, StatusKontoendring.MOTTATT)
+        kontoendringerForPersonMedStatusMottatt.forEach{
+            it.status = StatusKontoendring.TRUKKET
+            it.statustidspunkt = LocalDateTime.now()
         }
     }
 

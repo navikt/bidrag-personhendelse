@@ -1,4 +1,4 @@
-package no.nav.bidrag.person.hendelse.konsumere
+package no.nav.bidrag.person.hendelse.prosess
 
 import io.mockk.clearAllMocks
 import io.mockk.mockk
@@ -7,7 +7,6 @@ import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.domene.*
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
-import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -32,7 +31,12 @@ class LivshendelsebehandlerTest {
     @Test
     fun `Skal prosessere dødsfallhendelse`() {
         val hendelseId = UUID.randomUUID().toString()
-        val livshendelse = oppretteLivshendelseForDødsfall(hendelseId, Opplysningstype.DOEDSFALL_V1, Endringstype.OPPRETTET, LocalDate.now())
+        val livshendelse = oppretteLivshendelseForDødsfall(
+            hendelseId,
+            Opplysningstype.DOEDSFALL_V1,
+            Endringstype.OPPRETTET,
+            LocalDate.now()
+        )
         service.prosesserNyHendelse(livshendelse)
     }
 
@@ -41,7 +45,10 @@ class LivshendelsebehandlerTest {
         val hendelseId = UUID.randomUUID().toString()
         val livshendelse =
             oppretteLivshendelseForUtflytting(
-                hendelseId, Opplysningstype.UTFLYTTING_FRA_NORGE, Endringstype.OPPRETTET, Utflytting("SWE", null, LocalDate.now())
+                hendelseId,
+                Opplysningstype.UTFLYTTING_FRA_NORGE,
+                Endringstype.OPPRETTET,
+                Utflytting("SWE", null, LocalDate.now())
             )
 
         service.prosesserNyHendelse(livshendelse)
@@ -52,7 +59,12 @@ class LivshendelsebehandlerTest {
         val hendelseId = UUID.randomUUID().toString()
 
         val livshendelse =
-            oppretteLivshendelseForSivilstand(hendelseId, Opplysningstype.SIVILSTAND_V1, Endringstype.OPPRETTET, Sivilstand("GIFT"))
+            oppretteLivshendelseForSivilstand(
+                hendelseId,
+                Opplysningstype.SIVILSTAND_V1,
+                Endringstype.OPPRETTET,
+                Sivilstand("GIFT")
+            )
 
         service.prosesserNyHendelse(livshendelse)
         service.prosesserNyHendelse(livshendelse.copy(sivilstand = Sivilstand("UOPPGITT")))
@@ -63,7 +75,12 @@ class LivshendelsebehandlerTest {
         val hendelseId = UUID.randomUUID().toString()
 
         val livshendelse =
-            oppretteLivshendelseForFødsel(hendelseId, Opplysningstype.FOEDSEL_V1, Endringstype.OPPRETTET, Foedsel("NOR", LocalDate.now()))
+            oppretteLivshendelseForFødsel(
+                hendelseId,
+                Opplysningstype.FOEDSEL_V1,
+                Endringstype.OPPRETTET,
+                Foedsel("NOR", LocalDate.now())
+            )
 
         service.prosesserNyHendelse(livshendelse)
 
@@ -77,7 +94,12 @@ class LivshendelsebehandlerTest {
         val hendelseId = UUID.randomUUID().toString()
 
         val livshendelse =
-            oppretteLivshendelseForFødsel(hendelseId, Opplysningstype.FOEDSEL_V1, Endringstype.OPPRETTET, Foedsel("POL", LocalDate.now()))
+            oppretteLivshendelseForFødsel(
+                hendelseId,
+                Opplysningstype.FOEDSEL_V1,
+                Endringstype.OPPRETTET,
+                Foedsel("POL", LocalDate.now())
+            )
 
         service.prosesserNyHendelse(livshendelse)
         verify(exactly = 0) { mockDatabasetjeneste.lagreHendelse(livshendelse) }
@@ -98,7 +120,17 @@ class LivshendelsebehandlerTest {
         foedsel: Foedsel
     ): Livshendelse {
         return Livshendelse(
-            hendelseId, opplysningstype, endringstype, personidenter, LocalDateTime.now(), null, null, null, null, foedsel
+            hendelseId,
+            opplysningstype,
+            endringstype,
+            personidenter,
+            personidenter.first { it.length == 13 },
+            LocalDateTime.now(),
+            null,
+            null,
+            null,
+            null,
+            foedsel
         )
     }
 
@@ -108,7 +140,16 @@ class LivshendelsebehandlerTest {
         endringstype: Endringstype,
         dødsdato: LocalDate
     ): Livshendelse {
-        return Livshendelse(hendelseId, opplysningstype, endringstype, personidenter, LocalDateTime.now(), null, dødsdato)
+        return Livshendelse(
+            hendelseId,
+            opplysningstype,
+            endringstype,
+            personidenter,
+            personidenter.first { it.length == 13 },
+            LocalDateTime.now(),
+            null,
+            dødsdato
+        )
     }
 
     fun oppretteLivshendelseForUtflytting(
@@ -118,8 +159,20 @@ class LivshendelsebehandlerTest {
         utflytting: Utflytting
     ): Livshendelse {
         return Livshendelse(
-            hendelseId, opplysningstype, endringstype, personidenter, LocalDateTime.now(), null, null, null,
-            null, null, null, null, utflytting
+            hendelseId,
+            opplysningstype,
+            endringstype,
+            personidenter,
+            personidenter.first { it.length == 13 },
+            LocalDateTime.now(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            utflytting
         )
     }
 
@@ -130,8 +183,21 @@ class LivshendelsebehandlerTest {
         sivilstand: Sivilstand
     ): Livshendelse {
         return Livshendelse(
-            hendelseId, opplysningstype, endringstype, personidenter, LocalDateTime.now(), null, null, null,
-            null, null, null, null, null, sivilstand
+            hendelseId,
+            opplysningstype,
+            endringstype,
+            personidenter,
+            personidenter.first { it.length == 13 },
+            LocalDateTime.now(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            sivilstand
         )
     }
 }

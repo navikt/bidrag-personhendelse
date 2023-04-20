@@ -1,4 +1,4 @@
-package no.nav.bidrag.person.hendelse.integrasjon.mottak
+package no.nav.bidrag.person.hendelse.integrasjon.pdl
 
 import io.mockk.*
 import io.mockk.impl.annotations.MockK

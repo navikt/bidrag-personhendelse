@@ -1,6 +1,6 @@
-package no.nav.bidrag.person.hendelse.integrasjon.mottak
+package no.nav.bidrag.person.hendelse.integrasjon.kontoregister
 
-import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.BidragKontoregisterhendelseproduksjon
+import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.person.endringsmelding.v1.Endringsmelding
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service
     havingValue = "true",
     matchIfMissing = true
 )
-class Kontoregisterhendelsemottak(val bidragKontoregisterhendelseproduksjon: BidragKontoregisterhendelseproduksjon) {
+class Kontoendringsmottak(val databasetjeneste: Databasetjeneste) {
     @KafkaListener(
         groupId = "leesah-v1.bidrag",
         topics = ["okonomi.kontoregister-person-endringsmelding.v2"],
@@ -24,10 +24,11 @@ class Kontoregisterhendelsemottak(val bidragKontoregisterhendelseproduksjon: Bid
         idIsGroup = false
     ) fun listen(@Payload endringsmelding: Endringsmelding, cr: ConsumerRecord<String, Endringsmelding>) {
         SECURE_LOGGER.info("Kontoregisterendringsmelding mottatt: Record key={}, value={}, value={}", cr.key(), cr.value(), cr.offset())
-        bidragKontoregisterhendelseproduksjon.publisereEndringsmeldingTilBidragTopic(endringsmelding)
+        databasetjeneste.lagreKontoendring(endringsmelding.kontohaver.toString())
+        SECURE_LOGGER.info("Kontoendring lagret for kontoeier {}", endringsmelding.kontohaver)
     }
     companion object {
         val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
-        val log: Logger = LoggerFactory.getLogger(Kontoregisterhendelsemottak::class.java)
+        val log: Logger = LoggerFactory.getLogger(Kontoendringsmottak::class.java)
     }
 }

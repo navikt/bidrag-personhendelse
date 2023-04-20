@@ -9,6 +9,7 @@ import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig.Companion.PROFIL_TEST
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -17,105 +18,196 @@ import java.time.LocalDateTime
 
 @ActiveProfiles(PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
-open class DatabasetjenesteTest {
+class DatabasetjenesteTest {
 
-    val personidenter = listOf("12345678901", "1234567890123")
+    private val personidenter = listOf("12345678901", "1234567890123")
 
     @Autowired
     lateinit var hendelsemottakDao: HendelsemottakDao
 
     @Autowired
+    lateinit var kontoendringDao: KontoendringDao
+
+    @Autowired
     lateinit var databasetjeneste: Databasetjeneste
 
-    @BeforeEach
-    fun initialisere() {
-        hendelsemottakDao.deleteAll()
-    }
+    @Nested
+    open inner class Hendelsemottak {
 
-    @Test
-    @Transactional
-    fun skalKansellereTidligereOgNyHendelseVedAnnulleringDersomTidligereHendelseIkkeErOverført() {
+        @BeforeEach
+        fun initialisere() {
+            hendelsemottakDao.deleteAll()
+        }
 
-        // gitt
-        var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
-        var opprinneligHendelse =
-            Livshendelse(
-                hendelseidOpprinneligHendelse,
+        @Test
+        @Transactional
+        open fun skalKansellereTidligereOgNyHendelseVedAnnulleringDersomTidligereHendelseIkkeErOverført() {
+
+            // gitt
+            var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+            var opprinneligHendelse =
+                Livshendelse(
+                    hendelseidOpprinneligHendelse,
+                    Opplysningstype.BOSTEDSADRESSE_V1,
+                    Endringstype.OPPRETTET,
+                    personidenter,
+                    personidenter.first { it.length == 13 },
+                    LocalDateTime.now(),
+                )
+            var lagretOpprinneligHendelse = databasetjeneste.lagreHendelse(opprinneligHendelse)
+
+            var hendelseidAnnulleringshendelse = "38468520-70f2-40c0-b4ae-6c765c307a7d"
+            var annulleringAvOpprinneligHendelse = Livshendelse(
+                hendelseidAnnulleringshendelse,
                 Opplysningstype.BOSTEDSADRESSE_V1,
-                Endringstype.OPPRETTET,
+                Endringstype.ANNULLERT,
                 personidenter,
+                personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
+                hendelseidOpprinneligHendelse
             )
-        var lagretOpprinneligHendelse = databasetjeneste.lagreHendelse(opprinneligHendelse)
 
-        var hendelseidAnnulleringshendelse = "38468520-70f2-40c0-b4ae-6c765c307a7d"
-        var annulleringAvOpprinneligHendelse = Livshendelse(
-            hendelseidAnnulleringshendelse,
-            Opplysningstype.BOSTEDSADRESSE_V1,
-            Endringstype.ANNULLERT,
-            personidenter,
-            LocalDateTime.now(),
-            hendelseidOpprinneligHendelse
-        )
+            // hvis
+            var lagretAnnulleringAvOpprinneligHendelse =
+                databasetjeneste.lagreHendelse(annulleringAvOpprinneligHendelse)
 
-        // hvis
-        var lagretAnnulleringAvOpprinneligHendelse = databasetjeneste.lagreHendelse(annulleringAvOpprinneligHendelse)
+            // så
+            var lagretOpprinneligHendelseEtterKansellering = hendelsemottakDao.findById(lagretOpprinneligHendelse.id)
+            var lagretNyHendelseEtterKansellering =
+                hendelsemottakDao.findById(lagretAnnulleringAvOpprinneligHendelse.id)
 
-        // så
-        var lagretOpprinneligHendelseEtterKansellering = hendelsemottakDao.findById(lagretOpprinneligHendelse.id)
-        var lagretNyHendelseEtterKansellering = hendelsemottakDao.findById(lagretAnnulleringAvOpprinneligHendelse.id)
+            assertSoftly {
+                lagretOpprinneligHendelseEtterKansellering.isPresent
+                lagretOpprinneligHendelseEtterKansellering.get().status shouldBe Status.KANSELLERT
+                lagretNyHendelseEtterKansellering.isPresent
+                lagretNyHendelseEtterKansellering.get().status shouldBe Status.KANSELLERT
+            }
+        }
 
-        assertSoftly {
-            lagretOpprinneligHendelseEtterKansellering.isPresent
-            lagretOpprinneligHendelseEtterKansellering.get().status shouldBe Status.KANSELLERT
-            lagretNyHendelseEtterKansellering.isPresent
-            lagretNyHendelseEtterKansellering.get().status shouldBe Status.KANSELLERT
+        @Test
+        fun `skal kansellere opphør av bostedsadresse`() {
+
+            // gitt
+            var hendelseid = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+            var hendelse =
+                Livshendelse(
+                    hendelseid,
+                    Opplysningstype.BOSTEDSADRESSE_V1,
+                    Endringstype.OPPHOERT,
+                    personidenter,
+                    personidenter.first{it.length == 13},
+                    LocalDateTime.now()
+                )
+
+            // hvis
+            var lagretHendelse = databasetjeneste.lagreHendelse(hendelse)
+
+            // så
+            assertSoftly {
+                lagretHendelse.status shouldBe Status.KANSELLERT
+            }
+        }
+
+        @Test
+        @Transactional
+        open fun tidligereHendelseidFinnesIkkeIDatabasen() {
+
+            // gitt
+            var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+
+            var hendelseidAnnulleringshendelse = "38468520-70f2-40c0-b4ae-6c765c307a7d"
+            var annulleringAvOpprinneligHendelse = Livshendelse(
+                hendelseidAnnulleringshendelse,
+                Opplysningstype.BOSTEDSADRESSE_V1,
+                Endringstype.ANNULLERT,
+                personidenter,
+                personidenter.first { it.length == 13 },
+                LocalDateTime.now(),
+                hendelseidOpprinneligHendelse
+            )
+
+            // hvis
+            var lagretAnnulleringAvOpprinneligHendelse =
+                databasetjeneste.lagreHendelse(annulleringAvOpprinneligHendelse)
+
+            // så
+            var lagretNyHendelseEtterKansellering =
+                hendelsemottakDao.findById(lagretAnnulleringAvOpprinneligHendelse.id)
+
+            assertSoftly {
+                lagretNyHendelseEtterKansellering.isPresent
+                lagretNyHendelseEtterKansellering.get().status shouldBe Status.MOTTATT
+            }
         }
     }
 
-    @Test
-    fun `skal kansellere opphør av bostedsadresse`() {
+    @Nested
+    inner class Kontoendring {
 
-        // gitt
-        var hendelseid = "c096ca6f-9801-4543-9a44-116f4ed806ce"
-        var hendelse =
-            Livshendelse(hendelseid, Opplysningstype.BOSTEDSADRESSE_V1, Endringstype.OPPHOERT, personidenter, LocalDateTime.now())
+        @BeforeEach
+        fun initialisere() {
+            kontoendringDao.deleteAll()
+        }
 
-        // hvis
-        var lagretHendelse = databasetjeneste.lagreHendelse(hendelse)
+        @Test
+        fun `lagre kontoendring for ny kontoeier`() {
 
-        // så
-        assertSoftly {
-            lagretHendelse.status shouldBe Status.KANSELLERT
+            // gitt
+            var kontoeier = "123456"
+            var tidspunktFørLagring = LocalDateTime.now()
+
+            // hvis
+            var kontoendring = databasetjeneste.lagreKontoendring(kontoeier)
+
+            // så
+            var kontoendringFraDatabase = kontoendringDao.findById(kontoendring.id)
+
+            assertSoftly {
+                kontoendringFraDatabase.isPresent
+                kontoendringFraDatabase.get().status shouldBe StatusKontoendring.MOTTATT
+                kontoendringFraDatabase.get().kontoeier shouldBe kontoeier
+                tidspunkterErInnenforVindu(tidspunktFørLagring, kontoendringFraDatabase.get().mottatt)
+                tidspunkterErInnenforVindu(tidspunktFørLagring, kontoendringFraDatabase.get().statustidspunkt)
+                kontoendringFraDatabase.get().publisert shouldBe null
+            }
+        }
+
+        @Test
+        fun `lagre kontoendring for kontoeier med eksisterende mottatt-innslag i databasen`() {
+
+            // gitt
+            var kontoeier = "123456"
+            var tidspunktFørLagring = LocalDateTime.now()
+            var tidligereMottattKontoendring = databasetjeneste.lagreKontoendring(kontoeier)
+
+            // hvis
+            var nyttKontoendringsinnslag = databasetjeneste.lagreKontoendring(kontoeier)
+
+            // så
+            var forrigeLagredeKontoendringsinnslag = kontoendringDao.findById(tidligereMottattKontoendring.id)
+            var nyttLagretKontoendringsinnslag = kontoendringDao.findById(nyttKontoendringsinnslag.id)
+
+            assertSoftly {
+                forrigeLagredeKontoendringsinnslag.isPresent
+                nyttLagretKontoendringsinnslag.isPresent
+                forrigeLagredeKontoendringsinnslag.get().status shouldBe StatusKontoendring.TRUKKET
+                nyttLagretKontoendringsinnslag.get().status shouldBe StatusKontoendring.MOTTATT
+                forrigeLagredeKontoendringsinnslag.get().kontoeier shouldBe kontoeier
+                nyttLagretKontoendringsinnslag.get().kontoeier shouldBe kontoeier
+                forrigeLagredeKontoendringsinnslag.get().mottatt.isBefore(nyttLagretKontoendringsinnslag.get().mottatt)
+                tidspunkterErInnenforVindu(tidspunktFørLagring, nyttLagretKontoendringsinnslag.get().mottatt)
+                tidspunkterErInnenforVindu(
+                    tidspunktFørLagring,
+                    forrigeLagredeKontoendringsinnslag.get().statustidspunkt
+                )
+                tidspunkterErInnenforVindu(tidspunktFørLagring, nyttLagretKontoendringsinnslag.get().statustidspunkt)
+                forrigeLagredeKontoendringsinnslag.get().publisert shouldBe null
+                nyttLagretKontoendringsinnslag.get().publisert shouldBe null
+            }
         }
     }
 
-    @Test
-    @Transactional
-    fun tidligereHendelseidFinnesIkkeIDatabasen() {
-
-        // gitt
-        var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
-
-        var hendelseidAnnulleringshendelse = "38468520-70f2-40c0-b4ae-6c765c307a7d"
-        var annulleringAvOpprinneligHendelse = Livshendelse(
-            hendelseidAnnulleringshendelse,
-            Opplysningstype.BOSTEDSADRESSE_V1,
-            Endringstype.ANNULLERT,
-            personidenter,
-            LocalDateTime.now(),
-            hendelseidOpprinneligHendelse
-        )
-
-        // hvis
-        var lagretAnnulleringAvOpprinneligHendelse = databasetjeneste.lagreHendelse(annulleringAvOpprinneligHendelse)
-
-        // så
-        var lagretNyHendelseEtterKansellering = hendelsemottakDao.findById(lagretAnnulleringAvOpprinneligHendelse.id)
-
-        assertSoftly {
-            lagretNyHendelseEtterKansellering.isPresent
-            lagretNyHendelseEtterKansellering.get().status shouldBe Status.MOTTATT
-        }
+    private fun tidspunkterErInnenforVindu(start: LocalDateTime, tidspunkt: LocalDateTime): Boolean {
+        return tidspunkt.isAfter(start) && tidspunkt.isBefore(LocalDateTime.now().plusSeconds(2))
     }
 }
