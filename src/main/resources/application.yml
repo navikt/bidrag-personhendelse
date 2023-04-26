@@ -88,17 +88,17 @@ funksjonsbrytere:
 
 overføre_hendelser:
   kjøreplan: ${OVERFØRE_HENDELSER_KJØREPLAN}
-  låse_jobb:
+  lås:
       min: ${OVERFØRE_HENDELSER_LÅS_MIN}
       max: ${OVERFØRE_HENDELSER_LÅS_MAX}
 publisere_personhendelser:
   kjøreplan: ${PUBLISERE_PERSONHENDELSER_KJØREPLAN}
-  låse_jobb:
+  lås:
     min: ${PUBLISERE_PERSONHENDELSER_LÅS_MIN}
     max: ${PUBLISERE_PERSONHENDELSER_LÅS_MAX}
 slette_hendelser:
   kjøreplan: ${KJØREPLAN_SLETTE_HENDELSER}
-  låse_jobb:
+  lås:
     min: ${SLETTE_HENDELSER_LÅS_MIN}
     max: ${SLETTE_HENDELSER_LÅS_MAX}
 

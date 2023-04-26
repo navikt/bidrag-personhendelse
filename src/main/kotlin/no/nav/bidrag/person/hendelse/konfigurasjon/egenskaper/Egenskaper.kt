@@ -9,6 +9,7 @@ data class Egenskaper(val generelt: Generelt, val integrasjon: Integrasjon)
 data class Generelt(
     val antallMinutterForsinketVideresending: Int = 120,
     val antallDagerLevetidForUtgaatteHendelser: Int = 7,
+    val antallTimerSidenForrigePublisering: Int = 8,
     val maksAntallMeldingerSomOverfoeresTilBisysOmGangen: Int = 6500,
     val bolkstoerrelseVedSletting: Int = 65000
 )

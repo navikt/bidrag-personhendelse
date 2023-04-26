@@ -1,55 +1,28 @@
 package no.nav.bidrag.person.hendelse.database
 
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
+import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import java.util.Optional
 
 @Service
 class Databasetjeneste(
+    open val aktorDao: AktorDao,
     open val hendelsemottakDao: HendelsemottakDao,
-    open val kontoendringDao: KontoendringDao
+    open val kontoendringDao: KontoendringDao,
+    val egenskaper: Egenskaper
 ) {
-
-    fun henteIdTilHendelserSomErKlarTilOverføring(statustidspunktFør: LocalDateTime): Set<Long> {
-        return hendelsemottakDao.idTilHendelserSomErKlarTilOverføring(statustidspunktFør)
-    }
-
-    fun henteHendelse(id: Long): Optional<Hendelsemottak> {
-        return hendelsemottakDao.findById(id)
-    }
-
-    fun henteHendelser(ider: List<Long>): MutableList<Hendelsemottak> {
-        return hendelsemottakDao.findAllById(ider)
-    }
-
-    fun hendelseFinnesIDatabasen(hendelseid: String, opplysningstype: Livshendelse.Opplysningstype): Boolean {
-        return hendelsemottakDao.existsByHendelseidAndOpplysningstype(hendelseid, opplysningstype)
-    }
-
-    fun henteHendelserider(status: Status, statustidspunktFør: LocalDateTime): Set<Long> {
-        return hendelsemottakDao.henteIdTilHendelser(status, statustidspunktFør)
-    }
-
-    fun sletteHendelser(ider: Set<Long>): Long {
-        return hendelsemottakDao.deleteByIdIn(ider)
-    }
-
-    fun henteKontoeiere(status: StatusKontoendring): Set<String> {
-        return kontoendringDao.henteKontoeiere(status)
-    }
-
     fun oppdatereStatusPåHendelse(id: Long, nyStatus: Status) {
         var hendelse = hendelsemottakDao.findById(id)
         if (hendelse.isPresent) {
             var hendelsemottak = hendelse.get()
             hendelsemottak.status = nyStatus
             hendelsemottak.statustidspunkt = LocalDateTime.now()
-            hendelsemottakDao.save(hendelsemottak)
+            this.hendelsemottakDao.save(hendelsemottak)
         }
     }
 
@@ -64,7 +37,7 @@ class Databasetjeneste(
     fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
         var listeMedPersonidenter = livshendelse.personidenter
 
-        if (livshendelse.personidenter?.size!! > Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER) {
+        if (livshendelse.personidenter.size > Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER) {
             listeMedPersonidenter = listeMedPersonidenter.subList(0, Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER)
             Livshendelsebehandler.log.warn(
                 "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} personidenter. " +
@@ -85,14 +58,17 @@ class Databasetjeneste(
             status = Status.KANSELLERT
         }
 
+        var lagretAktør =
+            aktorDao.findByAktorid(livshendelse.aktorid).orElseGet { aktorDao.save(Aktor(livshendelse.aktorid)) }
+
         return hendelsemottakDao.save(
             Hendelsemottak(
                 livshendelse.hendelseid,
                 livshendelse.opplysningstype,
                 livshendelse.endringstype,
+                listeMedPersonidenter.joinToString { it },
+                lagretAktør,
                 livshendelse.opprettet,
-                listeMedPersonidenter?.joinToString { it },
-                livshendelse.aktorid,
                 livshendelse.tidligereHendelseid,
                 Livshendelse.tilJson(livshendelse),
                 livshendelse.master,
@@ -103,10 +79,33 @@ class Databasetjeneste(
     }
 
     @Transactional(readOnly = false)
-    open fun lagreKontoendring(kontoeier: String): Kontoendring {
-        trekkeTidligereMottatteKontoendringerForPerson(kontoeier)
+    fun lagreKontoendring(aktøridKontoeier: String): Kontoendring {
+        var aktør = hentEksisterendeEllerOpprettNyAktør(aktøridKontoeier)
+        return kontoendringDao.save(Kontoendring(aktør))
+    }
 
-        return kontoendringDao.save(Kontoendring(kontoeier))
+    fun henteAktøridTilPersonerMedNyligOppdatertePersonopplysninger(): Set<String> {
+        return hendelsemottakDao.aktøridTilPubliseringsklareOverførteHendelser(
+            LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
+        )
+    }
+
+    fun henteAktøridTilKontoeiereMedNyligeKontoendringer(): Set<String> {
+        var mottattFør =
+            LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
+        var publisertFør =
+            LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
+
+        return kontoendringDao.henteKontoeiereForPublisering(mottattFør, publisertFør)
+    }
+
+    fun hentEksisterendeEllerOpprettNyAktør(aktørid: String): Aktor {
+        var eksisterendeAktør = aktorDao.findByAktorid(aktørid)
+        if (eksisterendeAktør.isPresent) {
+            return eksisterendeAktør.get()
+        } else {
+            return aktorDao.save(Aktor(aktørid))
+        }
     }
 
     private fun kansellereTidligereHendelse(livshendelse: Livshendelse): Status {
@@ -130,8 +129,9 @@ class Databasetjeneste(
         }
     }
 
-    private fun trekkeTidligereMottatteKontoendringerForPerson(personident: String) {
-        var kontoendringerForPersonMedStatusMottatt = kontoendringDao.findByAktoridAndStatus(personident, StatusKontoendring.MOTTATT)
+    private fun trekkeTidligereMottatteKontoendringerForPerson(aktør: Aktor) {
+        var kontoendringerForPersonMedStatusMottatt =
+            kontoendringDao.findByAktorAndStatus(aktør, StatusKontoendring.MOTTATT)
         kontoendringerForPersonMedStatusMottatt.forEach {
             it.status = StatusKontoendring.TRUKKET
             it.statustidspunkt = LocalDateTime.now()

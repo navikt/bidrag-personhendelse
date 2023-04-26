@@ -30,6 +30,5 @@ class Kontoendringsmottak(val databasetjeneste: Databasetjeneste) {
     }
     companion object {
         val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
-        val log: Logger = LoggerFactory.getLogger(Kontoendringsmottak::class.java)
     }
 }

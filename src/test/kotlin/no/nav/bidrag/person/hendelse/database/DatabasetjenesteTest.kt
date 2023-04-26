@@ -161,10 +161,10 @@ class DatabasetjenesteTest {
             assertSoftly {
                 kontoendringFraDatabase.isPresent
                 kontoendringFraDatabase.get().status shouldBe StatusKontoendring.MOTTATT
-                kontoendringFraDatabase.get().aktorid shouldBe kontoeier
+                kontoendringFraDatabase.get().aktor.aktorid shouldBe kontoeier
                 tidspunkterErInnenforVindu(tidspunktFørLagring, kontoendringFraDatabase.get().mottatt)
                 tidspunkterErInnenforVindu(tidspunktFørLagring, kontoendringFraDatabase.get().statustidspunkt)
-                kontoendringFraDatabase.get().publisert shouldBe null
+                kontoendringFraDatabase.get().aktor.publisert shouldBe null
             }
         }
 
@@ -185,10 +185,10 @@ class DatabasetjenesteTest {
             assertSoftly {
                 forrigeLagredeKontoendringsinnslag.isPresent
                 nyttLagretKontoendringsinnslag.isPresent
-                forrigeLagredeKontoendringsinnslag.get().status shouldBe StatusKontoendring.TRUKKET
+                forrigeLagredeKontoendringsinnslag.get().status shouldBe StatusKontoendring.MOTTATT
                 nyttLagretKontoendringsinnslag.get().status shouldBe StatusKontoendring.MOTTATT
-                forrigeLagredeKontoendringsinnslag.get().aktorid shouldBe kontoeier
-                nyttLagretKontoendringsinnslag.get().aktorid shouldBe kontoeier
+                forrigeLagredeKontoendringsinnslag.get().aktor.aktorid shouldBe kontoeier
+                nyttLagretKontoendringsinnslag.get().aktor.aktorid shouldBe kontoeier
                 forrigeLagredeKontoendringsinnslag.get().mottatt.isBefore(nyttLagretKontoendringsinnslag.get().mottatt)
                 tidspunkterErInnenforVindu(tidspunktFørLagring, nyttLagretKontoendringsinnslag.get().mottatt)
                 tidspunkterErInnenforVindu(
@@ -196,8 +196,8 @@ class DatabasetjenesteTest {
                     forrigeLagredeKontoendringsinnslag.get().statustidspunkt
                 )
                 tidspunkterErInnenforVindu(tidspunktFørLagring, nyttLagretKontoendringsinnslag.get().statustidspunkt)
-                forrigeLagredeKontoendringsinnslag.get().publisert shouldBe null
-                nyttLagretKontoendringsinnslag.get().publisert shouldBe null
+                forrigeLagredeKontoendringsinnslag.get().aktor.publisert shouldBe null
+                nyttLagretKontoendringsinnslag.get().aktor.publisert shouldBe null
             }
         }
     }

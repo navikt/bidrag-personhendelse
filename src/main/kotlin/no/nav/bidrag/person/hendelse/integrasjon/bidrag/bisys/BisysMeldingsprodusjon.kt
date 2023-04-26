@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import javax.jms.Queue
 
 @Component
-open class BisysMeldingsprodusjon(private val jmsTemplate: JmsTemplate) {
+class BisysMeldingsprodusjon(private val jmsTemplate: JmsTemplate) {
 
     fun sendeMeldinger(mottakerkoe: String, hendelser: List<String>): Int {
         var antallOverført = 0
@@ -25,7 +25,7 @@ open class BisysMeldingsprodusjon(private val jmsTemplate: JmsTemplate) {
         try {
             jmsTemplate.execute(producerCallback)
         } catch (e: Exception) {
-            logger.error("Sending av melding til WMQ feilet med feilmelding '{}'", e.message)
+            log.error("Sending av melding til WMQ feilet med feilmelding '{}'", e.message)
             throw e.message?.let { OverføringFeiletException(it) }!!
         }
 
@@ -33,7 +33,6 @@ open class BisysMeldingsprodusjon(private val jmsTemplate: JmsTemplate) {
     }
 
     companion object {
-        private val logger: Logger = LoggerFactory.getLogger(BisysMeldingsprodusjon::class.java)
-        private val secureLogger: Logger = LoggerFactory.getLogger("secureLogger")
+        private val log: Logger = LoggerFactory.getLogger(BisysMeldingsprodusjon::class.java)
     }
 }

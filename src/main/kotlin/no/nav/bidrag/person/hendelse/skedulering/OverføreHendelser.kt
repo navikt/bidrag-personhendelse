@@ -27,7 +27,7 @@ class OverføreHendelser(
         var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
         log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før $sisteStatusoppdateringFør")
 
-        var hendelserKlarTilOverføring = databasetjeneste.henteIdTilHendelserSomErKlarTilOverføring(sisteStatusoppdateringFør)
+        var hendelserKlarTilOverføring = databasetjeneste.hendelsemottakDao.idTilHendelserSomErKlarTilOverføring(sisteStatusoppdateringFør)
         log.info(henteLoggmelding(hendelserKlarTilOverføring.size, egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen))
 
         // Begrenser antall hendelser som skal videresendes
@@ -36,7 +36,7 @@ class OverføreHendelser(
         try {
             var antallOverført: Int = meldingsprodusent.sendeMeldinger(
                 egenskaper.integrasjon.wmq.queueNameLivshendelser,
-                databasetjeneste.henteHendelser(hendelserSomOverføresIDenneOmgang).map { it.hendelse }
+                databasetjeneste.hendelsemottakDao.findAllById(hendelserSomOverføresIDenneOmgang).map { it.hendelse }
             )
             databasetjeneste.oppdatereStatusPåHendelser(hendelserSomOverføresIDenneOmgang, Status.OVERFØRT)
             log.info("Overføring fullført (for antall: $antallOverført)")

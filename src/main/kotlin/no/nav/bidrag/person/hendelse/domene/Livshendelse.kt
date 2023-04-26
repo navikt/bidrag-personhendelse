@@ -30,9 +30,7 @@ data class Livshendelse(
 
 ) {
 
-    fun hentPersonident() = personidenter?.first { it.length == 11 }
-    fun hentGjeldendeAktørid() = personidenter?.first { it.length == 13 }
-    fun hentPersonidenter() = personidenter?.filter { it.length == 11 }
+    fun hentGjeldendeAktørid() = personidenter.first { it.length == 13 }
 
     enum class Gradering {
         STRENGT_FORTROLIG_UTLAND,
@@ -51,10 +49,10 @@ data class Livshendelse(
 
     companion object {
         fun tilJson(livshendelse: Livshendelse): String {
-            var gsonbuilder = GsonBuilder()
+            val gsonbuilder = GsonBuilder()
             gsonbuilder.registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
             gsonbuilder.registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter().nullSafe())
-            var gson = gsonbuilder.create()
+            val gson = gsonbuilder.create()
             return gson.toJson(livshendelse)
         }
     }

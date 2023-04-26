@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Import
 
 @SpringBootApplication
 @Import(Applikasjonskonfig::class)
-open class Teststarter
+class Teststarter
 
 fun main(args: Array<String>) {
     val app = SpringApplicationBuilder(Teststarter::class.java)

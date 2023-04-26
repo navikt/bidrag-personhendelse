@@ -22,12 +22,19 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     fun findByHendelseidAndStatus(hendelseid: String, status: Status): Hendelsemottak?
 
     @Query(
-        "select ha.id from Hendelsemottak ha " +
-            "where ha.status = no.nav.bidrag.person.hendelse.database.Status.MOTTATT and ha.statustidspunkt < :statustidspunktFør"
+        "select hm.id from Hendelsemottak hm " +
+            "where hm.status = no.nav.bidrag.person.hendelse.database.Status.MOTTATT and hm.statustidspunkt < :statustidspunktFør"
     )
     fun idTilHendelserSomErKlarTilOverføring(statustidspunktFør: LocalDateTime): Set<Long>
 
-    @Query("select ha.id from Hendelsemottak ha where ha.status = :status and ha.statustidspunkt < :statustidspunktFør")
+    @Query(
+        "select distinct(hm.aktor.aktorid) from Hendelsemottak hm " +
+            "where (hm.aktor.publisert is null or hm.aktor.publisert < :publisertFør) " +
+            " and hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT"
+    )
+    fun aktøridTilPubliseringsklareOverførteHendelser(publisertFør: LocalDateTime): Set<String>
+
+    @Query("select hm.id from Hendelsemottak hm where hm.status = :status and hm.statustidspunkt < :statustidspunktFør")
     fun henteIdTilHendelser(status: Status, statustidspunktFør: LocalDateTime): Set<Long>
 
     @Transactional

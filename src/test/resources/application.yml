@@ -8,8 +8,15 @@ WMQ_TIMEOUT: 15000
 WMQ_APPLICATION_NAME: bidrag-person-hendelse
 PASSORD_SRVBIDRAG_PERSON_HEN: passw0rd
 KAFKA_BROKERS: http://localhost:9093
-KJØREPLAN_OVERFØRE_HENDELSER: "0 0/1 * * * ?"
-KJØREPLAN_SLETTE_HENDELSER: "0 0/1 * * * ?"
+OVERFØRE_HENDELSER_KJØREPLAN: "0 0/3 * * * ?"
+OVERFØRE_HENDELSER_LÅS_MIN: PT2M
+OVERFØRE_HENDELSER_LÅS_MAX: PT10M
+PUBLISERE_PERSONHENDELSER_KJØREPLAN: "0 0/15 * * * ?"
+PUBLISERE_PERSONHENDELSER_LÅS_MIN: PT2M
+PUBLISERE_PERSONHENDELSER_LÅS_MAX: PT10M
+KJØREPLAN_SLETTE_HENDELSER: "0 0 * * * ?"
+SLETTE_HENDELSER_LÅS_MIN: PT30S
+SLETTE_HENDELSER_LÅS_MAX: PT1M
 DAGER_LEVETID_UTGÅTTE_HENDELSER: 2
 BIDRAG_PERSON_URL: http://localhost
 AZURE_OPENID_CONFIG_TOKEN_ENDPOINT: http://localhost:${mock-oauth2-server.port}/aad/token
@@ -50,9 +57,21 @@ funksjonsbrytere:
     cluster: localhost
     applicationName: bidrag-person-hendelse
 
-kjøreplan:
-  overføre_hendelser: ${KJØREPLAN_OVERFØRE_HENDELSER}
-  slette_hendelser: ${KJØREPLAN_SLETTE_HENDELSER}
+overføre_hendelser:
+  kjøreplan: ${OVERFØRE_HENDELSER_KJØREPLAN}
+  lås:
+    min: ${OVERFØRE_HENDELSER_LÅS_MIN}
+    max: ${OVERFØRE_HENDELSER_LÅS_MAX}
+publisere_personhendelser:
+  kjøreplan: ${PUBLISERE_PERSONHENDELSER_KJØREPLAN}
+  lås:
+    min: ${PUBLISERE_PERSONHENDELSER_LÅS_MIN}
+    max: ${PUBLISERE_PERSONHENDELSER_LÅS_MAX}
+slette_hendelser:
+  kjøreplan: ${KJØREPLAN_SLETTE_HENDELSER}
+  lås:
+    min: ${SLETTE_HENDELSER_LÅS_MIN}
+    max: ${SLETTE_HENDELSER_LÅS_MAX}
 
 egenskaper:
   generelt:
@@ -79,9 +98,12 @@ spring:
 
   ### H2 ###
   flyway.enabled: false
-  datasource.type: com.zaxxer.hikari.HikariDataSource
-  datasource.url: jdbc:h2:mem:default
-  spring.datasource.initialization-mode: always
+  spring:
+    datasource:
+      datasource.type: com.zaxxer.hikari.HikariDataSource
+      initialization-mode: always
+      driverClassName: org.h2.Driver
+      url: jdbc:h2:mem:default
   data.jpa.repositories.bootstrap-mode: default
   h2.console.enabled: true
   jpa:
