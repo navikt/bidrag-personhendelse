@@ -13,7 +13,8 @@
 
 ***/
 
-alter table hendelsemottak add column aktor_id integer;
+
+alter table public.hendelsemottak add column aktor_id integer;
 
 insert into aktor(aktorid) select distinct substring(personidenter, '\d{13}') from  hendelsemottak;
 
