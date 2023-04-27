@@ -35,11 +35,14 @@ alter table hm rename to hendelsemottak;
 
 drop table mellomlagring;
 
-/*** rulle tilbake ***
+/*** roll back ***
 
-drop table hendelsemottak;
+-- delete old hendelsemottak table since new events may have been received during the time the latest version has been  active on gcp
+drop table hendelsemottak_gammel;
 
-alter table hendelsemottak_gammel rename to hendelsemottak;
+-- add indexes and constraints
+alter table hendelsemottak add constraint hendelsemottak_pkey primary key (id);
+create index if not exists index_hendelsemottak_hendelseid on hendelsemottak(hendelseid)
 
 delete from aktor;
 
