@@ -6,15 +6,12 @@
  Stop all bidrag-person-hendelse pods prior to deploy using the kubectl command:
   -> k scale deployment bidrag-person-hendelse --replicas 0
 
-  This script will create a new column aktor_id in table hendelsemottak with a foreign key constraint reference
+  This script will create a foreign key constraint for column aktor_id in hendelsemottak with reference to
   to the id field of table aktor.
 
-  Population of the new aktor_id column happens in a series of steps to optimize performance.
+  Population of the aktor_id column happens in a series of steps to optimize performance.
 
 ***/
-
-
-alter table hendelsemottak add column aktor_id integer;
 
 insert into aktor(aktorid) select distinct substring(personidenter, '\d{13}') from  hendelsemottak;
 
