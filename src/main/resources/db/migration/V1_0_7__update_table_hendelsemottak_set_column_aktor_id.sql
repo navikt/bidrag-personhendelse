@@ -31,13 +31,6 @@ create table hm as (
 );
 
 alter table hendelsemottak rename to hendelsemottak_gammel;
-alter table hendelsemottak add constraint fk_aktor foreign key (aktor_id)
-        references aktor (id) match simple
-        on update no action
-        on delete no action;
-
-create index index_hendelsemottak_aktor_id on hendelsemottak(aktor_id);
-
 alter table hm rename to hendelsemottak;
 
 drop table mellomlagring;
@@ -48,10 +41,8 @@ drop table hendelsemottak;
 
 alter table hendelsemottak_gammel rename to hendelsemottak;
 
-alter table hendelsemottak drop column aktor_id;
-
 delete from aktor;
 
-delete from flyway_schema_history where version = '1.0.6';
+delete from flyway_schema_history where version = '1.0.7';
 
  */
