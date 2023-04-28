@@ -434,11 +434,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun sikkerLoggingAvLivshendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
         slog.info(
             "Livshendelse mottatt: " +
-                    "hendelseId: ${livshendelse.hendelseid} " +
-                    "offset: ${livshendelse.offset}, " +
-                    "opplysningstype: ${livshendelse.opplysningstype}, " +
-                    "aktørid: ${livshendelse.hentGjeldendeAktørid()}, " +
-                    "endringstype: ${livshendelse.endringstype}, $ekstraInfo"
+                "hendelseId: ${livshendelse.hendelseid} " +
+                "offset: ${livshendelse.offset}, " +
+                "opplysningstype: ${livshendelse.opplysningstype}, " +
+                "aktørid: ${livshendelse.hentGjeldendeAktørid()}, " +
+                "endringstype: ${livshendelse.endringstype}, $ekstraInfo"
         )
     }
 

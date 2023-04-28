@@ -1,8 +1,12 @@
 package no.nav.bidrag.person.hendelse.integrasjon.kontoregister
 
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.clearAllMocks
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
+import io.mockk.verify
 import no.nav.bidrag.person.hendelse.prosess.Kontoendringsbehandler
 import no.nav.bidrag.person.hendelse.testdata.generererFødselsnummer
 import no.nav.person.endringsmelding.v1.Endringsmelding
@@ -34,7 +38,6 @@ class KontoendringsmottakTest {
 
     @Test
     fun `skal lagre kontoendring`() {
-
         // gitt
         var kontoeierFødselsnummer: String = generererFødselsnummer()
         var endringsmelding: Endringsmelding =

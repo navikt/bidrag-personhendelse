@@ -23,14 +23,14 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
 
     @Query(
         "select hm.id from Hendelsemottak hm " +
-                "where hm.status = no.nav.bidrag.person.hendelse.database.Status.MOTTATT and hm.statustidspunkt < :statustidspunktFør"
+            "where hm.status = no.nav.bidrag.person.hendelse.database.Status.MOTTATT and hm.statustidspunkt < :statustidspunktFør"
     )
     fun idTilHendelserSomErKlarTilOverføring(statustidspunktFør: LocalDateTime): Set<Long>
 
     @Query(
         "select distinct(hm.aktor.aktorid) from Hendelsemottak hm " +
-                "where (hm.aktor.publisert is null or hm.aktor.publisert < :publisertFør) " +
-                " and hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT"
+            "where (hm.aktor.publisert is null or hm.aktor.publisert < :publisertFør) " +
+            " and hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT"
     )
     fun aktøridTilPubliseringsklareOverførteHendelser(publisertFør: LocalDateTime): Set<String>
 

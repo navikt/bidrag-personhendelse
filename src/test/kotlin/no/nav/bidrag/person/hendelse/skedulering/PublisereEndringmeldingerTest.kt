@@ -61,7 +61,6 @@ class PublisereEndringmeldingerTest {
 
     @Test
     fun `skal publisere endringsmelding for kontoendring med utløpt venteperiode etter mottak`() {
-
         // gitt
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
@@ -93,7 +92,6 @@ class PublisereEndringmeldingerTest {
 
     @Test
     fun `skal ikke publisere endringsmelding for kontoendring for person med ikke utløpt venteperiode mellom publiseringer`() {
-
         // gitt
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
@@ -128,7 +126,6 @@ class PublisereEndringmeldingerTest {
 
     @Test
     fun `skal publisere endringsmeldinger for personer med nylig oppdaterte personopplysninger`() {
-
         // gitt
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
@@ -159,7 +156,6 @@ class PublisereEndringmeldingerTest {
 
     @Test
     fun `skal ikke publisere endringsmelding for samme person mer enn én gang innenfor en bestemt periode`() {
-
         // gitt
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)

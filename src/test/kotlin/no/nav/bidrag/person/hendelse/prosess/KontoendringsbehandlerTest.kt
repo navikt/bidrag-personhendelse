@@ -1,8 +1,11 @@
 package no.nav.bidrag.person.hendelse.prosess
 
-import io.mockk.*
+import io.mockk.clearAllMocks
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
+import io.mockk.verify
 import no.nav.bidrag.person.hendelse.database.Aktor
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.Kontoendring
@@ -33,7 +36,6 @@ class KontoendringsbehandlerTest {
 
     @Test
     fun `skal lagre kontoendring`() {
-
         // gitt
         var kontoeierAktørid = generereAktørid()
         var kontoeierFødselsnummer = generererFødselsnummer()
@@ -54,5 +56,4 @@ class KontoendringsbehandlerTest {
             )
         }
     }
-
 }

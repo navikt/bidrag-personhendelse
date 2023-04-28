@@ -1,6 +1,15 @@
 package no.nav.bidrag.person.hendelse.integrasjon.pdl
 
-import no.nav.bidrag.person.hendelse.domene.*
+import no.nav.bidrag.person.hendelse.domene.Foedsel
+import no.nav.bidrag.person.hendelse.domene.Folkeregisteridentifikator
+import no.nav.bidrag.person.hendelse.domene.Innflytting
+import no.nav.bidrag.person.hendelse.domene.Livshendelse
+import no.nav.bidrag.person.hendelse.domene.Navn
+import no.nav.bidrag.person.hendelse.domene.OriginaltNavn
+import no.nav.bidrag.person.hendelse.domene.Sivilstand
+import no.nav.bidrag.person.hendelse.domene.Utflytting
+import no.nav.bidrag.person.hendelse.domene.VergeEllerFremtidsfullmakt
+import no.nav.bidrag.person.hendelse.domene.VergeEllerFullmektig
 import no.nav.bidrag.person.hendelse.exception.HendelsemottakException
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import no.nav.person.pdl.leesah.Endringstype

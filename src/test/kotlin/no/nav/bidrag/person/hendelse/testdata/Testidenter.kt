@@ -42,5 +42,3 @@ fun genereIdent(erAktørid: Boolean): String {
         return (1000000000000..9999999999999).random().toString()
     }
 }
-
-

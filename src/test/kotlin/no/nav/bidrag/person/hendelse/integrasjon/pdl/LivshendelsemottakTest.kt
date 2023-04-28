@@ -1,8 +1,12 @@
 package no.nav.bidrag.person.hendelse.integrasjon.pdl
 
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.clearAllMocks
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
+import io.mockk.verify
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
@@ -44,7 +48,6 @@ class LivshendelsemottakTest {
 
     @Test
     fun `skal avbryte prossesering av melding med opplysningstype som ikke støttes`() {
-
         // gitt
         var personhendelse = henteIkkeStøttetOpplysingstype()
 
