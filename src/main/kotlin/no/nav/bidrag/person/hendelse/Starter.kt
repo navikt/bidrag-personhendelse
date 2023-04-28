@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import
 
 @SpringBootApplication(exclude = [SecurityAutoConfiguration::class, ManagementWebSecurityAutoConfiguration::class])
 @Import(Applikasjonskonfig::class)
-open class Starter
+class Starter
 
 fun main(args: Array<String>) {
     SpringApplication.run(Starter::class.java, *args)

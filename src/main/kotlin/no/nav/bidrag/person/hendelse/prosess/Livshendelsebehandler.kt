@@ -432,13 +432,13 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     private fun sikkerLoggingAvLivshendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
-        SECURE_LOGGER.info(
+        slog.info(
             "Livshendelse mottatt: " +
-                "hendelseId: ${livshendelse.hendelseid} " +
-                "offset: ${livshendelse.offset}, " +
-                "opplysningstype: ${livshendelse.opplysningstype}, " +
-                "aktørid: ${livshendelse.hentGjeldendeAktørid()}, " +
-                "endringstype: ${livshendelse.endringstype}, $ekstraInfo"
+                    "hendelseId: ${livshendelse.hendelseid} " +
+                    "offset: ${livshendelse.offset}, " +
+                    "opplysningstype: ${livshendelse.opplysningstype}, " +
+                    "aktørid: ${livshendelse.hentGjeldendeAktørid()}, " +
+                    "endringstype: ${livshendelse.endringstype}, $ekstraInfo"
         )
     }
 
@@ -454,8 +454,8 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     companion object {
-        val log: Logger = LoggerFactory.getLogger(Livshendelsebehandler::class.java)
-        val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
+        val log: Logger = LoggerFactory.getLogger(this::class.java)
+        val slog: Logger = LoggerFactory.getLogger("secureLogger")
 
         const val MAKS_ANTALL_PERSONIDENTER = 20
 

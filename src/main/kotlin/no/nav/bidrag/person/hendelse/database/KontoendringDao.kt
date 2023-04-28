@@ -13,9 +13,9 @@ interface KontoendringDao : JpaRepository<Kontoendring, Long> {
 
     @Query(
         "select ke.aktor.aktorid from Kontoendring ke " +
-            "where ke.status in (no.nav.bidrag.person.hendelse.database.StatusKontoendring.MOTTATT) " +
-            "and ke.mottatt < :mottattFør " +
-            "and (ke.aktor.publisert is null or ke.aktor.publisert < :publisertFør)"
+                "where ke.status in (no.nav.bidrag.person.hendelse.database.StatusKontoendring.MOTTATT) " +
+                "and ke.mottatt < :mottattFør " +
+                "and (ke.aktor.publisert is null or ke.aktor.publisert < :publisertFør)"
     )
     fun henteKontoeiereForPublisering(mottattFør: LocalDateTime, publisertFør: LocalDateTime): Set<String>
 

@@ -1,4 +1,5 @@
 package no.nav.bidrag.person.hendelse.domene
+
 import java.time.LocalDate
 
 data class Navn(

@@ -70,6 +70,6 @@ class SletteUtgåtteHendelser(
     }
 
     companion object {
-        val log: Logger = LoggerFactory.getLogger(SletteUtgåtteHendelser::class.java)
+        val log: Logger = LoggerFactory.getLogger(this::class.java)
     }
 }

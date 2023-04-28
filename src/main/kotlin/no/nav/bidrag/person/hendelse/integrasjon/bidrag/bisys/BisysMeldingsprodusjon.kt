@@ -33,6 +33,6 @@ class BisysMeldingsprodusjon(private val jmsTemplate: JmsTemplate) {
     }
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(BisysMeldingsprodusjon::class.java)
+        private val log: Logger = LoggerFactory.getLogger(this::class.java)
     }
 }

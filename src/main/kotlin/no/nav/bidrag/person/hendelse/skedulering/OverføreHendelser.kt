@@ -22,16 +22,28 @@ class OverføreHendelser(
 
     @Transactional
     @Scheduled(cron = "\${overføre_hendelser.kjøreplan}")
-    @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "\${overføre_hendelser.lås.min}", lockAtMostFor = "\${overføre_hendelser.lås.max}")
+    @SchedulerLock(
+        name = "overføre_hendelser",
+        lockAtLeastFor = "\${overføre_hendelser.lås.min}",
+        lockAtMostFor = "\${overføre_hendelser.lås.max}"
+    )
     fun overføreHendelserTilBisys() {
-        var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
+        var sisteStatusoppdateringFør =
+            LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
         log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før $sisteStatusoppdateringFør")
 
-        var hendelserKlarTilOverføring = databasetjeneste.hendelsemottakDao.idTilHendelserSomErKlarTilOverføring(sisteStatusoppdateringFør)
-        log.info(henteLoggmelding(hendelserKlarTilOverføring.size, egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen))
+        var hendelserKlarTilOverføring =
+            databasetjeneste.hendelsemottakDao.idTilHendelserSomErKlarTilOverføring(sisteStatusoppdateringFør)
+        log.info(
+            henteLoggmelding(
+                hendelserKlarTilOverføring.size,
+                egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen
+            )
+        )
 
         // Begrenser antall hendelser som skal videresendes
-        var hendelserSomOverføresIDenneOmgang = hendelserKlarTilOverføring.take(egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
+        var hendelserSomOverføresIDenneOmgang =
+            hendelserKlarTilOverføring.take(egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
 
         try {
             var antallOverført: Int = meldingsprodusent.sendeMeldinger(
@@ -61,6 +73,6 @@ class OverføreHendelser(
     }
 
     companion object {
-        val log: Logger = LoggerFactory.getLogger(OverføreHendelser::class.java)
+        val log: Logger = LoggerFactory.getLogger(this::class.java)
     }
 }

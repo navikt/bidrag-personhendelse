@@ -43,7 +43,7 @@ class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
             records.first().run {
                 LOGGER.warn(
                     "Feil ved konsumering av melding fra ${this.topic()}. id ${this.key()}, " +
-                        "offset: ${this.offset()}, partition: ${this.partition()}"
+                            "offset: ${this.offset()}, partition: ${this.partition()}"
                 )
                 SECURE_LOGGER.warn("${this.topic()} - Problemer med prosessering av $records", e)
                 scheduleRestart(
@@ -65,8 +65,8 @@ class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
             if (counter.get() > 0) {
                 LOGGER.error(
                     "Feil ved prosessering av kafkamelding for $topic. Container har restartet ${counter.get()} ganger og " +
-                        "man må se på hvorfor record ikke kan leses. " +
-                        "Hvis denne meldingen gjentar seg hver ${Duration.ofMillis(LONG_SLEEP)} så klarer ikke tjenesten å hente seg inn"
+                            "man må se på hvorfor record ikke kan leses. " +
+                            "Hvis denne meldingen gjentar seg hver ${Duration.ofMillis(LONG_SLEEP)} så klarer ikke tjenesten å hente seg inn"
                 )
             }
             counter.set(0)
@@ -85,7 +85,11 @@ class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
         }
         stopContainer(container) // i stedet for stopContainer i handleRemaining i parent som kaster error
 
-        throw KafkaException("Stopper kafka container ${counter.get()} for $topic i ${Duration.ofMillis(stopTime)} antall feil $numErrors", KafkaException.Level.WARN, e)
+        throw KafkaException(
+            "Stopper kafka container ${counter.get()} for $topic i ${Duration.ofMillis(stopTime)} antall feil $numErrors",
+            KafkaException.Level.WARN,
+            e
+        )
     }
 
     /**
