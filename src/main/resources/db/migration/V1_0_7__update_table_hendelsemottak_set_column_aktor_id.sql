@@ -30,20 +30,17 @@ create table hm as (
              inner join aktor on aktor.aktorid = ml.aktorid
 );
 
-alter table hendelsemottak rename to hendelsemottak_gammel;
+drop table hendelsemottak;
 alter table hm rename to hendelsemottak;
 
 drop table mellomlagring;
 
 /*** roll back ***
 
--- delete old hendelsemottak table since new events may have been received during the time the latest version has been  active on gcp
-drop table hendelsemottak_gammel;
-
 -- add indexes and constraints
 alter table hendelsemottak add constraint hendelsemottak_pkey primary key (id);
 create index if not exists index_hendelsemottak_hendelseid on hendelsemottak(hendelseid)
-
+update hendelsemottak set aktor_id = null;
 delete from aktor;
 
 delete from flyway_schema_history where version = '1.0.7';
