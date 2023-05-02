@@ -2,7 +2,9 @@ package no.nav.bidrag.person.hendelse.konfigurasjon
 
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock
+import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.security.api.EnableSecurityConfiguration
+import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.person.hendelse.konfigurasjon.Applikasjonskonfig.Companion.PROFIL_I_SKY
 import no.nav.bidrag.person.hendelse.konfigurasjon.Applikasjonskonfig.Companion.PROFIL_LOKAL_POSTGRES
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -35,6 +37,11 @@ class Applikasjonskonfig {
     companion object {
         const val PROFIL_I_SKY = "i-sky"
         const val PROFIL_LOKAL_POSTGRES = "lokal-postgres"
+    }
+
+    @Bean
+    fun exceptionLogger(): ExceptionLogger? {
+        return ExceptionLogger(this::class.java.simpleName)
     }
 }
 
