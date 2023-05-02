@@ -37,7 +37,7 @@ class PublisereEndringsmeldinger(
         log.info("Fant ${aktøriderPersonopplysninger.size} unike personer med nylige endringer i personopplysninger.")
 
         var aktøriderForPublisering = aktøriderPersonopplysninger.plus(aktøriderKontoeiere)
-        log.info("Identifiserte totalt $aktøriderForPublisering unike personer som det skal publiseres endringsmeldinger for.")
+        log.info("Identifiserte totalt ${aktøriderForPublisering.size} unike personer som det skal publiseres endringsmeldinger for.")
 
         // Publisere melding til intern topic for samtlige personer med endringer
         aktøriderForPublisering.forEach {
