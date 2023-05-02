@@ -21,7 +21,7 @@ class BidragPersonklient(
     private val bidragPersonUri =
         UriComponentsBuilder.fromUri(bidragPersonBaseUrl).pathSegment("fodselsdatoer").build().toUri()
 
-    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
+    @Retryable(value = [Exception::class], maxAttempts = 10, backoff = Backoff(delay = 1000, multiplier = 2.0))
     fun henteAlleIdenterForPerson(personIdent: String): Set<PersonidentDto> {
         val personidenter: PersonidenterDto? = postForEntity(bidragPersonUri, personIdent)
         if (personidenter != null) {
