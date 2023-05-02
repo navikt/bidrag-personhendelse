@@ -69,3 +69,4 @@ spec:
             - name: mq
               port: 1413
               protocol: TCP
+        - host: bidrag-person.dev-fss-pub.nais.io
