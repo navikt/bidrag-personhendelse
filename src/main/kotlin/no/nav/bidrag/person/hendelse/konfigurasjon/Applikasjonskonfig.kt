@@ -4,7 +4,6 @@ import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.security.api.EnableSecurityConfiguration
-import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.person.hendelse.konfigurasjon.Applikasjonskonfig.Companion.PROFIL_I_SKY
 import no.nav.bidrag.person.hendelse.konfigurasjon.Applikasjonskonfig.Companion.PROFIL_LOKAL_POSTGRES
 import org.springframework.boot.autoconfigure.domain.EntityScan
