@@ -6,6 +6,7 @@ import no.nav.bidrag.person.hendelse.integrasjon.bidrag.person.BidragPersonklien
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.person.domene.PersonidentDto
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.BidragKafkaMeldingsprodusent
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.domene.Endringsmelding
+import no.nav.bidrag.person.hendelse.integrasjon.pdl.domene.Identgruppe
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -29,25 +30,35 @@ class PublisereEndringsmeldinger(
     )
     fun identifisereOgPublisere() {
         // Hente aktørid for kontoeiere med nylige endringer
-        var aktøriderKontoeiere = databasetjeneste.henteAktøridTilKontoeiereMedNyligeKontoendringer()
+        val aktøriderKontoeiere = databasetjeneste.henteAktøridTilKontoeiereMedNyligeKontoendringer()
         log.info("Fant ${aktøriderKontoeiere.size} unike kontoeiere med nylige kontoendringer.")
 
         // Hente aktørid til personer med nylige endringer i personopplysninger
-        var aktøriderPersonopplysninger = databasetjeneste.henteAktøridTilPersonerMedNyligOppdatertePersonopplysninger()
+        val aktøriderPersonopplysninger = databasetjeneste.henteAktøridTilPersonerMedNyligOppdatertePersonopplysninger()
         log.info("Fant ${aktøriderPersonopplysninger.size} unike personer med nylige endringer i personopplysninger.")
 
-        var aktøriderForPublisering = aktøriderPersonopplysninger.plus(aktøriderKontoeiere)
+        val aktøriderForPublisering = aktøriderPersonopplysninger.plus(aktøriderKontoeiere)
         log.info("Identifiserte totalt ${aktøriderForPublisering.size} unike personer som det skal publiseres endringsmeldinger for.")
 
         // Publisere melding til intern topic for samtlige personer med endringer
-        aktøriderForPublisering.forEach {
-            var personidenter = bidragPersonklient.henteAlleIdenterForPerson(it)
-            bidragtopic.publisereEndringsmelding(tilEndringsmelding(it, personidenter))
-        }
-    }
+        val aktøriderForPubliseringSubset = aktøriderForPublisering.take(egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
+        log.info("Publiserer i denne omgang endringsmeldinger for ${aktøriderForPubliseringSubset.size} av ${aktøriderForPublisering.size} personer")
 
-    private fun tilEndringsmelding(aktørid: String, personidenter: Set<PersonidentDto>): Endringsmelding {
-        return Endringsmelding(aktørid, personidenter.map { it.ident }.toSet())
+        // TODO: Avklare behov med moher. Kan vi klare oss med bare aktørid.
+        /*
+        val personerDetSkalOpprettesMeldingFor = bidragPersonklient.henteAlleIdenterForPersoner(aktøriderForPubliseringSubset.toSet())
+        personerDetSkalOpprettesMeldingFor.forEach {
+            bidragtopic.publisereEndringsmelding(
+                tilEndringsmelding(
+                    it.identer.first { it.gruppe ==Identgruppe.AKTORID && !it.historisk }.ident,
+                    it.identer.toSet()
+                )
+            )
+        }
+         */
+        aktøriderForPublisering.forEach {
+            bidragtopic.publisereEndringsmelding(Endringsmelding(it, setOf(it)))
+        }
     }
 
     companion object {

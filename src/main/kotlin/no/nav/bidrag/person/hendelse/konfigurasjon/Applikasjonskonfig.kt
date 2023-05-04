@@ -4,12 +4,16 @@ import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.security.api.EnableSecurityConfiguration
+import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.commons.web.config.RestOperationsAzure
 import no.nav.bidrag.commons.web.config.RestTemplateBuilderBean
 import no.nav.bidrag.person.hendelse.konfigurasjon.Applikasjonskonfig.Companion.PROFIL_I_SKY
 import no.nav.bidrag.person.hendelse.konfigurasjon.Applikasjonskonfig.Companion.PROFIL_LOKAL_POSTGRES
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
+import org.springframework.boot.web.client.RootUriTemplateHandler
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory
 import org.springframework.context.annotation.Bean
@@ -17,6 +21,8 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Profile
+import org.springframework.context.annotation.Scope
+import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.retry.annotation.EnableRetry
 import org.springframework.scheduling.annotation.EnableScheduling
@@ -43,6 +49,19 @@ class Applikasjonskonfig {
     @Bean
     fun exceptionLogger(): ExceptionLogger? {
         return ExceptionLogger(this::class.java.simpleName)
+    }
+
+    @Bean
+    @Scope("prototype")
+    @Qualifier("bidrag-person-azure-client-credentials")
+    fun bidragPersonAzureCCRestTemplate(
+        @Value("\${egenskaper.integrasjon.bidrag.person.url}") urlBidragPerson: String?,
+        httpHeaderRestTemplate: HttpHeaderRestTemplate,
+        bidragPersonClientCredentialsTokenInterceptor: ClientHttpRequestInterceptor?
+    ): HttpHeaderRestTemplate? {
+        httpHeaderRestTemplate.interceptors.add(bidragPersonClientCredentialsTokenInterceptor)
+        httpHeaderRestTemplate.uriTemplateHandler = RootUriTemplateHandler(urlBidragPerson)
+        return httpHeaderRestTemplate
     }
 }
 
