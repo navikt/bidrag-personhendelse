@@ -21,6 +21,6 @@ create index index_kontoendring_fk_aktor on kontoendring(aktor_id)
 /*** rulle tilbake ***
 
   drop table kontoendring
-  delete from flyway_schema_history where version = '1.0.6';
+  delete from flyway_schema_history where version = '1.0.9';
 
  */

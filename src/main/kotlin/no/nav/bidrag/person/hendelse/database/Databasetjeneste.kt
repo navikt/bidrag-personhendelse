@@ -17,9 +17,9 @@ class Databasetjeneste(
     val egenskaper: Egenskaper
 ) {
     fun oppdatereStatusPåHendelse(id: Long, nyStatus: Status) {
-        var hendelse = hendelsemottakDao.findById(id)
+        val hendelse = hendelsemottakDao.findById(id)
         if (hendelse.isPresent) {
-            var hendelsemottak = hendelse.get()
+            val hendelsemottak = hendelse.get()
             hendelsemottak.status = nyStatus
             hendelsemottak.statustidspunkt = LocalDateTime.now()
             this.hendelsemottakDao.save(hendelsemottak)
@@ -58,8 +58,7 @@ class Databasetjeneste(
             status = Status.KANSELLERT
         }
 
-        var lagretAktør =
-            aktorDao.findByAktorid(livshendelse.aktorid).orElseGet { aktorDao.save(Aktor(livshendelse.aktorid)) }
+        val lagretAktør = aktorDao.findByAktorid(livshendelse.aktorid).orElseGet { aktorDao.save(Aktor(livshendelse.aktorid)) }
 
         return hendelsemottakDao.save(
             Hendelsemottak(
@@ -79,37 +78,39 @@ class Databasetjeneste(
     }
 
     @Transactional(readOnly = false)
-    fun lagreKontoendring(aktøridKontoeier: String): Kontoendring {
-        var aktør = hentEksisterendeEllerOpprettNyAktør(aktøridKontoeier)
-        return kontoendringDao.save(Kontoendring(aktør))
+    fun lagreKontoendring(aktøridKontoeier: String, personidenter: Set<String>): Kontoendring {
+        val aktør = hentEksisterendeEllerOpprettNyAktør(aktøridKontoeier)
+        return kontoendringDao.save(Kontoendring(aktør, personidenter.toString()))
     }
 
-    fun henteAktøridTilPersonerMedNyligOppdatertePersonopplysninger(): Set<String> {
-        return hendelsemottakDao.aktøridTilPubliseringsklareOverførteHendelser(
-            LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
+    fun henteAktøridTilPersonerMedNyligOppdatertePersonopplysninger(): HashMap<String, String> {
+        return tilHashMap(
+            hendelsemottakDao.aktøridTilPubliseringsklareOverførteHendelser(
+                LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
+            )
         )
     }
 
-    fun henteAktøridTilKontoeiereMedNyligeKontoendringer(): Set<String> {
-        var mottattFør =
+    fun henteAktøridTilKontoeiereMedNyligeKontoendringer(): HashMap<String, String> {
+        val mottattFør =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
-        var publisertFør =
+        val publisertFør =
             LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
 
-        return kontoendringDao.henteKontoeiereForPublisering(mottattFør, publisertFør)
+        return tilHashMap(kontoendringDao.henteKontoeiereForPublisering(mottattFør, publisertFør))
     }
 
     fun hentEksisterendeEllerOpprettNyAktør(aktørid: String): Aktor {
-        var eksisterendeAktør = aktorDao.findByAktorid(aktørid)
-        if (eksisterendeAktør.isPresent) {
-            return eksisterendeAktør.get()
+        val eksisterendeAktør = aktorDao.findByAktorid(aktørid)
+        return if (eksisterendeAktør.isPresent) {
+            eksisterendeAktør.get()
         } else {
-            return aktorDao.save(Aktor(aktørid))
+            aktorDao.save(Aktor(aktørid))
         }
     }
 
     private fun kansellereTidligereHendelse(livshendelse: Livshendelse): Status {
-        var tidligereHendelseMedStatusMottatt =
+        val tidligereHendelseMedStatusMottatt =
             livshendelse.tidligereHendelseid?.let { hendelsemottakDao.findByHendelseidAndStatus(it, Status.MOTTATT) }
         tidligereHendelseMedStatusMottatt?.status = Status.KANSELLERT
         tidligereHendelseMedStatusMottatt?.statustidspunkt = LocalDateTime.now()
@@ -129,8 +130,14 @@ class Databasetjeneste(
         }
     }
 
+    private fun tilHashMap(liste: List<Personhendelse>): HashMap<String, String> {
+        var map = HashMap<String, String>()
+        liste.forEach { map.put(it.aktor.aktorid, it.personidenter) }
+        return map
+    }
+
     private fun trekkeTidligereMottatteKontoendringerForPerson(aktør: Aktor) {
-        var kontoendringerForPersonMedStatusMottatt =
+        val kontoendringerForPersonMedStatusMottatt =
             kontoendringDao.findByAktorAndStatus(aktør, StatusKontoendring.MOTTATT)
         kontoendringerForPersonMedStatusMottatt.forEach {
             it.status = StatusKontoendring.TRUKKET

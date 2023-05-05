@@ -37,13 +37,13 @@ class KontoendringsbehandlerTest {
     @Test
     fun `skal lagre kontoendring`() {
         // gitt
-        var kontoeierAktørid = generereAktørid()
-        var kontoeierFødselsnummer = generererFødselsnummer()
+        val kontoeierAktørid = generereAktørid()
+        val kontoeierFødselsnummer = generererFødselsnummer()
 
-        var personidentDtoer = tilPersonidentDtoer(setOf(kontoeierAktørid, kontoeierFødselsnummer))
+        val personidentDtoer = tilPersonidentDtoer(setOf(kontoeierAktørid, kontoeierFødselsnummer))
 
         every { mockBidragPersonklient.henteAlleIdenterForPerson(kontoeierFødselsnummer) } returns personidentDtoer
-        every { mockDatabasetjeneste.lagreKontoendring(kontoeierAktørid) } returns Kontoendring(Aktor(kontoeierAktørid))
+        every { mockDatabasetjeneste.lagreKontoendring(kontoeierAktørid, setOf(kontoeierAktørid, kontoeierFødselsnummer)) } returns Kontoendring(Aktor(kontoeierAktørid), kontoeierAktørid)
 
         // hvis
         kontoendringsbehandler.lagreKontoendring(kontoeierFødselsnummer)
@@ -52,7 +52,8 @@ class KontoendringsbehandlerTest {
         val kontoeier = slot<String>()
         verify(exactly = 1) {
             mockDatabasetjeneste.lagreKontoendring(
-                capture(kontoeier)
+                capture(kontoeier),
+                any()
             )
         }
     }

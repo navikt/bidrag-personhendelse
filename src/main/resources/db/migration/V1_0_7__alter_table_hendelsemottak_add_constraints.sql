@@ -15,7 +15,7 @@ create index index_hendelsemottak_aktor_id on hendelsemottak(aktor_id);
     drop constraint fk_aktor,
     drop constraint hendelsemottak_pkey;
   drop index index_hendelsemottak_aktor_id;
-  delete from flyway_schema_history where version = '1.0.8';
+  delete from flyway_schema_history where version = '1.0.7';
 
  */
 

@@ -16,6 +16,14 @@ import jakarta.persistence.Table
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import java.time.LocalDateTime
 
+annotation class NoArg
+
+@NoArg
+abstract class Personhendelse(
+    open var personidenter: String,
+    open var aktor: Aktor
+)
+
 @Entity
 class Hendelsemottak(
     val hendelseid: String = "",
@@ -25,9 +33,9 @@ class Hendelsemottak(
     @Enumerated(EnumType.STRING)
     val endringstype: Livshendelse.Endringstype,
     @Column(name = "personidenter", nullable = false)
-    val personidenter: String,
+    override var personidenter: String,
     @ManyToOne(cascade = arrayOf(CascadeType.MERGE))
-    val aktor: Aktor,
+    override var aktor: Aktor,
     @Column(name = "opprettet", nullable = false, updatable = false)
     val opprettet: LocalDateTime = LocalDateTime.now(),
     val tidligereHendelseid: String? = null,
@@ -42,13 +50,15 @@ class Hendelsemottak(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
-)
+) : Personhendelse(personidenter, aktor)
 
 @Entity
 @Table(indexes = [Index(name = "index_kontoendring_aktor_id", columnList = "aktor_id", unique = false)])
 class Kontoendring(
     @ManyToOne(cascade = arrayOf(CascadeType.MERGE))
-    val aktor: Aktor,
+    override var aktor: Aktor,
+    @Column(name = "personidenter", nullable = false)
+    override var personidenter: String,
     @Column(name = "mottatt", nullable = false)
     val mottatt: LocalDateTime = LocalDateTime.now(),
     @Enumerated(EnumType.STRING)
@@ -59,7 +69,7 @@ class Kontoendring(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
-)
+) : Personhendelse(personidenter, aktor)
 
 @Entity
 class Aktor(

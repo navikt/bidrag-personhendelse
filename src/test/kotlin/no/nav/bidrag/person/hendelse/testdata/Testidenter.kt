@@ -1,29 +1,29 @@
 package no.nav.bidrag.person.hendelse.testdata
 
-import no.nav.bidrag.person.hendelse.integrasjon.bidrag.person.domene.PersonidentDto
-import no.nav.bidrag.person.hendelse.integrasjon.pdl.domene.Identgruppe
+import no.nav.bidrag.transport.person.Identgruppe
+import no.nav.bidrag.transport.person.PersonidentDto
 
-fun tilPersonidentDtoer(personidenter: Set<String>): Set<PersonidentDto> {
+fun tilPersonidentDtoer(personidenter: Set<String>): List<PersonidentDto>? {
     return personidenter.map {
         var identgruppe = Identgruppe.FOLKEREGISTERIDENT
         if (it.length == 13) {
             identgruppe = Identgruppe.AKTORID
         }
-        PersonidentDto(it, identgruppe, false)
-    }.toSet()
+        PersonidentDto(it, false, identgruppe)
+    }.toList()
 }
 
 fun generereIdenter(antall: Int = 2): Set<String> {
-    var personidenter = setOf(genereIdent(true), genereIdent(false))
-    if (antall > 3) {
-        return personidenter
+    val personidenter = setOf(genereIdent(true), genereIdent(false))
+    return if (antall > 3) {
+        personidenter
     } else {
-        var personidenter = setOf(genereIdent(true), genereIdent(false))
+        val personidenter = setOf(genereIdent(true), genereIdent(false))
         for (i in 1..antall - 2) {
             personidenter.plus(genereIdent(false))
         }
 
-        return personidenter
+        personidenter
     }
 }
 
@@ -36,9 +36,9 @@ fun generererFødselsnummer(): String {
 }
 
 fun genereIdent(erAktørid: Boolean): String {
-    if (erAktørid) {
-        return (10000000000..99999999999).random().toString()
+    return if (erAktørid) {
+        (10000000000..99999999999).random().toString()
     } else {
-        return (1000000000000..9999999999999).random().toString()
+        (1000000000000..9999999999999).random().toString()
     }
 }

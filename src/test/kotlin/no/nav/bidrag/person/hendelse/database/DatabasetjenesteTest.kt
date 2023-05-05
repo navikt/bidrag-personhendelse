@@ -153,7 +153,7 @@ class DatabasetjenesteTest {
             var tidspunktFørLagring = LocalDateTime.now()
 
             // hvis
-            var kontoendring = databasetjeneste.lagreKontoendring(kontoeier)
+            var kontoendring = databasetjeneste.lagreKontoendring(kontoeier, setOf(kontoeier))
 
             // så
             var kontoendringFraDatabase = kontoendringDao.findById(kontoendring.id)
@@ -173,10 +173,10 @@ class DatabasetjenesteTest {
             // gitt
             var kontoeier = "123456"
             var tidspunktFørLagring = LocalDateTime.now()
-            var tidligereMottattKontoendring = databasetjeneste.lagreKontoendring(kontoeier)
+            var tidligereMottattKontoendring = databasetjeneste.lagreKontoendring(kontoeier, setOf(kontoeier))
 
             // hvis
-            var nyttKontoendringsinnslag = databasetjeneste.lagreKontoendring(kontoeier)
+            var nyttKontoendringsinnslag = databasetjeneste.lagreKontoendring(kontoeier, setOf(kontoeier))
 
             // så
             var forrigeLagredeKontoendringsinnslag = kontoendringDao.findById(tidligereMottattKontoendring.id)

@@ -43,6 +43,6 @@ create index if not exists index_hendelsemottak_hendelseid on hendelsemottak(hen
 update hendelsemottak set aktor_id = null;
 delete from aktor;
 
-delete from flyway_schema_history where version = '1.0.7';
+delete from flyway_schema_history where version = '1.0.6;
 
  */

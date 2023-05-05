@@ -19,6 +19,7 @@
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <bidrag-commons.version>20230427084654_4121ef0</bidrag-commons.version>
+        <bidrag-transport.version>20230505084652_740c713</bidrag-transport.version>
         <google.gson.version>2.10.1</google.gson.version>
         <hibernate-validator.version>8.0.0.Final</hibernate-validator.version>
         <java.version>17</java.version>
@@ -190,6 +191,11 @@
                     <artifactId>token-client-spring</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.bidrag</groupId>
+            <artifactId>bidrag-transport</artifactId>
+            <version>${bidrag-transport.version}</version>
         </dependency>
         <dependency>
             <groupId>no.nav.security</groupId>
@@ -438,11 +444,16 @@
                     <compilerPlugins>
                         <plugin>spring</plugin>
                         <plugin>jpa</plugin>
+                        <plugin>no-arg</plugin>
                     </compilerPlugins>
+                    <pluginOptions>
+                        <option>no-arg:annotation=no.nav.bidrag.person.hendelse.database.NoArg</option>
+                    </pluginOptions>
                 </configuration>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
+
                 <executions>
                     <execution>
                         <id>compile</id>

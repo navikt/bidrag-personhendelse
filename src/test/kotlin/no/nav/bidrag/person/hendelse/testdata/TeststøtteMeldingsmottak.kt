@@ -24,13 +24,13 @@ class TeststøtteMeldingsmottak(val databasetjeneste: Databasetjeneste) {
     }
 
     fun oppretteOgLagreKontoendring(
-        aktørid: String,
+        personidenter: List<String>,
         mottatt: LocalDateTime = LocalDateTime.now()
             .minusHours(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 1),
         publisert: LocalDateTime? = null
     ): Kontoendring {
-        var aktør = henteAktør(aktørid)
-        return databasetjeneste.kontoendringDao.save(Kontoendring(aktør, mottatt))
+        val aktør = henteAktør(personidenter.first { it.length == 13 })
+        return databasetjeneste.kontoendringDao.save(Kontoendring(aktør, personidenter.toString(), mottatt))
     }
 
     fun oppretteOgLagreHendelsemottak(personidenter: List<String>, status: Status = Status.OVERFØRT): Hendelsemottak {

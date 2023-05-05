@@ -41,7 +41,7 @@ class KontoendringDaoTest {
     fun skalLagreNyKontoendring() {
         // gitt
         var aktør: Aktor = aktorDao.save(Aktor("1231234567891"))
-        var nyKontoendring = Kontoendring(aktør)
+        var nyKontoendring = Kontoendring(aktør, aktør.aktorid)
 
         // hvis
         var lagretKontoendring = kontoendringDao.save(nyKontoendring)
@@ -54,11 +54,11 @@ class KontoendringDaoTest {
     @Test
     fun skalHenteKontoendringSomErKlarForPublisering() {
         // gitt
-        var aktør: Aktor = aktorDao.save(Aktor("1231234567891", LocalDateTime.now().minusDays(1)))
-        kontoendringDao.save(Kontoendring(aktør, LocalDateTime.now().minusDays(1)))
+        val aktør: Aktor = aktorDao.save(Aktor("1231234567891", LocalDateTime.now().minusDays(1)))
+        kontoendringDao.save(Kontoendring(aktør, aktør.aktorid, LocalDateTime.now().minusDays(1)))
 
         // hvis
-        var kontoeiere = kontoendringDao.henteKontoeiereForPublisering(
+        val kontoeiere = kontoendringDao.henteKontoeiereForPublisering(
             LocalDateTime.now().minusDays(1),
             LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
         )
@@ -66,7 +66,7 @@ class KontoendringDaoTest {
         // så
         assertSoftly {
             kontoeiere.size shouldBe 1
-            kontoeiere.first() shouldBe aktør.aktorid
+            kontoeiere.first().aktor.aktorid shouldBe aktør.aktorid
         }
     }
 }

@@ -13,11 +13,11 @@ import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.person.BidragPersonklient
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.BidragKafkaMeldingsprodusent
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.domene.Endringsmelding
-import no.nav.bidrag.person.hendelse.integrasjon.pdl.domene.Identgruppe
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig
 import no.nav.bidrag.person.hendelse.testdata.TeststøtteMeldingsmottak
 import no.nav.bidrag.person.hendelse.testdata.generereIdenter
 import no.nav.bidrag.person.hendelse.testdata.tilPersonidentDtoer
+import no.nav.bidrag.transport.person.Identgruppe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -51,10 +51,10 @@ class PublisereEndringmeldingerTest {
         databasetjeneste.kontoendringDao.deleteAll()
         databasetjeneste.aktorDao.deleteAll()
         publisereEndringsmeldinger = PublisereEndringsmeldinger(
-            meldingsprodusent,
-            bidragPersonklient,
-            databasetjeneste,
-            databasetjeneste.egenskaper
+                meldingsprodusent,
+                bidragPersonklient,
+                databasetjeneste,
+                databasetjeneste.egenskaper
         )
         every { meldingsprodusent.publisereEndringsmelding(any()) }
     }
@@ -65,17 +65,17 @@ class PublisereEndringmeldingerTest {
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
 
-        val aktør = personidentDtoer.find { it.gruppe == Identgruppe.AKTORID }
+        val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
         val mottattTidspunkt = LocalDateTime.now()
-            .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 1)
+                .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 1)
 
         val tidspunktSistPublisert = LocalDateTime.now()
-            .minusHours(databasetjeneste.egenskaper.generelt.antallTimerSidenForrigePublisering.toLong() - 1)
+                .minusHours(databasetjeneste.egenskaper.generelt.antallTimerSidenForrigePublisering.toLong() - 1)
 
-        teststøtteMeldingsmottak.oppretteOgLagreKontoendring(aktør!!.ident, mottattTidspunkt, tidspunktSistPublisert)
+        teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident }, mottattTidspunkt, tidspunktSistPublisert)
 
-        every { aktør.let { bidragPersonklient.henteAlleIdenterForPerson(aktør.ident) } } returns personidentDtoer
+        every { aktør.let { bidragPersonklient.henteAlleIdenterForPerson(aktør!!.ident) } } returns personidentDtoer
         every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
 
         // hvis
@@ -85,7 +85,7 @@ class PublisereEndringmeldingerTest {
         val endringsmelding = slot<Endringsmelding>()
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
-                capture(endringsmelding)
+                    capture(endringsmelding)
             )
         }
     }
@@ -96,20 +96,16 @@ class PublisereEndringmeldingerTest {
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
 
-        val aktør = personidentDtoer.find { it.gruppe == Identgruppe.AKTORID }
+        val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
         var mottattTidspunktIVenteperiode = LocalDateTime.now()
-            .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 1)
-        val publsertTidspunktEtterVenteperiode = LocalDateTime.now()
-            .minusHours(databasetjeneste.egenskaper.generelt.antallTimerSidenForrigePublisering.toLong() + 1)
+                .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 1)
+        var publisertTidspunktEtterVenteperiode = LocalDateTime.now()
+                .minusHours(databasetjeneste.egenskaper.generelt.antallTimerSidenForrigePublisering.toLong() + 1)
 
-        teststøtteMeldingsmottak.oppretteOgLagreKontoendring(
-            aktør!!.ident,
-            mottattTidspunktIVenteperiode,
-            publsertTidspunktEtterVenteperiode
-        )
+        teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident }, mottattTidspunktIVenteperiode, publisertTidspunktEtterVenteperiode)
 
-        every { aktør.let { bidragPersonklient.henteAlleIdenterForPerson(aktør.ident) } } returns personidentDtoer
+        every { aktør.let { bidragPersonklient.henteAlleIdenterForPerson(aktør!!.ident) } } returns personidentDtoer
         every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
 
         // hvis
@@ -119,20 +115,21 @@ class PublisereEndringmeldingerTest {
         val endringsmelding = slot<Endringsmelding>()
         verify(exactly = 0) {
             meldingsprodusent.publisereEndringsmelding(
-                capture(endringsmelding)
+                    capture(endringsmelding)
             )
         }
     }
 
     @Test
     fun `skal publisere endringsmeldinger for personer med nylig oppdaterte personopplysninger`() {
+
         // gitt
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
 
-        val aktør = personidentDtoer.find { it.gruppe == Identgruppe.AKTORID }
+        val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
-        teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer.map { it.ident })
+        teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer!!.map { it.ident })
         every { aktør?.let { bidragPersonklient.henteAlleIdenterForPerson(aktør.ident) } } returns personidentDtoer
         every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
 
@@ -143,27 +140,27 @@ class PublisereEndringmeldingerTest {
         val endringsmelding = slot<Endringsmelding>()
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
-                capture(endringsmelding)
+                    capture(endringsmelding)
             )
         }
 
         endringsmelding.asClue {
             it.captured.aktørid shouldBe aktør?.ident
-            it.captured.personidenter.size shouldBe personidentDtoer.size
-            it.captured.personidenter shouldBe personidenter
+            it.captured.personidenter shouldBe personidenter.toString()
         }
     }
 
     @Test
     fun `skal ikke publisere endringsmelding for samme person mer enn én gang innenfor en bestemt periode`() {
+
         // gitt
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
 
-        val aktør = personidentDtoer.find { it.gruppe == Identgruppe.AKTORID }
+        val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
-        personidenter.find { it.length == 13 }?.let { teststøtteMeldingsmottak.oppretteOgLagreKontoendring(it) }
-        teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer.map { it.ident })
+        teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident })
+        teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer!!.map { it.ident })
         every { aktør?.let { bidragPersonklient.henteAlleIdenterForPerson(aktør.ident) } } returns personidentDtoer
         every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
 
@@ -174,14 +171,13 @@ class PublisereEndringmeldingerTest {
         val endringsmelding = slot<Endringsmelding>()
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
-                capture(endringsmelding)
+                    capture(endringsmelding)
             )
         }
 
         endringsmelding.asClue {
             it.captured.aktørid shouldBe aktør?.ident
-            it.captured.personidenter.size shouldBe personidentDtoer.size
-            it.captured.personidenter shouldBe personidenter
+            it.captured.personidenter shouldBe personidenter.toString()
         }
     }
 }
