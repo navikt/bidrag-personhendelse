@@ -2,7 +2,6 @@ package no.nav.bidrag.person.hendelse.skedulering
 
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
-import no.nav.bidrag.person.hendelse.integrasjon.bidrag.person.BidragPersonklient
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.BidragKafkaMeldingsprodusent
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.domene.Endringsmelding
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 class PublisereEndringsmeldinger(
     val bidragtopic: BidragKafkaMeldingsprodusent,
-    val bidragPersonklient: BidragPersonklient,
     val databasetjeneste: Databasetjeneste,
     val egenskaper: Egenskaper
 ) {

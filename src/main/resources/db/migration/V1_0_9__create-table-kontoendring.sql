@@ -3,6 +3,7 @@
 create table kontoendring
 (
     aktor_id integer,
+    personidenter varchar(255),
     mottatt timestamp without time zone,
     status varchar(20),
     statustidspunkt timestamp without time zone,

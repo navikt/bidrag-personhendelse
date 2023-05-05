@@ -10,7 +10,6 @@ import io.mockk.slot
 import io.mockk.verify
 import no.nav.bidrag.person.hendelse.Teststarter
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
-import no.nav.bidrag.person.hendelse.integrasjon.bidrag.person.BidragPersonklient
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.BidragKafkaMeldingsprodusent
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.domene.Endringsmelding
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig
@@ -38,9 +37,6 @@ class PublisereEndringmeldingerTest {
     @MockK
     lateinit var meldingsprodusent: BidragKafkaMeldingsprodusent
 
-    @MockK
-    lateinit var bidragPersonklient: BidragPersonklient
-
     lateinit var publisereEndringsmeldinger: PublisereEndringsmeldinger
 
     @BeforeEach
@@ -51,10 +47,9 @@ class PublisereEndringmeldingerTest {
         databasetjeneste.kontoendringDao.deleteAll()
         databasetjeneste.aktorDao.deleteAll()
         publisereEndringsmeldinger = PublisereEndringsmeldinger(
-                meldingsprodusent,
-                bidragPersonklient,
-                databasetjeneste,
-                databasetjeneste.egenskaper
+            meldingsprodusent,
+            databasetjeneste,
+            databasetjeneste.egenskaper
         )
         every { meldingsprodusent.publisereEndringsmelding(any()) }
     }
@@ -68,14 +63,13 @@ class PublisereEndringmeldingerTest {
         val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
         val mottattTidspunkt = LocalDateTime.now()
-                .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 1)
+            .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 1)
 
         val tidspunktSistPublisert = LocalDateTime.now()
-                .minusHours(databasetjeneste.egenskaper.generelt.antallTimerSidenForrigePublisering.toLong() - 1)
+            .minusHours(databasetjeneste.egenskaper.generelt.antallTimerSidenForrigePublisering.toLong() - 1)
 
         teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident }, mottattTidspunkt, tidspunktSistPublisert)
 
-        every { aktør.let { bidragPersonklient.henteAlleIdenterForPerson(aktør!!.ident) } } returns personidentDtoer
         every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
 
         // hvis
@@ -85,7 +79,7 @@ class PublisereEndringmeldingerTest {
         val endringsmelding = slot<Endringsmelding>()
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
-                    capture(endringsmelding)
+                capture(endringsmelding)
             )
         }
     }
@@ -99,13 +93,12 @@ class PublisereEndringmeldingerTest {
         val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
         var mottattTidspunktIVenteperiode = LocalDateTime.now()
-                .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 1)
+            .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 1)
         var publisertTidspunktEtterVenteperiode = LocalDateTime.now()
-                .minusHours(databasetjeneste.egenskaper.generelt.antallTimerSidenForrigePublisering.toLong() + 1)
+            .minusHours(databasetjeneste.egenskaper.generelt.antallTimerSidenForrigePublisering.toLong() + 1)
 
         teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident }, mottattTidspunktIVenteperiode, publisertTidspunktEtterVenteperiode)
 
-        every { aktør.let { bidragPersonklient.henteAlleIdenterForPerson(aktør!!.ident) } } returns personidentDtoer
         every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
 
         // hvis
@@ -115,14 +108,13 @@ class PublisereEndringmeldingerTest {
         val endringsmelding = slot<Endringsmelding>()
         verify(exactly = 0) {
             meldingsprodusent.publisereEndringsmelding(
-                    capture(endringsmelding)
+                capture(endringsmelding)
             )
         }
     }
 
     @Test
     fun `skal publisere endringsmeldinger for personer med nylig oppdaterte personopplysninger`() {
-
         // gitt
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
@@ -130,7 +122,6 @@ class PublisereEndringmeldingerTest {
         val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
         teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer!!.map { it.ident })
-        every { aktør?.let { bidragPersonklient.henteAlleIdenterForPerson(aktør.ident) } } returns personidentDtoer
         every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
 
         // hvis
@@ -140,7 +131,7 @@ class PublisereEndringmeldingerTest {
         val endringsmelding = slot<Endringsmelding>()
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
-                    capture(endringsmelding)
+                capture(endringsmelding)
             )
         }
 
@@ -152,7 +143,6 @@ class PublisereEndringmeldingerTest {
 
     @Test
     fun `skal ikke publisere endringsmelding for samme person mer enn én gang innenfor en bestemt periode`() {
-
         // gitt
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
@@ -161,7 +151,6 @@ class PublisereEndringmeldingerTest {
 
         teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident })
         teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer!!.map { it.ident })
-        every { aktør?.let { bidragPersonklient.henteAlleIdenterForPerson(aktør.ident) } } returns personidentDtoer
         every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
 
         // hvis
@@ -171,7 +160,7 @@ class PublisereEndringmeldingerTest {
         val endringsmelding = slot<Endringsmelding>()
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
-                    capture(endringsmelding)
+                capture(endringsmelding)
             )
         }
 
