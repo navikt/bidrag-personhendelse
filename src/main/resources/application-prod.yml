@@ -22,3 +22,4 @@ WMQ_QUEUE_NAME_LIVSHENDELSER: QA.P_BISYS.PDL_LIVSHENDELSER
 
 # bidrag-person
 BIDRAG_PERSON_URL: https://bidrag-person.nais.adeo.no/bidrag-person
+BIDRAG_PERSON_SCOPE: prod-fss.bidrag.bidrag-person
