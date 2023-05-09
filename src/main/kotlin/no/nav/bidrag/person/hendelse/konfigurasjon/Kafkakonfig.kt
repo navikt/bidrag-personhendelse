@@ -4,8 +4,6 @@ import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.OffsetResetStrategy
-import org.apache.kafka.clients.producer.ProducerConfig
-import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -16,11 +14,8 @@ import org.springframework.core.env.Environment
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
-import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.listener.ContainerProperties
-import org.springframework.kafka.support.serializer.JsonSerializer
 import java.time.Duration
 
 @EnableKafka
@@ -39,7 +34,7 @@ open class Kafkakonfig(val kafka: Kafka) {
     )
 
     @Bean
-    open fun kafkaLeesahListenerContainerFactory(
+    fun kafkaLeesahListenerContainerFactory(
         properties: KafkaProperties,
         kafkaOmstartFeilhåndterer: KafkaOmstartFeilhåndterer,
         environment: Environment
@@ -56,9 +51,9 @@ open class Kafkakonfig(val kafka: Kafka) {
         factory.setCommonErrorHandler(kafkaOmstartFeilhåndterer)
         return factory
     }
-
+/*
     @Bean
-    open fun producerFactory(): ProducerFactory<String, String> {
+    fun producerFactory(): ProducerFactory<String, String> {
         val configProps: MutableMap<String, Any> = HashMap()
         configProps[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafka.bootstrapServers
         configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
@@ -67,7 +62,9 @@ open class Kafkakonfig(val kafka: Kafka) {
     }
 
     @Bean
-    open fun kafkaTemplate(): KafkaTemplate<String, String> {
+    fun kafkaTemplate(): KafkaTemplate<String, String> {
         return KafkaTemplate(producerFactory())
     }
+
+    */
 }

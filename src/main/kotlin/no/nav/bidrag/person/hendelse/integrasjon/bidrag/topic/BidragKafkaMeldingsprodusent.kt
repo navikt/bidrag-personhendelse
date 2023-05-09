@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class BidragKafkaMeldingsprodusent(
-    val kafkaTemplate: KafkaTemplate<String, String>,
+    private val kafkaTemplate: KafkaTemplate<String, String>,
     private val objectMapper: ObjectMapper
 ) {
     @Retryable(

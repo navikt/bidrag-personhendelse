@@ -44,7 +44,6 @@
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.servlet-api.version>5.0.0</jakarta.servlet-api.version>
         <token-support.version>3.0.10</token-support.version>
-        <jackson-datatype-jsr310.version>2.14.2</jackson-datatype-jsr310.version>
     </properties>
 
     <dependencyManagement>
@@ -179,15 +178,6 @@
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
             <version>${confluent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-kotlin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson-datatype-jsr310.version}</version>
         </dependency>
 
         <!-- NAVIKT -->
