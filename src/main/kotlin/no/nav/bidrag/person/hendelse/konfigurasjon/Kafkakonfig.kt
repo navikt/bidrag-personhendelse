@@ -50,20 +50,4 @@ open class Kafkakonfig(val kafka: Kafka) {
         factory.setCommonErrorHandler(kafkaOmstartFeilhåndterer)
         return factory
     }
-/*
-    @Bean
-    fun producerFactory(): ProducerFactory<String, String> {
-        val configProps: MutableMap<String, Any> = HashMap()
-        configProps[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafka.bootstrapServers
-        configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
-        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
-        return DefaultKafkaProducerFactory(configProps)
-    }
-
-    @Bean
-    fun kafkaTemplate(): KafkaTemplate<String, String> {
-        return KafkaTemplate(producerFactory())
-    }
-
-    */
 }
