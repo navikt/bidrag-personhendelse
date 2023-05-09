@@ -76,7 +76,7 @@ class Aktor(
     @Column(nullable = false)
     val aktorid: String,
     @Column
-    val publisert: LocalDateTime? = null,
+    var publisert: LocalDateTime? = null,
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = 0,

@@ -33,6 +33,15 @@ class Databasetjeneste(
         }
     }
 
+    @Transactional
+    fun oppdaterePubliseringstidspunkt(aktørid: String) {
+        var aktør = aktorDao.findByAktorid(aktørid)
+
+        if (aktør.isPresent) {
+            aktør.get().publisert = LocalDateTime.now()
+        }
+    }
+
     @Transactional(readOnly = false)
     fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
         var listeMedPersonidenter = livshendelse.personidenter
