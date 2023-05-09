@@ -30,11 +30,35 @@ class Kontoendringsmottak(val kontoendringsbehandler: Kontoendringsbehandler) {
             cr.value(),
             cr.offset()
         )
-        kontoendringsbehandler.lagreKontoendring(endringsmelding.kontohaver.toString())
-        slog.info("Kontoendring lagret for kontoeier {}", endringsmelding.kontohaver)
+
+        if (harGyldigFormat(endringsmelding)) {
+            kontoendringsbehandler.lagreKontoendring(endringsmelding.kontohaver.toString())
+            slog.info("Kontoendring lagret for kontoeier {}", endringsmelding.kontohaver)
+        }
+    }
+
+    fun harGyldigFormat(endringsmelding: Endringsmelding): Boolean {
+        if (endringsmelding == null) {
+            log.warn("Innhold mangler i mottatt endringsmelding.")
+            return false
+        } else if (endringsmelding.kontohaver.isNullOrEmpty()) {
+            log.warn("Kontohaver mangler i mottatt endringsmelding.")
+            return false
+        } else if (!harGylidgFormat(endringsmelding.kontohaver.toString())) {
+            log.warn("Kontohavers personident har ikke gyldig format.")
+            slog.warn("Kontohavers personident (${endringsmelding.kontohaver}) har ikke gyldig format.")
+            return false
+        }
+
+        return true
+    }
+
+    fun harGylidgFormat(personident: String): Boolean {
+        return !personident.isNullOrEmpty() && personident.length == 11 || personident.length == 13
     }
 
     companion object {
+        val log: Logger = LoggerFactory.getLogger(this::class.java)
         val slog: Logger = LoggerFactory.getLogger("secureLogger")
     }
 }
