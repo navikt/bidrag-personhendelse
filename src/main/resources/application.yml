@@ -103,7 +103,7 @@ publisere_personhendelser:
     min: ${PUBLISERE_PERSONHENDELSER_LÅS_MIN}
     max: ${PUBLISERE_PERSONHENDELSER_LÅS_MAX}
 slette_hendelser:
-  kjøreplan: ${KJØREPLAN_SLETTE_HENDELSER}
+  kjøreplan: ${SLETTE_HENDELSER_KJØREPLAN}
   lås:
     min: ${SLETTE_HENDELSER_LÅS_MIN}
     max: ${SLETTE_HENDELSER_LÅS_MAX}
