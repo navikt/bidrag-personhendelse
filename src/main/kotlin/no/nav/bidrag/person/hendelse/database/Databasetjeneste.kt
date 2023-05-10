@@ -50,7 +50,7 @@ class Databasetjeneste(
             listeMedPersonidenter = listeMedPersonidenter.subList(0, Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER)
             Livshendelsebehandler.log.warn(
                 "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} personidenter. " +
-                    "Kun de ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} første arkiveres."
+                        "Kun de ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} første arkiveres."
             )
         }
 
@@ -93,11 +93,12 @@ class Databasetjeneste(
     }
 
     fun henteAktøridTilPersonerMedNyligOppdatertePersonopplysninger(): HashMap<String, String> {
-        return tilHashMap(
-            hendelsemottakDao.aktøridTilPubliseringsklareOverførteHendelser(
-                LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
-            )
+
+        var aktor = hendelsemottakDao.aktøridTilPubliseringsklareOverførteHendelser(
+            LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
         )
+        
+        return tilHashMap(aktor.map { a -> a.hendelsemottak.first() })
     }
 
     fun henteAktøridTilKontoeiereMedNyligeKontoendringer(): HashMap<String, String> {
@@ -143,15 +144,6 @@ class Databasetjeneste(
         var map = HashMap<String, String>()
         liste.forEach { map.put(it.aktor.aktorid, it.personidenter) }
         return map
-    }
-
-    private fun trekkeTidligereMottatteKontoendringerForPerson(aktør: Aktor) {
-        val kontoendringerForPersonMedStatusMottatt =
-            kontoendringDao.findByAktorAndStatus(aktør, StatusKontoendring.MOTTATT)
-        kontoendringerForPersonMedStatusMottatt.forEach {
-            it.status = StatusKontoendring.TRUKKET
-            it.statustidspunkt = LocalDateTime.now()
-        }
     }
 
     companion object {

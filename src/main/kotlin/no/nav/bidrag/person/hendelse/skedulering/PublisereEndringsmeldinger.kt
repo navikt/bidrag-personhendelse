@@ -36,8 +36,10 @@ class PublisereEndringsmeldinger(
         val aktøriderForPublisering = aktøriderPersonopplysninger.plus(aktøriderKontoeiere)
         log.info("Identifiserte totalt ${aktøriderForPublisering.size} unike personer som det skal publiseres endringsmeldinger for.")
 
+        val subliste = aktøriderForPublisering.keys.take(2000)
+
         // Publisere melding til intern topic for samtlige personer med endringer
-        aktøriderForPublisering.forEach { bidragtopic.publisereEndringsmelding(Endringsmelding(it.key, it.value)) }
+        subliste.forEach { bidragtopic.publisereEndringsmelding(Endringsmelding(it, aktøriderForPublisering.getValue(it))) }
     }
 
     companion object {
