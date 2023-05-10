@@ -60,8 +60,6 @@ class PublisereEndringmeldingerTest {
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
 
-        val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
-
         val mottattTidspunkt = LocalDateTime.now()
             .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 1)
 
@@ -90,14 +88,16 @@ class PublisereEndringmeldingerTest {
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
 
-        val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
-
         var mottattTidspunktIVenteperiode = LocalDateTime.now()
             .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 1)
         var publisertTidspunktEtterVenteperiode = LocalDateTime.now()
             .minusHours(databasetjeneste.egenskaper.generelt.antallTimerSidenForrigePublisering.toLong() + 1)
 
-        teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident }, mottattTidspunktIVenteperiode, publisertTidspunktEtterVenteperiode)
+        teststøtteMeldingsmottak.oppretteOgLagreKontoendring(
+            personidentDtoer!!.map { it.ident },
+            mottattTidspunktIVenteperiode,
+            publisertTidspunktEtterVenteperiode
+        )
 
         every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
 
@@ -150,7 +150,7 @@ class PublisereEndringmeldingerTest {
         val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
         teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident })
-        teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer!!.map { it.ident })
+        teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer.map { it.ident })
         every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
 
         // hvis
