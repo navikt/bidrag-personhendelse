@@ -37,7 +37,7 @@ class Kontoendringsmottak(val kontoendringsbehandler: Kontoendringsbehandler) {
         }
     }
 
-    fun harGyldigFormat(endringsmelding: Endringsmelding): Boolean {
+    fun harGyldigFormat(endringsmelding: Endringsmelding?): Boolean {
         if (endringsmelding == null) {
             log.warn("Innhold mangler i mottatt endringsmelding.")
             return false
