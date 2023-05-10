@@ -28,6 +28,7 @@ class BidragKafkaMeldingsprodusent(
     }
 
     private fun publisereMelding(emne: String, aktørid: String, data: String) {
+        slog.info("Publiserer endringsmelding for aktørid $aktørid")
         val melding = objectMapper.writeValueAsString(data)
         var future = kafkaTemplate.send(emne, aktørid, melding)
 
