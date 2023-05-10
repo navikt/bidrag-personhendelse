@@ -51,6 +51,11 @@ spring:
           type: PKCS12
           location: ${KAFKA_TRUSTSTORE_PATH}
           password: ${KAFKA_CREDSTORE_PASSWORD}
+    producer:
+      retries: 0
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
@@ -67,6 +72,19 @@ logging:
 
 retry.backoff.delay: 5000
 
+no.nav.security.jwt:
+  dont-propagate-bearertoken: true
+  client.registration:
+    bidrag-person:
+      resource-url: ${BIDRAG_PERSON_URL}
+      token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+      grant-type: client_credentials
+      scope: api://${BIDRAG_PERSON_SCOPE}/.default
+      authentication:
+        client-id: ${AZURE_APP_CLIENT_ID}
+        client-secret: ${AZURE_APP_CLIENT_SECRET}
+        client-auth-method: client_secret_basic
+
 funksjonsbrytere:
   enabled: true
   unleash:
@@ -74,9 +92,21 @@ funksjonsbrytere:
     cluster: ${NAIS_CLUSTER_NAME}
     applicationName: ${NAIS_APP_NAME}
 
-kjøreplan:
-  overføre_hendelser: ${KJØREPLAN_OVERFØRE_HENDELSER}
-  slette_hendelser: ${KJØREPLAN_SLETTE_HENDELSER}
+overføre_hendelser:
+  kjøreplan: ${OVERFØRE_HENDELSER_KJØREPLAN}
+  lås:
+      min: ${OVERFØRE_HENDELSER_LÅS_MIN}
+      max: ${OVERFØRE_HENDELSER_LÅS_MAX}
+publisere_personhendelser:
+  kjøreplan: ${PUBLISERE_PERSONHENDELSER_KJØREPLAN}
+  lås:
+    min: ${PUBLISERE_PERSONHENDELSER_LÅS_MIN}
+    max: ${PUBLISERE_PERSONHENDELSER_LÅS_MAX}
+slette_hendelser:
+  kjøreplan: ${KJØREPLAN_SLETTE_HENDELSER}
+  lås:
+    min: ${SLETTE_HENDELSER_LÅS_MIN}
+    max: ${SLETTE_HENDELSER_LÅS_MAX}
 
 management:
   endpoint.health.show-details: always
@@ -92,15 +122,16 @@ egenskaper:
   generelt:
     antallMinutterForsinketVideresending: 120
     antallDagerLevetidForUtgaatteHendelser: ${DAGER_LEVETID_UTGÅTTE_HENDELSER}
-
-  wmq:
-    host: ${WMQ_HOST}
-    port: ${WMQ_PORT}
-    channel: ${WMQ_CHANNEL}
-    queue-manager: ${WMQ_QUEUEMANAGER}
-    username: srvbidrag-person-hen
-    password: ${PASSORD_SRVBIDRAG_PERSON_HEN}
-    timeout: ${WMQ_TIMEOUT}
-    application-name: ${WMQ_APPLICATION_NAME}
-    queueNameLivshendelser: ${WMQ_QUEUE_NAME_LIVSHENDELSER}
-
+  integrasjon:
+    wmq:
+      host: ${WMQ_HOST}
+      port: ${WMQ_PORT}
+      channel: ${WMQ_CHANNEL}
+      queue-manager: ${WMQ_QUEUEMANAGER}
+      username: srvbidrag-person-hen
+      password: ${PASSORD_SRVBIDRAG_PERSON_HEN}
+      timeout: ${WMQ_TIMEOUT}
+      application-name: ${WMQ_APPLICATION_NAME}
+      queueNameLivshendelser: ${WMQ_QUEUE_NAME_LIVSHENDELSER}
+    bidrag-person:
+        url: ${BIDRAG_PERSON_URL}

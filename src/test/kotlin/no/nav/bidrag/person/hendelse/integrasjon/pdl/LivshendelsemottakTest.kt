@@ -1,4 +1,4 @@
-package no.nav.bidrag.person.hendelse.integrasjon.mottak
+package no.nav.bidrag.person.hendelse.integrasjon.pdl
 
 import io.mockk.MockKAnnotations
 import io.mockk.clearAllMocks
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Instant
 import java.time.LocalDate
-import java.util.Optional
+import java.util.*
 
 @ExtendWith(MockKExtension::class)
 class LivshendelsemottakTest {
@@ -127,9 +127,15 @@ class LivshendelsemottakTest {
 
         assertThat(livshendelseSomSendesTilBehandling.captured).isNotNull
         assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.FOLKEREGISTERIDENTIFIKATOR_V1)
-        assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.identifikasjonsnummer).isEqualTo(personhendelse.folkeregisteridentifikator.identifikasjonsnummer)
-        assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.type).isEqualTo(personhendelse.folkeregisteridentifikator.type)
-        assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.status).isEqualTo(personhendelse.folkeregisteridentifikator.status)
+        assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.identifikasjonsnummer).isEqualTo(
+            personhendelse.folkeregisteridentifikator.identifikasjonsnummer
+        )
+        assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.type).isEqualTo(
+            personhendelse.folkeregisteridentifikator.type
+        )
+        assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.status).isEqualTo(
+            personhendelse.folkeregisteridentifikator.status
+        )
     }
 
     @Test
@@ -272,6 +278,7 @@ class LivshendelsemottakTest {
 
             return personhendelse
         }
+
         fun hentePersonhendelseForDødsfall(): Personhendelse {
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.doedsfall = Doedsfall(LocalDate.now())
@@ -332,7 +339,8 @@ class LivshendelsemottakTest {
         }
 
         fun hentePersonhendelseForUtflytting(): Personhendelse {
-            var utflytting = UtflyttingFraNorge.newBuilder().setTilflyttingsland("POL").setUtflyttingsdato(LocalDate.now()).build()
+            var utflytting =
+                UtflyttingFraNorge.newBuilder().setTilflyttingsland("POL").setUtflyttingsdato(LocalDate.now()).build()
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.utflyttingFraNorge = utflytting
             personhendelse.opplysningstype = Opplysningstype.UTFLYTTING_FRA_NORGE.name
@@ -340,7 +348,9 @@ class LivshendelsemottakTest {
         }
 
         fun hentePersonhendelseForSivilstand(): Personhendelse {
-            var sivilstand = no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now()).setType("GIFT").build()
+            var sivilstand =
+                no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now())
+                    .setType("GIFT").build()
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.sivilstand = sivilstand
             personhendelse.opplysningstype = Opplysningstype.SIVILSTAND_V1.name
@@ -348,7 +358,9 @@ class LivshendelsemottakTest {
         }
 
         fun hentePersonhendelseForSivilstandKorrigering(): Personhendelse {
-            var sivilstand = no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now()).setType("GIFT").build()
+            var sivilstand =
+                no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now())
+                    .setType("GIFT").build()
             var personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.sivilstand = sivilstand
             personhendelse.tidligereHendelseId = "123"

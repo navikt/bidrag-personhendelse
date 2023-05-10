@@ -4,7 +4,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.Status
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
-import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
+import no.nav.bidrag.person.hendelse.integrasjon.bidrag.bisys.BisysMeldingsprodusjon
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -14,34 +14,46 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Component
-open class OverføreHendelser(
+class OverføreHendelser(
     open val databasetjeneste: Databasetjeneste,
     open val egenskaper: Egenskaper,
-    open val meldingsprodusent: Meldingsprodusent
+    open val meldingsprodusent: BisysMeldingsprodusjon
 ) {
 
     @Transactional
-    @Scheduled(cron = "\${kjøreplan.overføre_hendelser}")
-    @SchedulerLock(name = "overføre_hendelser", lockAtLeastFor = "PT2M", lockAtMostFor = "PT10M")
-    open fun overføreHendelserTilBisys() {
-        var sisteStatusoppdateringFør = LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
+    @Scheduled(cron = "\${overføre_hendelser.kjøreplan}")
+    @SchedulerLock(
+        name = "overføre_hendelser",
+        lockAtLeastFor = "\${overføre_hendelser.lås.min}",
+        lockAtMostFor = "\${overføre_hendelser.lås.max}"
+    )
+    fun overføreHendelserTilBisys() {
+        var sisteStatusoppdateringFør =
+            LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
         log.info("Ser etter hendelser med status mottatt og med siste statusoppdatering før $sisteStatusoppdateringFør")
 
-        var hendelserKlarTilOverføring = databasetjeneste.henteIdTilHendelserSomErKlarTilOverføring(sisteStatusoppdateringFør)
-        log.info(henteLoggmelding(hendelserKlarTilOverføring.size, egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen))
+        var hendelserKlarTilOverføring =
+            databasetjeneste.hendelsemottakDao.idTilHendelserSomErKlarTilOverføring(sisteStatusoppdateringFør)
+        log.info(
+            henteLoggmelding(
+                hendelserKlarTilOverføring.size,
+                egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen
+            )
+        )
 
         // Begrenser antall hendelser som skal videresendes
-        var hendelserSomOverføresIDenneOmgang = hendelserKlarTilOverføring.take(egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
+        var hendelserSomOverføresIDenneOmgang =
+            hendelserKlarTilOverføring.take(egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
 
         try {
             var antallOverført: Int = meldingsprodusent.sendeMeldinger(
-                egenskaper.wmq.queueNameLivshendelser,
-                databasetjeneste.henteHendelser(hendelserSomOverføresIDenneOmgang).map { it.hendelse }
+                egenskaper.integrasjon.wmq.queueNameLivshendelser,
+                databasetjeneste.hendelsemottakDao.findAllById(hendelserSomOverføresIDenneOmgang).map { it.hendelse }
             )
-            databasetjeneste.oppdatereStatus(hendelserSomOverføresIDenneOmgang, Status.OVERFØRT)
+            databasetjeneste.oppdatereStatusPåHendelser(hendelserSomOverføresIDenneOmgang, Status.OVERFØRT)
             log.info("Overføring fullført (for antall: $antallOverført)")
         } catch (ofe: OverføringFeiletException) {
-            databasetjeneste.oppdatereStatus(hendelserSomOverføresIDenneOmgang, Status.OVERFØRING_FEILET)
+            databasetjeneste.oppdatereStatusPåHendelser(hendelserSomOverføresIDenneOmgang, Status.OVERFØRING_FEILET)
             log.error("Overføring av $hendelserSomOverføresIDenneOmgang meldinger feilet")
         }
     }
@@ -61,6 +73,6 @@ open class OverføreHendelser(
     }
 
     companion object {
-        val log: Logger = LoggerFactory.getLogger(OverføreHendelser::class.java)
+        val log: Logger = LoggerFactory.getLogger(this::class.java)
     }
 }

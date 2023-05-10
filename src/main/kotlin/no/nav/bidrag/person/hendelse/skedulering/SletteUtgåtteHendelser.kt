@@ -11,21 +11,27 @@ import org.springframework.stereotype.Component
 import java.time.LocalDate
 
 @Component
-open class SletteUtgåtteHendelser(
+class SletteUtgåtteHendelser(
     open val databasetjeneste: Databasetjeneste,
     open val egenskaper: Egenskaper
 
 ) {
-    @Scheduled(cron = "\${kjøreplan.slette_hendelser}")
-    @SchedulerLock(name = "slette_hendelser", lockAtLeastFor = "PT30S", lockAtMostFor = "PT5M")
-    open fun sletteUtgåtteHendelserFraDatabase() {
+    @Scheduled(cron = "\${slette_hendelser.kjøreplan}")
+    @SchedulerLock(
+        name = "slette_hendelser",
+        lockAtLeastFor = "\${slette_hendelser.lås.min}",
+        lockAtMostFor = "\${slette_hendelser.lås.max}"
+    )
+    fun sletteUtgåtteHendelserFraDatabase() {
         var statusoppdateringFør = LocalDate.now().atStartOfDay()
             .minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong())
 
         log.info("Ser etter utgåtte livshendelser med siste statusoppdatering før $statusoppdateringFør som skal slettes fra databasen.")
 
-        var kansellerteHendelser = databasetjeneste.henteHendelserider(Status.KANSELLERT, statusoppdateringFør)
-        var overførteHendelser = databasetjeneste.henteHendelserider(Status.OVERFØRT, statusoppdateringFør)
+        var kansellerteHendelser =
+            databasetjeneste.hendelsemottakDao.henteIdTilHendelser(Status.KANSELLERT, statusoppdateringFør)
+        var overførteHendelser =
+            databasetjeneste.hendelsemottakDao.henteIdTilHendelser(Status.OVERFØRT, statusoppdateringFør)
 
         log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen")
 
@@ -51,7 +57,7 @@ open class SletteUtgåtteHendelser(
             var bolknummer: Int = 1
             listeMedListeAvHendelseider.forEach {
                 log.info("Sletter bolk-$bolknummer med ${it.size} $hendelsebeskrivelse-hendelser.")
-                var antallHendelserSomBleSlettet = databasetjeneste.sletteHendelser(it.toSet())
+                var antallHendelserSomBleSlettet = databasetjeneste.hendelsemottakDao.deleteByIdIn(it.toSet())
                 log.info("$antallHendelserSomBleSlettet av ${it.size} $hendelsebeskrivelse-hendelser i bolk-$bolknummer ble slettet.")
                 totaltAntallHendelserSomBleSlettet += antallHendelserSomBleSlettet
                 bolknummer++
@@ -59,12 +65,11 @@ open class SletteUtgåtteHendelser(
 
             return totaltAntallHendelserSomBleSlettet
         } else {
-            return databasetjeneste.sletteHendelser(ider)
+            return databasetjeneste.hendelsemottakDao.deleteByIdIn(ider)
         }
-
     }
 
     companion object {
-        val log: Logger = LoggerFactory.getLogger(SletteUtgåtteHendelser::class.java)
+        val log: Logger = LoggerFactory.getLogger(this::class.java)
     }
 }

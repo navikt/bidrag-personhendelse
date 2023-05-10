@@ -7,12 +7,14 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
 import no.nav.bidrag.person.hendelse.Teststarter
+import no.nav.bidrag.person.hendelse.database.AktorDao
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.HendelsemottakDao
+import no.nav.bidrag.person.hendelse.database.KontoendringDao
 import no.nav.bidrag.person.hendelse.database.Status
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
-import no.nav.bidrag.person.hendelse.integrasjon.distribusjon.Meldingsprodusent
+import no.nav.bidrag.person.hendelse.integrasjon.bidrag.bisys.BisysMeldingsprodusjon
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
 import org.assertj.core.api.Assertions.assertThat
@@ -27,19 +29,25 @@ import java.time.LocalDateTime
 
 @ActiveProfiles(Testkonfig.PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
-open class OverføreHendelserTest {
+class OverføreHendelserTest {
 
     val personidenter = listOf("12345678901", "1234567890123")
 
     @Autowired
     lateinit var hendelsemottakDao: HendelsemottakDao
+
+    @Autowired
+    lateinit var aktorDao: AktorDao
+
+    @Autowired
+    lateinit var kontoendringDao: KontoendringDao
     lateinit var databasetjeneste: Databasetjeneste
 
     @Autowired
     lateinit var egenskaper: Egenskaper
 
     @MockK
-    lateinit var meldingsprodusent: Meldingsprodusent
+    lateinit var meldingsprodusent: BisysMeldingsprodusjon
 
     lateinit var overføreHendelser: OverføreHendelser
 
@@ -47,7 +55,7 @@ open class OverføreHendelserTest {
     fun initialisere() {
         MockKAnnotations.init(this)
         clearAllMocks()
-        databasetjeneste = Databasetjeneste(hendelsemottakDao)
+        databasetjeneste = Databasetjeneste(aktorDao, hendelsemottakDao, kontoendringDao, egenskaper)
         hendelsemottakDao.deleteAll()
         overføreHendelser = OverføreHendelser(databasetjeneste, egenskaper, meldingsprodusent)
         every { meldingsprodusent.sendeMeldinger(any(), any()) } returns 1
@@ -63,6 +71,7 @@ open class OverføreHendelserTest {
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
                 Livshendelse.Endringstype.OPPRETTET,
                 personidenter,
+                personidenter.first { it.length == 13 },
                 LocalDateTime.now()
             )
         var lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
@@ -77,6 +86,7 @@ open class OverføreHendelserTest {
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
+            personidenter.first { it.length == 13 },
             LocalDateTime.now()
         )
         var lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
@@ -91,6 +101,7 @@ open class OverføreHendelserTest {
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
+            personidenter.first { it.length == 13 },
             LocalDateTime.now()
         )
         var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
@@ -104,9 +115,16 @@ open class OverføreHendelserTest {
 
         // så
         val meldingerTilKø = slot<List<String>>()
-        verify(exactly = 1) { meldingsprodusent.sendeMeldinger(egenskaper.wmq.queueNameLivshendelser, capture(meldingerTilKø)) }
+        verify(exactly = 1) {
+            meldingsprodusent.sendeMeldinger(
+                egenskaper.integrasjon.wmq.queueNameLivshendelser,
+                capture(meldingerTilKø)
+            )
+        }
         assertThat(meldingerTilKø.captured[0]).contains(hendelseMottattUtenforVenteperiode.hendelseid)
-        assertThat(databasetjeneste.henteHendelse(lagretHendelseVenteperiodeUtløpt.id).get().status).isEqualTo(Status.OVERFØRING_FEILET)
+        assertThat(
+            databasetjeneste.hendelsemottakDao.findById(lagretHendelseVenteperiodeUtløpt.id).get().status
+        ).isEqualTo(Status.OVERFØRING_FEILET)
     }
 
     @Test
@@ -119,6 +137,7 @@ open class OverføreHendelserTest {
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
                 Livshendelse.Endringstype.OPPRETTET,
                 personidenter,
+                personidenter.first { it.length == 13 },
                 LocalDateTime.now()
             )
         var lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
@@ -133,6 +152,7 @@ open class OverføreHendelserTest {
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
+            personidenter.first { it.length == 13 },
             LocalDateTime.now()
         )
         var lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
@@ -147,6 +167,7 @@ open class OverføreHendelserTest {
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
+            personidenter.first { it.length == 13 },
             LocalDateTime.now()
         )
         var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
@@ -158,7 +179,12 @@ open class OverføreHendelserTest {
 
         // så
         val meldingerTilKø = slot<List<String>>()
-        verify(exactly = 1) { meldingsprodusent.sendeMeldinger(egenskaper.wmq.queueNameLivshendelser, capture(meldingerTilKø)) }
+        verify(exactly = 1) {
+            meldingsprodusent.sendeMeldinger(
+                egenskaper.integrasjon.wmq.queueNameLivshendelser,
+                capture(meldingerTilKø)
+            )
+        }
         assertThat(meldingerTilKø.captured[0]).contains(hendelseMottattUtenforVenteperiode.hendelseid)
     }
 
@@ -172,6 +198,7 @@ open class OverføreHendelserTest {
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
                 Livshendelse.Endringstype.OPPRETTET,
                 personidenter,
+                personidenter.first { it.length == 13 },
                 LocalDateTime.now()
             )
         var lagretHendelse1 = databasetjeneste.lagreHendelse(hendelse1)
@@ -185,6 +212,7 @@ open class OverføreHendelserTest {
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
+            personidenter.first { it.length == 13 },
             LocalDateTime.now()
         )
         var lagretHendelse2 = databasetjeneste.lagreHendelse(hendelse2)
@@ -198,7 +226,12 @@ open class OverføreHendelserTest {
         // så
         val meldingerTilKø = slot<List<String>>()
         // Maks antall satt i test application.yml (egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
-        verify(exactly = 1) { meldingsprodusent.sendeMeldinger(egenskaper.wmq.queueNameLivshendelser, capture(meldingerTilKø)) }
+        verify(exactly = 1) {
+            meldingsprodusent.sendeMeldinger(
+                egenskaper.integrasjon.wmq.queueNameLivshendelser,
+                capture(meldingerTilKø)
+            )
+        }
         assertThat(meldingerTilKø.captured[0]).contains(hendelse1.hendelseid)
     }
 

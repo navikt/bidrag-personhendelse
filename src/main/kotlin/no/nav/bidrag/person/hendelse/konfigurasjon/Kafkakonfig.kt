@@ -6,8 +6,10 @@ import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.OffsetResetStrategy
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 import org.springframework.core.env.Environment
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
@@ -22,10 +24,16 @@ import java.time.Duration
     havingValue = "true",
     matchIfMissing = true
 )
-open class Kafkakonfig {
+open class Kafkakonfig(val kafka: Kafka) {
+
+    @Primary
+    @ConfigurationProperties("spring.kafka")
+    data class Kafka(
+        val bootstrapServers: String
+    )
 
     @Bean
-    open fun kafkaLeesahListenerContainerFactory(
+    fun kafkaLeesahListenerContainerFactory(
         properties: KafkaProperties,
         kafkaOmstartFeilhåndterer: KafkaOmstartFeilhåndterer,
         environment: Environment

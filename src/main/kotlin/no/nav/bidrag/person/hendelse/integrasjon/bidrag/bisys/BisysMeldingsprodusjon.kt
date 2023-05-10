@@ -1,4 +1,4 @@
-package no.nav.bidrag.person.hendelse.integrasjon.distribusjon
+package no.nav.bidrag.person.hendelse.integrasjon.bidrag.bisys
 
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
 import org.slf4j.Logger
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import javax.jms.Queue
 
 @Component
-open class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
+class BisysMeldingsprodusjon(private val jmsTemplate: JmsTemplate) {
 
     fun sendeMeldinger(mottakerkoe: String, hendelser: List<String>): Int {
         var antallOverført = 0
@@ -25,7 +25,7 @@ open class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
         try {
             jmsTemplate.execute(producerCallback)
         } catch (e: Exception) {
-            logger.error("Sending av melding til WMQ feilet med feilmelding '{}'", e.message)
+            log.error("Sending av melding til WMQ feilet med feilmelding '{}'", e.message)
             throw e.message?.let { OverføringFeiletException(it) }!!
         }
 
@@ -33,7 +33,6 @@ open class Meldingsprodusent(private val jmsTemplate: JmsTemplate) {
     }
 
     companion object {
-        private val logger: Logger = LoggerFactory.getLogger(Meldingsprodusent::class.java)
-        private val secureLogger: Logger = LoggerFactory.getLogger("secureLogger")
+        private val log: Logger = LoggerFactory.getLogger(this::class.java)
     }
 }

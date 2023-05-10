@@ -1,0 +1,20 @@
+@namespace("no.nav.person.endringsmelding.v1")
+protocol EndringsmeldingProto {
+
+	record UtenlandskKontoInfo {
+		union{null, string} banknavn;
+		union{null, string} bankkode;
+		string bankLandkode;
+		string valutakode;
+		union{null, string} swiftBicKode;
+		union{null, string} bankadresse1;
+		union{null, string} bankadresse2;
+		union{null, string} bankadresse3;
+	}
+
+	record Endringsmelding {
+		string kontohaver;
+		union{null, string} kontonummer;
+		union{null, UtenlandskKontoInfo} utenlandskKontoInfo;
+	}
+}

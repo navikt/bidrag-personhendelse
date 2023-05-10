@@ -85,7 +85,11 @@ class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
         }
         stopContainer(container) // i stedet for stopContainer i handleRemaining i parent som kaster error
 
-        throw KafkaException("Stopper kafka container ${counter.get()} for $topic i ${Duration.ofMillis(stopTime)} antall feil $numErrors", KafkaException.Level.WARN, e)
+        throw KafkaException(
+            "Stopper kafka container ${counter.get()} for $topic i ${Duration.ofMillis(stopTime)} antall feil $numErrors",
+            KafkaException.Level.WARN,
+            e
+        )
     }
 
     /**

@@ -32,7 +32,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun behandleAdressebeskyttelse(livshendelse: Livshendelse) {
         tellerAdressebeskyttelse.increment()
 
-        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
+                livshendelse.hendelseid,
+                livshendelse.opplysningstype
+            )
+        ) {
             tellerLeesahDuplikat.increment()
             log.info(
                 "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
@@ -55,7 +59,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun behandleVerge(livshendelse: Livshendelse) {
         tellerVerge.increment()
 
-        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
+                livshendelse.hendelseid,
+                livshendelse.opplysningstype
+            )
+        ) {
             tellerLeesahDuplikat.increment()
             log.info(
                 "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
@@ -63,7 +71,10 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             return
         }
 
-        sikkerLoggingAvLivshendelse(livshendelse, "Type: ${livshendelse.verge?.type}, omfang: ${livshendelse.verge?.vergeEllerFullmektig?.omfang}")
+        sikkerLoggingAvLivshendelse(
+            livshendelse,
+            "Type: ${livshendelse.verge?.type}, omfang: ${livshendelse.verge?.vergeEllerFullmektig?.omfang}"
+        )
 
         when (livshendelse.endringstype) {
             Endringstype.ANNULLERT -> tellerVergeAnnullert.increment()
@@ -80,7 +91,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun behandleBostedsadresse(livshendelse: Livshendelse) {
         tellerBostedsadresse.increment()
 
-        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
+                livshendelse.hendelseid,
+                livshendelse.opplysningstype
+            )
+        ) {
             tellerLeesahDuplikat.increment()
             log.info(
                 "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
@@ -101,7 +116,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun behandleDødsfall(livshendelse: Livshendelse) {
         tellerDødsfall.increment()
 
-        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
+                livshendelse.hendelseid,
+                livshendelse.opplysningstype
+            )
+        ) {
             tellerLeesahDuplikat.increment()
             log.info(
                 "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
@@ -145,7 +164,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun behandleFolkeregisteridentifikator(livshendelse: Livshendelse) {
         tellerFolkeregisteridentifikator.increment()
 
-        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
+                livshendelse.hendelseid,
+                livshendelse.opplysningstype
+            )
+        ) {
             tellerLeesahDuplikat.increment()
             log.info(
                 "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
@@ -181,7 +204,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun behandleInnflytting(livshendelse: Livshendelse) {
         tellerInnflytting.increment()
 
-        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
+                livshendelse.hendelseid,
+                livshendelse.opplysningstype
+            )
+        ) {
             tellerLeesahDuplikat.increment()
             log.info(
                 "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.hendelseid}. Ignorerer denne."
@@ -198,7 +225,10 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         when (livshendelse.endringstype) {
             Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
-                sikkerLoggingAvLivshendelse(livshendelse, "Fraflyttingsland: ${livshendelse.innflytting?.fraflyttingsland}")
+                sikkerLoggingAvLivshendelse(
+                    livshendelse,
+                    "Fraflyttingsland: ${livshendelse.innflytting?.fraflyttingsland}"
+                )
                 databasetjeneste.lagreHendelse(livshendelse)
             }
 
@@ -217,7 +247,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun behandleNavn(livshendelse: Livshendelse) {
         tellerNavn.increment()
 
-        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
+                livshendelse.hendelseid,
+                livshendelse.opplysningstype
+            )
+        ) {
             tellerLeesahDuplikat.increment()
             log.info(
                 "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
@@ -258,7 +292,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun behandleFødsel(livshendelse: Livshendelse) {
         tellerFødsel.increment()
 
-        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
+                livshendelse.hendelseid,
+                livshendelse.opplysningstype
+            )
+        ) {
             tellerLeesahDuplikat.increment()
             log.info(
                 "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
@@ -309,7 +347,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun behandleUtflytting(livshendelse: Livshendelse) {
         tellerUtflytting.increment()
 
-        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
+                livshendelse.hendelseid,
+                livshendelse.opplysningstype
+            )
+        ) {
             tellerLeesahDuplikat.increment()
             log.info(
                 "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
@@ -326,7 +368,10 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         when (livshendelse.endringstype) {
             Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
-                sikkerLoggingAvLivshendelse(livshendelse, "utflyttingsdato: ${livshendelse.utflytting?.utflyttingsdato}")
+                sikkerLoggingAvLivshendelse(
+                    livshendelse,
+                    "utflyttingsdato: ${livshendelse.utflytting?.utflyttingsdato}"
+                )
                 databasetjeneste.lagreHendelse(livshendelse)
             }
 
@@ -346,7 +391,11 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     private fun behandleSivilstand(livshendelse: Livshendelse) {
         tellerSivilstand.increment()
 
-        if (databasetjeneste.hendelseFinnesIDatabasen(livshendelse.hendelseid, livshendelse.opplysningstype)) {
+        if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
+                livshendelse.hendelseid,
+                livshendelse.opplysningstype
+            )
+        ) {
             tellerLeesahDuplikat.increment()
             log.info(
                 "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
@@ -363,7 +412,10 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         when (livshendelse.endringstype) {
             Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
-                sikkerLoggingAvLivshendelse(livshendelse, "sivilstandDato: ${livshendelse.sivilstand?.bekreftelsesdato}")
+                sikkerLoggingAvLivshendelse(
+                    livshendelse,
+                    "sivilstandDato: ${livshendelse.sivilstand?.bekreftelsesdato}"
+                )
                 databasetjeneste.lagreHendelse(livshendelse)
             }
 
@@ -380,7 +432,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     private fun sikkerLoggingAvLivshendelse(livshendelse: Livshendelse, ekstraInfo: String = "") {
-        SECURE_LOGGER.info(
+        slog.info(
             "Livshendelse mottatt: " +
                 "hendelseId: ${livshendelse.hendelseid} " +
                 "offset: ${livshendelse.offset}, " +
@@ -402,8 +454,8 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     }
 
     companion object {
-        val log: Logger = LoggerFactory.getLogger(Livshendelsebehandler::class.java)
-        val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
+        val log: Logger = LoggerFactory.getLogger(this::class.java)
+        val slog: Logger = LoggerFactory.getLogger("secureLogger")
 
         const val MAKS_ANTALL_PERSONIDENTER = 20
 
@@ -415,23 +467,32 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.ANNULLERT.name.lowercase()}"))
         val tellerAdressebeskyttelseKorrigert: Counter =
             Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.KORRIGERT.name.lowercase()}"))
-        val tellerAdressebeskyttelseOpphørt: Counter = Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerAdressebeskyttelseOpphørt: Counter =
+            Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.OPPHOERT.name.lowercase()}"))
         val tellerAdressebeskyttelseOpprettet: Counter =
             Metrics.counter(tellernavn(adressebeskyttelse + ".${Endringstype.OPPRETTET.name.lowercase()}"))
 
         const val bostedsadresse = "bostedsadresse"
         val tellerBostedsadresse: Counter = Metrics.counter(tellernavn(bostedsadresse))
-        val tellerBostedsadresseAnnullert: Counter = Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.ANNULLERT.name.lowercase()}"))
-        val tellerBostedsadresseKorrigert: Counter = Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.KORRIGERT.name.lowercase()}"))
-        val tellerBostedsadresseOpphørt: Counter = Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.OPPHOERT.name.lowercase()}"))
-        val tellerBostedsadresseOpprettet: Counter = Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerBostedsadresseAnnullert: Counter =
+            Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerBostedsadresseKorrigert: Counter =
+            Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerBostedsadresseOpphørt: Counter =
+            Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerBostedsadresseOpprettet: Counter =
+            Metrics.counter(tellernavn(bostedsadresse + ".${Endringstype.OPPRETTET.name.lowercase()}"))
 
         const val dødsfall = "doedsfall"
         val tellerDødsfall: Counter = Metrics.counter(tellernavn(dødsfall))
-        val tellerDødsfallAnnullert: Counter = Metrics.counter(tellernavn(dødsfall + ".${Endringstype.ANNULLERT.name.lowercase()}"))
-        val tellerDødsfallKorrigert: Counter = Metrics.counter(tellernavn(dødsfall + ".${Endringstype.KORRIGERT.name.lowercase()}"))
-        val tellerDødsfallOpphørt: Counter = Metrics.counter(tellernavn(dødsfall + ".${Endringstype.OPPHOERT.name.lowercase()}"))
-        val tellerDødsfallOpprettet: Counter = Metrics.counter(tellernavn(dødsfall + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerDødsfallAnnullert: Counter =
+            Metrics.counter(tellernavn(dødsfall + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerDødsfallKorrigert: Counter =
+            Metrics.counter(tellernavn(dødsfall + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerDødsfallOpphørt: Counter =
+            Metrics.counter(tellernavn(dødsfall + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerDødsfallOpprettet: Counter =
+            Metrics.counter(tellernavn(dødsfall + ".${Endringstype.OPPRETTET.name.lowercase()}"))
         val tellerDødsfallIgnorert: Counter = Metrics.counter(tellernavn(dødsfall + ".ignorert"))
 
         const val folkeregisteridentifikator = "folkeregisteridentifikator"
@@ -444,52 +505,77 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.OPPHOERT.name.lowercase()}"))
         val tellerFolkeregisteridentifikatorOpprettet: Counter =
             Metrics.counter(tellernavn(folkeregisteridentifikator + ".${Endringstype.OPPRETTET.name.lowercase()}"))
-        val tellerFolkeregisteridentifikatorIgnorert: Counter = Metrics.counter(tellernavn(folkeregisteridentifikator + ".ignorert"))
+        val tellerFolkeregisteridentifikatorIgnorert: Counter =
+            Metrics.counter(tellernavn(folkeregisteridentifikator + ".ignorert"))
 
         const val fødsel = "foedsel"
         val tellerFødsel: Counter = Metrics.counter(tellernavn(fødsel))
         val tellerFødselIgnorert: Counter = Metrics.counter(tellernavn(fødsel + ".ignorert"))
-        val tellerFødselAnnulert: Counter = Metrics.counter(tellernavn(fødsel + ".${Endringstype.ANNULLERT.name.lowercase()}"))
-        val tellerFødselKorrigert: Counter = Metrics.counter(tellernavn(fødsel + ".${Endringstype.KORRIGERT.name.lowercase()}"))
-        val tellerFødselOpphørt: Counter = Metrics.counter(tellernavn(fødsel + ".${Endringstype.OPPHOERT.name.lowercase()}"))
-        val tellerFødselOpprettet: Counter = Metrics.counter(tellernavn(fødsel + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerFødselAnnulert: Counter =
+            Metrics.counter(tellernavn(fødsel + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerFødselKorrigert: Counter =
+            Metrics.counter(tellernavn(fødsel + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerFødselOpphørt: Counter =
+            Metrics.counter(tellernavn(fødsel + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerFødselOpprettet: Counter =
+            Metrics.counter(tellernavn(fødsel + ".${Endringstype.OPPRETTET.name.lowercase()}"))
 
         const val innflytting = "innflytting"
         val tellerInnflytting: Counter = Metrics.counter(tellernavn(innflytting))
-        val tellerInnflyttingAnnullert: Counter = Metrics.counter(tellernavn(innflytting + ".${Endringstype.ANNULLERT.name.lowercase()}"))
-        val tellerInnflyttingKorrigert: Counter = Metrics.counter(tellernavn(innflytting + ".${Endringstype.KORRIGERT.name.lowercase()}"))
-        val tellerInnflyttingOpphørt: Counter = Metrics.counter(tellernavn(innflytting + ".${Endringstype.OPPHOERT.name.lowercase()}"))
-        val tellerInnflyttingOpprettet: Counter = Metrics.counter(tellernavn(innflytting + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerInnflyttingAnnullert: Counter =
+            Metrics.counter(tellernavn(innflytting + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerInnflyttingKorrigert: Counter =
+            Metrics.counter(tellernavn(innflytting + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerInnflyttingOpphørt: Counter =
+            Metrics.counter(tellernavn(innflytting + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerInnflyttingOpprettet: Counter =
+            Metrics.counter(tellernavn(innflytting + ".${Endringstype.OPPRETTET.name.lowercase()}"))
         val tellerInnflyttingIgnorert: Counter = Metrics.counter(tellernavn((innflytting + ".ignorert")))
 
         const val navn = "navn"
         val tellerNavn: Counter = Metrics.counter(tellernavn(navn))
-        val tellerNavnAnnullert: Counter = Metrics.counter(tellernavn(navn + ".${Endringstype.ANNULLERT.name.lowercase()}"))
-        val tellerNavnKorrigert: Counter = Metrics.counter(tellernavn(navn + ".${Endringstype.KORRIGERT.name.lowercase()}"))
-        val tellerNavnOpphørt: Counter = Metrics.counter(tellernavn(navn + ".${Endringstype.OPPHOERT.name.lowercase()}"))
-        val tellerNavnOpprettet: Counter = Metrics.counter(tellernavn(navn + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerNavnAnnullert: Counter =
+            Metrics.counter(tellernavn(navn + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerNavnKorrigert: Counter =
+            Metrics.counter(tellernavn(navn + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerNavnOpphørt: Counter =
+            Metrics.counter(tellernavn(navn + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerNavnOpprettet: Counter =
+            Metrics.counter(tellernavn(navn + ".${Endringstype.OPPRETTET.name.lowercase()}"))
 
         const val sivilstand = "sivilstand"
         val tellerSivilstand: Counter = Metrics.counter(tellernavn(sivilstand))
-        val tellerSivilstandAnnullert: Counter = Metrics.counter(tellernavn(sivilstand + ".${Endringstype.ANNULLERT.name.lowercase()}"))
-        val tellerSivilstandKorrigert: Counter = Metrics.counter(tellernavn(sivilstand + ".${Endringstype.KORRIGERT.name.lowercase()}"))
-        val tellerSivilstandOpphørt: Counter = Metrics.counter(tellernavn(sivilstand + ".${Endringstype.OPPHOERT.name.lowercase()}"))
-        val tellerSivilstandOpprettet: Counter = Metrics.counter(tellernavn(sivilstand + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerSivilstandAnnullert: Counter =
+            Metrics.counter(tellernavn(sivilstand + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerSivilstandKorrigert: Counter =
+            Metrics.counter(tellernavn(sivilstand + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerSivilstandOpphørt: Counter =
+            Metrics.counter(tellernavn(sivilstand + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerSivilstandOpprettet: Counter =
+            Metrics.counter(tellernavn(sivilstand + ".${Endringstype.OPPRETTET.name.lowercase()}"))
 
         const val utflytting = "utflytting"
         val tellerUtflytting: Counter = Metrics.counter(tellernavn(utflytting))
-        val tellerUtflyttingAnnullert: Counter = Metrics.counter(tellernavn(utflytting + ".${Endringstype.ANNULLERT.name.lowercase()}"))
-        val tellerUtflyttingKorrigert: Counter = Metrics.counter(tellernavn(utflytting + ".${Endringstype.KORRIGERT.name.lowercase()}"))
-        val tellerUtflyttingOpphørt: Counter = Metrics.counter(tellernavn(utflytting + ".${Endringstype.OPPHOERT.name.lowercase()}"))
-        val tellerUtflyttingOpprettet: Counter = Metrics.counter(tellernavn(utflytting + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerUtflyttingAnnullert: Counter =
+            Metrics.counter(tellernavn(utflytting + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerUtflyttingKorrigert: Counter =
+            Metrics.counter(tellernavn(utflytting + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerUtflyttingOpphørt: Counter =
+            Metrics.counter(tellernavn(utflytting + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerUtflyttingOpprettet: Counter =
+            Metrics.counter(tellernavn(utflytting + ".${Endringstype.OPPRETTET.name.lowercase()}"))
         val tellerUtflyttingIgnorert: Counter = Metrics.counter(tellernavn(utflytting + ".ignorert"))
 
         const val verge = "verge"
         val tellerVerge: Counter = Metrics.counter(tellernavn(verge))
-        val tellerVergeAnnullert: Counter = Metrics.counter(tellernavn(verge + ".${Endringstype.ANNULLERT.name.lowercase()}"))
-        val tellerVergeKorrigert: Counter = Metrics.counter(tellernavn(verge + ".${Endringstype.KORRIGERT.name.lowercase()}"))
-        val tellerVergeOpphørt: Counter = Metrics.counter(tellernavn(verge + ".${Endringstype.OPPHOERT.name.lowercase()}"))
-        val tellerVergeOpprettet: Counter = Metrics.counter(tellernavn(verge + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+        val tellerVergeAnnullert: Counter =
+            Metrics.counter(tellernavn(verge + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerVergeKorrigert: Counter =
+            Metrics.counter(tellernavn(verge + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerVergeOpphørt: Counter =
+            Metrics.counter(tellernavn(verge + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerVergeOpprettet: Counter =
+            Metrics.counter(tellernavn(verge + ".${Endringstype.OPPRETTET.name.lowercase()}"))
 
         private fun tellernavn(navn: String): String {
             return "bidrag.personhendelse.$navn"

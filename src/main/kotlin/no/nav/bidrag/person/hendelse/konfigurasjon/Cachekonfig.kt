@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit
 
 @Configuration
 @EnableCaching
-open class Cachekonfig {
+class Cachekonfig {
 
     @Bean
-    open fun cacheManager(): CacheManager = object : ConcurrentMapCacheManager() {
+    fun cacheManager(): CacheManager = object : ConcurrentMapCacheManager() {
         override fun createConcurrentMapCache(name: String): Cache {
             val concurrentMap = Caffeine
                 .newBuilder()

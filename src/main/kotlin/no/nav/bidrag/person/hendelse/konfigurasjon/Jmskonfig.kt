@@ -13,7 +13,7 @@ import javax.jms.JMSException
 
 @EnableJms
 @Configuration
-open class Jmskonfig(var wmq: Wmq) {
+class Jmskonfig(var wmq: Wmq) {
 
     fun createCachingConnectionFactory(): CachingConnectionFactory {
         var cachingConnectionFactory = CachingConnectionFactory()
@@ -23,7 +23,7 @@ open class Jmskonfig(var wmq: Wmq) {
     }
 
     @Bean
-    open fun jmsTemplate(): JmsTemplate {
+    fun jmsTemplate(): JmsTemplate {
         return JmsTemplate(createCachingConnectionFactory())
     }
 

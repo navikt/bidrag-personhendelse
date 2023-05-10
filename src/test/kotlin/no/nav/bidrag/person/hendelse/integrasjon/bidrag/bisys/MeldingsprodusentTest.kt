@@ -1,4 +1,4 @@
-package no.nav.bidrag.person.hendelse.integrasjon.distribusjon
+package no.nav.bidrag.person.hendelse.integrasjon.bidrag.bisys
 
 import io.mockk.MockKAnnotations
 import io.mockk.clearAllMocks
@@ -17,13 +17,13 @@ class MeldingsprodusentTest {
 
     @MockK
     lateinit var jmsTemplate: JmsTemplate
-    lateinit var meldingsprodusent: Meldingsprodusent
+    lateinit var meldingsprodusent: BisysMeldingsprodusjon
 
     @BeforeEach
     internal fun oppsett() {
         MockKAnnotations.init(this)
         clearAllMocks()
-        meldingsprodusent = Meldingsprodusent(jmsTemplate)
+        meldingsprodusent = BisysMeldingsprodusjon(jmsTemplate)
     }
 
     @Test

@@ -1,4 +1,4 @@
-package no.nav.bidrag.person.hendelse.integrasjon.mottak
+package no.nav.bidrag.person.hendelse.integrasjon.pdl
 
 import no.nav.bidrag.person.hendelse.domene.Foedsel
 import no.nav.bidrag.person.hendelse.domene.Folkeregisteridentifikator
@@ -51,7 +51,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
     )
     fun listen(@Payload personhendelse: Personhendelse, cr: ConsumerRecord<String, Personhendelse>) {
         log.info("Livshendelse med hendelseid {} mottatt.", personhendelse.hendelseId)
-        SECURE_LOGGER.info("Har mottatt leesah-hendelse $cr")
+        slog.info("Har mottatt leesah-hendelse $cr")
 
         var opplysningstype = konvertereOpplysningstype(personhendelse.opplysningstype)
 
@@ -60,11 +60,23 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             return
         }
 
+        if (personhendelse.personidenter.isNullOrEmpty()) {
+            log.warn("Mottok hendelse uten personidenter - avbryter videre prosessering")
+            return
+        }
+
+        if (personhendelse.personidenter?.first { it.length == 13 }.isNullOrEmpty()) {
+            log.warn("Mottok hendelse uten aktørid - avbryter videre prosessering")
+            slog.warn("Fant ikke aktørid i hendelse med hendelseid: ${personhendelse.hendelseId} og personidenter: {${personhendelse.personidenter}}")
+            return
+        }
+
         val livshendelse = Livshendelse(
             personhendelse.hendelseId.toString(),
             opplysningstype,
             konvertereEndringstype(personhendelse.endringstype),
-            personhendelse.personidenter?.stream()?.map(CharSequence::toString)?.collect(Collectors.toList()),
+            personhendelse.personidenter?.stream()?.map(CharSequence::toString)!!.collect(Collectors.toList()),
+            personhendelse.personidenter.first { it.length == 13 }.toString(),
             LocalDateTime.ofInstant(personhendelse.opprettet, ZoneId.systemDefault()),
             personhendelse.tidligereHendelseId?.toString(),
             henteDødsdato(personhendelse.doedsfall),
@@ -85,7 +97,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             MDC.put(MdcKonstanter.MDC_KALLID, livshendelse.hendelseid)
             livshendelsebehandler.prosesserNyHendelse(livshendelse)
         } catch (e: RuntimeException) {
-            SECURE_LOGGER.error("Feil i prosessering av leesah-hendelse", e)
+            slog.error("Feil i prosessering av leesah-hendelse", e)
             throw RuntimeException("Feil i prosessering av leesah-hendelse")
         } finally {
             MDC.clear()
@@ -96,7 +108,10 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return try {
             Livshendelse.Opplysningstype.valueOf(pdlOpplysningstype.toString())
         } catch (iae: IllegalArgumentException) {
-            log.info("Mottok livshendelse med opplysningstype ({}) fra PDL. Denne ignoreres av løsningen.", pdlOpplysningstype.toString())
+            log.info(
+                "Mottok livshendelse med opplysningstype ({}) fra PDL. Denne ignoreres av løsningen.",
+                pdlOpplysningstype.toString()
+            )
             Livshendelse.Opplysningstype.IKKE_STØTTET
         }
     }
@@ -181,7 +196,13 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
                 navn.originaltNavn?.mellomnavn?.toString(),
                 navn.originaltNavn?.etternavn?.toString()
             )
-            Navn(navn.fornavn?.toString(), navn.mellomnavn?.toString(), navn.etternavn?.toString(), originaltNavn, navn.gyldigFraOgMed)
+            Navn(
+                navn.fornavn?.toString(),
+                navn.mellomnavn?.toString(),
+                navn.etternavn?.toString(),
+                originaltNavn,
+                navn.gyldigFraOgMed
+            )
         }
     }
 
@@ -189,7 +210,11 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (utflytting == null) {
             null
         } else {
-            Utflytting(utflytting.tilflyttingsland?.toString(), utflytting.tilflyttingsstedIUtlandet?.toString(), utflytting.utflyttingsdato)
+            Utflytting(
+                utflytting.tilflyttingsland?.toString(),
+                utflytting.tilflyttingsstedIUtlandet?.toString(),
+                utflytting.utflyttingsdato
+            )
         }
     }
 
@@ -215,7 +240,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
     }
 
     companion object {
-        val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
-        val log: Logger = LoggerFactory.getLogger(Livshendelsemottak::class.java)
+        val slog: Logger = LoggerFactory.getLogger("secureLogger")
+        val log: Logger = LoggerFactory.getLogger(this::class.java)
     }
 }
