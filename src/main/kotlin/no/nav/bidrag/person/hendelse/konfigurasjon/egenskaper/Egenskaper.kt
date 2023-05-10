@@ -11,6 +11,7 @@ data class Generelt(
     val antallDagerLevetidForUtgaatteHendelser: Int = 7,
     val antallTimerSidenForrigePublisering: Int = 8,
     val maksAntallMeldingerSomOverfoeresTilBisysOmGangen: Int = 6500,
+    val maksAntallMeldingerSomSendesTilBidragTopicOmGangen: Int = 2000,
     val bolkstoerrelseVedSletting: Int = 65000
 )
 

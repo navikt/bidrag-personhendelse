@@ -81,7 +81,9 @@ class Aktor(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = 0,
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "aktor", cascade = arrayOf(CascadeType.MERGE))
-    val hendelsemottak: Set<Hendelsemottak> = HashSet()
+    val hendelsemottak: Set<Hendelsemottak> = HashSet(),
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "aktor", cascade = arrayOf(CascadeType.MERGE))
+    val kontoendring: Set<Kontoendring> = HashSet()
 )
 
 enum class Status {

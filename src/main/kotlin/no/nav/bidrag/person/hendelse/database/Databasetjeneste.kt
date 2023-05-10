@@ -6,6 +6,7 @@ import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
@@ -92,12 +93,13 @@ class Databasetjeneste(
         return kontoendringDao.save(Kontoendring(aktør, personidenter.toString()))
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = [Exception::class])
     fun henteAktøridTilPersonerMedNyligOppdatertePersonopplysninger(): HashMap<String, String> {
-        return tilHashMap(
-            hendelsemottakDao.aktøridTilPubliseringsklareOverførteHendelser(
-                LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
-            )
+        var aktor = hendelsemottakDao.aktøridTilPubliseringsklareOverførteHendelser(
+            LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
         )
+
+        return tilHashMap(aktor.map { a -> a.hendelsemottak.first() })
     }
 
     fun henteAktøridTilKontoeiereMedNyligeKontoendringer(): HashMap<String, String> {
@@ -143,15 +145,6 @@ class Databasetjeneste(
         var map = HashMap<String, String>()
         liste.forEach { map.put(it.aktor.aktorid, it.personidenter) }
         return map
-    }
-
-    private fun trekkeTidligereMottatteKontoendringerForPerson(aktør: Aktor) {
-        val kontoendringerForPersonMedStatusMottatt =
-            kontoendringDao.findByAktorAndStatus(aktør, StatusKontoendring.MOTTATT)
-        kontoendringerForPersonMedStatusMottatt.forEach {
-            it.status = StatusKontoendring.TRUKKET
-            it.statustidspunkt = LocalDateTime.now()
-        }
     }
 
     companion object {

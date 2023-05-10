@@ -28,11 +28,11 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     fun idTilHendelserSomErKlarTilOverføring(statustidspunktFør: LocalDateTime): Set<Long>
 
     @Query(
-        "from Hendelsemottak hm " +
-            "where (hm.aktor.publisert is null or hm.aktor.publisert < :publisertFør) " +
-            " and hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT"
+        "from Aktor aktor " +
+            "where (aktor.publisert is null or aktor.publisert < :publisertFør) " +
+            " and aktor.id in (select hm.aktor.id from Hendelsemottak hm where hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT)"
     )
-    fun aktøridTilPubliseringsklareOverførteHendelser(publisertFør: LocalDateTime): List<Hendelsemottak>
+    fun aktøridTilPubliseringsklareOverførteHendelser(publisertFør: LocalDateTime): List<Aktor>
 
     @Query("select hm.id from Hendelsemottak hm where hm.status = :status and hm.statustidspunkt < :statustidspunktFør")
     fun henteIdTilHendelser(status: Status, statustidspunktFør: LocalDateTime): Set<Long>
