@@ -52,8 +52,8 @@ spring:
           location: ${KAFKA_TRUSTSTORE_PATH}
           password: ${KAFKA_CREDSTORE_PASSWORD}
     producer:
-      batch-size: 50
-      retries: 3
+      buffer-memory: 68554432
+      retries: 0
       acks: all
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
