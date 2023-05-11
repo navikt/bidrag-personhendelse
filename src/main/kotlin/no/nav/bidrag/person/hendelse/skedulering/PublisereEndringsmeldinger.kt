@@ -37,7 +37,8 @@ class PublisereEndringsmeldinger(
         log.info("Identifiserte totalt ${aktørerForPublisering.size} unike personer som det skal publiseres endringsmeldinger for.")
 
         val subsetMedAktører = aktørerForPublisering.keys.take(egenskaper.generelt.maksAntallMeldingerSomSendesTilBidragTopicOmGangen).toSet()
-        log.info("Begrenser antall meldinger som skal publiseres til ${subsetMedAktører.size}")
+
+        if (subsetMedAktører.size < aktørerForPublisering.size) log.info("Begrenser antall meldinger som skal publiseres til ${subsetMedAktører.size}")
 
         // Publisere melding til intern topic for samtlige personer med endringer
         subsetMedAktører.forEach { bidragtopic.publisereEndringsmelding(Endringsmelding(it, aktørerForPublisering.getValue(it))) }
