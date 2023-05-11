@@ -12,12 +12,11 @@ interface KontoendringDao : JpaRepository<Kontoendring, Long> {
     fun save(kontoendring: Kontoendring): Kontoendring
 
     @Query(
-        "from Kontoendring ke " +
-            "where ke.status in (no.nav.bidrag.person.hendelse.database.Status.MOTTATT) " +
-            "and ke.mottatt < :mottattFør " +
-            "and (ke.aktor.publisert is null or ke.aktor.publisert < :publisertFør)"
+        "from Aktor aktor " +
+            "where (aktor.publisert is null or aktor.publisert < :publisertFør) " +
+            " and aktor.id in (select ke.aktor.id from Kontoendring ke where ke.status = no.nav.bidrag.person.hendelse.database.Status.MOTTATT and ke.mottatt < :mottattFør)"
     )
-    fun henteKontoeiereForPublisering(mottattFør: LocalDateTime, publisertFør: LocalDateTime): List<Kontoendring>
+    fun henteAktørerForPublisering(mottattFør: LocalDateTime, publisertFør: LocalDateTime): List<Aktor>
 
     @Query("select ke.id from Kontoendring ke where ke.aktor.aktorid = :aktorid and ke.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT")
     fun finnKontoendringsiderMedStatusOverført(aktorid: String): Set<Long>

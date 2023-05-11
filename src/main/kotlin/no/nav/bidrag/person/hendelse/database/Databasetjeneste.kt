@@ -123,20 +123,23 @@ class Databasetjeneste(
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = [Exception::class])
     fun henteAktørMedIdenterTilPersonerMedNyligOppdatertePersonopplysninger(): HashMap<Aktor, String> {
-        var aktor = hendelsemottakDao.aktøridTilPubliseringsklareOverførteHendelser(
+        val aktører = hendelsemottakDao.aktørerTilPubliseringsklareOverførteHendelser(
             LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
         )
 
-        return tilHashMap(aktor.map { a -> a.hendelsemottak.first() })
+        return tilHashMap(aktører.map { a -> a.hendelsemottak.first() })
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = [Exception::class])
     fun henteAktørMedIdenterTilKontoeiereMedNyligeKontoendringer(): HashMap<Aktor, String> {
         val mottattFør =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
         val publisertFør =
             LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
 
-        return tilHashMap(kontoendringDao.henteKontoeiereForPublisering(mottattFør, publisertFør))
+        val aktører = kontoendringDao.henteAktørerForPublisering(mottattFør, publisertFør)
+
+        return tilHashMap(aktører.map { a -> a.kontoendring.first() })
     }
 
     fun hentEksisterendeEllerOpprettNyAktør(aktørid: String): Aktor {
