@@ -13,7 +13,7 @@ interface KontoendringDao : JpaRepository<Kontoendring, Long> {
 
     @Query(
         "from Kontoendring ke " +
-            "where ke.status in (no.nav.bidrag.person.hendelse.database.StatusKontoendring.MOTTATT) " +
+            "where ke.status in (no.nav.bidrag.person.hendelse.database.Status.MOTTATT) " +
             "and ke.mottatt < :mottattFør " +
             "and (ke.aktor.publisert is null or ke.aktor.publisert < :publisertFør)"
     )
