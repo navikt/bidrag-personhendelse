@@ -25,22 +25,22 @@ class PublisereEndringsmeldinger(
         lockAtMostFor = "\${publisere_personhendelser.lås.max}"
     )
     fun identifisereOgPublisere() {
-        // Hente aktørid med personidenter til kontoeiere med nylige endringer
-        val aktøriderKontoeiere = databasetjeneste.henteAktøridTilKontoeiereMedNyligeKontoendringer()
-        log.info("Fant ${aktøriderKontoeiere.size} unike kontoeiere med nylige kontoendringer.")
+        // Hente aktør med personidenter til kontoeiere med nylige endringer
+        val aktørerKontoeiere = databasetjeneste.henteAktørMedIdenterTilKontoeiereMedNyligeKontoendringer()
+        log.info("Fant ${aktørerKontoeiere.size} unike kontoeiere med nylige kontoendringer.")
 
-        // Hente aktørid med personidenter til til personer med nylige endringer i personopplysninger
-        val aktøriderPersonopplysninger = databasetjeneste.henteAktøridTilPersonerMedNyligOppdatertePersonopplysninger()
-        log.info("Fant ${aktøriderPersonopplysninger.size} unike personer med nylige endringer i personopplysninger.")
+        // Hente aktør med personidenter til til personer med nylige endringer i personopplysninger
+        val aktørerPersonopplysninger = databasetjeneste.henteAktørMedIdenterTilPersonerMedNyligOppdatertePersonopplysninger()
+        log.info("Fant ${aktørerPersonopplysninger.size} unike personer med nylige endringer i personopplysninger.")
 
-        val aktøriderForPublisering = aktøriderPersonopplysninger.plus(aktøriderKontoeiere)
-        log.info("Identifiserte totalt ${aktøriderForPublisering.size} unike personer som det skal publiseres endringsmeldinger for.")
+        val aktørerForPublisering = aktørerPersonopplysninger.plus(aktørerKontoeiere)
+        log.info("Identifiserte totalt ${aktørerForPublisering.size} unike personer som det skal publiseres endringsmeldinger for.")
 
-        val subsetMedAktørider = aktøriderForPublisering.keys.take(egenskaper.generelt.maksAntallMeldingerSomSendesTilBidragTopicOmGangen).toSet()
-        log.info("Begrenser antall meldinger som skal publiseres til ${subsetMedAktørider.size}")
+        val subsetMedAktører = aktørerForPublisering.keys.take(egenskaper.generelt.maksAntallMeldingerSomSendesTilBidragTopicOmGangen).toSet()
+        log.info("Begrenser antall meldinger som skal publiseres til ${subsetMedAktører.size}")
 
         // Publisere melding til intern topic for samtlige personer med endringer
-        subsetMedAktørider.forEach { bidragtopic.publisereEndringsmelding(Endringsmelding(it, aktøriderForPublisering.getValue(it))) }
+        subsetMedAktører.forEach { bidragtopic.publisereEndringsmelding(Endringsmelding(it, aktørerForPublisering.getValue(it))) }
     }
 
     companion object {

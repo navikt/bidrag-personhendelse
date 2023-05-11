@@ -27,10 +27,38 @@ class Databasetjeneste(
         }
     }
 
+    fun oppdatereStatusPåKontoendring(id: Long, nyStatus: Status) {
+        val kontoendring = kontoendringDao.findById(id)
+        if (kontoendring.isPresent) {
+            val kontoendring = kontoendring.get()
+            kontoendring.status = nyStatus
+            kontoendring.statustidspunkt = LocalDateTime.now()
+            this.kontoendringDao.save(kontoendring)
+        }
+    }
+
     @Transactional
     fun oppdatereStatusPåHendelser(ider: List<Long>, nyStatus: Status) {
         for (id in ider) {
             oppdatereStatusPåHendelse(id, nyStatus)
+        }
+    }
+
+    @Transactional
+    fun oppdatereStatusPåHendelserEtterPublisering(aktørid: String) {
+        var ider = hendelsemottakDao.finnHendelsemottakIderMedStatusOverført(aktørid)
+
+        for (id in ider) {
+            oppdatereStatusPåHendelse(id, Status.PUBLISERT)
+        }
+    }
+
+    @Transactional
+    fun oppdatereStatusPåKontoendringerEtterPublisering(aktørid: String) {
+        var ider = kontoendringDao.finnKontoendringsiderMedStatusOverført(aktørid)
+
+        for (id in ider) {
+            oppdatereStatusPåKontoendring(id, Status.PUBLISERT)
         }
     }
 
@@ -51,7 +79,7 @@ class Databasetjeneste(
             listeMedPersonidenter = listeMedPersonidenter.subList(0, Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER)
             Livshendelsebehandler.log.warn(
                 "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} personidenter. " +
-                    "Kun de ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} første arkiveres."
+                        "Kun de ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} første arkiveres."
             )
         }
 
@@ -94,7 +122,7 @@ class Databasetjeneste(
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = [Exception::class])
-    fun henteAktøridTilPersonerMedNyligOppdatertePersonopplysninger(): HashMap<String, String> {
+    fun henteAktørMedIdenterTilPersonerMedNyligOppdatertePersonopplysninger(): HashMap<Aktor, String> {
         var aktor = hendelsemottakDao.aktøridTilPubliseringsklareOverførteHendelser(
             LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
         )
@@ -102,7 +130,7 @@ class Databasetjeneste(
         return tilHashMap(aktor.map { a -> a.hendelsemottak.first() })
     }
 
-    fun henteAktøridTilKontoeiereMedNyligeKontoendringer(): HashMap<String, String> {
+    fun henteAktørMedIdenterTilKontoeiereMedNyligeKontoendringer(): HashMap<Aktor, String> {
         val mottattFør =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
         val publisertFør =
@@ -141,9 +169,9 @@ class Databasetjeneste(
         }
     }
 
-    private fun tilHashMap(liste: List<Personhendelse>): HashMap<String, String> {
-        var map = HashMap<String, String>()
-        liste.forEach { map.put(it.aktor.aktorid, it.personidenter) }
+    private fun tilHashMap(liste: List<Personhendelse>): HashMap<Aktor, String> {
+        var map = HashMap<Aktor, String>()
+        liste.forEach { map.put(it.aktor, it.personidenter) }
         return map
     }
 

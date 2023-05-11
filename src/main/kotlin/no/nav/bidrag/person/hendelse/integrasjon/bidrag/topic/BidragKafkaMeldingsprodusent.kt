@@ -1,6 +1,7 @@
 package no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.bidrag.person.hendelse.database.Aktor
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.domene.Endringsmelding
 import org.slf4j.Logger
@@ -24,20 +25,22 @@ class BidragKafkaMeldingsprodusent(
     )
     fun publisereEndringsmelding(endringsmelding: Endringsmelding) {
         var melding = objectMapper.writeValueAsString(endringsmelding)
-        publisereMelding(BIDRAG_PERSONHENDELSE_TOPIC, endringsmelding.aktørid, melding)
+        publisereMelding(BIDRAG_PERSONHENDELSE_TOPIC, endringsmelding.aktør, melding)
     }
 
-    private fun publisereMelding(emne: String, aktørid: String, data: String) {
-        slog.info("Publiserer endringsmelding for aktørid $aktørid")
+    private fun publisereMelding(emne: String, aktør: Aktor, data: String) {
+        slog.info("Publiserer endringsmelding for aktørid ${aktør.aktorid}")
         val melding = objectMapper.writeValueAsString(data)
-        var future = kafkaTemplate.send(emne, aktørid, melding)
+        var future = kafkaTemplate.send(emne, aktør.aktorid, melding)
 
         future.whenComplete { result, ex ->
             if (ex != null) {
                 log.warn("Publisering av melding til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
                 slog.warn("Publisering av melding for aktørid ${result.producerRecord.key()} til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
             } else {
-                databasetjeneste.oppdaterePubliseringstidspunkt(aktørid)
+                databasetjeneste.oppdaterePubliseringstidspunkt(aktør.aktorid)
+                databasetjeneste.oppdatereStatusPåHendelserEtterPublisering(aktør.aktorid)
+                databasetjeneste.oppdatereStatusPåKontoendringerEtterPublisering(aktør.aktorid)
             }
         }
     }

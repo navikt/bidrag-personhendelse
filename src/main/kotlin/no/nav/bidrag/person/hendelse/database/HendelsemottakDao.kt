@@ -21,6 +21,9 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     @Nullable
     fun findByHendelseidAndStatus(hendelseid: String, status: Status): Hendelsemottak?
 
+    @Query("select hm.id from Hendelsemottak hm where hm.aktor.aktorid = :aktorid and hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT")
+    fun finnHendelsemottakIderMedStatusOverført(aktorid: String): Set<Long>
+
     @Query(
         "select hm.id from Hendelsemottak hm " +
             "where hm.status = no.nav.bidrag.person.hendelse.database.Status.MOTTATT and hm.statustidspunkt < :statustidspunktFør"

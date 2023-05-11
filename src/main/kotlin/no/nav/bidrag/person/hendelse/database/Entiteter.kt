@@ -63,7 +63,7 @@ class Kontoendring(
     val mottatt: LocalDateTime = LocalDateTime.now(),
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    var status: StatusKontoendring = StatusKontoendring.MOTTATT,
+    var status: Status = Status.MOTTATT,
     @Column(name = "statustidspunkt", nullable = false)
     var statustidspunkt: LocalDateTime = LocalDateTime.now(),
     @Id
@@ -84,16 +84,22 @@ class Aktor(
     val hendelsemottak: Set<Hendelsemottak> = HashSet(),
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "aktor", cascade = arrayOf(CascadeType.MERGE))
     val kontoendring: Set<Kontoendring> = HashSet()
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Aktor) return false
+        return aktorid == other.aktorid
+    }
+
+    override fun hashCode(): Int {
+        return aktorid.hashCode() * 31
+    }
+}
 
 enum class Status {
     MOTTATT,
     KANSELLERT,
     OVERFØRT,
-    OVERFØRING_FEILET
-}
-
-enum class StatusKontoendring {
-    MOTTATT,
-    TRUKKET
+    OVERFØRING_FEILET,
+    PUBLISERT
 }

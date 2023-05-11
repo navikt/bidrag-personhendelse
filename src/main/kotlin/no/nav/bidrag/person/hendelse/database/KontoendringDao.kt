@@ -19,5 +19,6 @@ interface KontoendringDao : JpaRepository<Kontoendring, Long> {
     )
     fun henteKontoeiereForPublisering(mottattFør: LocalDateTime, publisertFør: LocalDateTime): List<Kontoendring>
 
-    fun findByAktorAndStatus(kontoeier: Aktor, status: StatusKontoendring): List<Kontoendring>
+    @Query("select ke.id from Kontoendring ke where ke.aktor.aktorid = :aktorid and ke.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT")
+    fun finnKontoendringsiderMedStatusOverført(aktorid: String): Set<Long>
 }

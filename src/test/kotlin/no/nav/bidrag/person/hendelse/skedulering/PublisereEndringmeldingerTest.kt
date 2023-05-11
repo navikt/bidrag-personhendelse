@@ -119,7 +119,7 @@ class PublisereEndringmeldingerTest {
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
 
-        val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
+        val personidentDtoAktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
         teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer!!.map { it.ident })
         every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
@@ -136,7 +136,7 @@ class PublisereEndringmeldingerTest {
         }
 
         endringsmelding.asClue {
-            it.captured.aktørid shouldBe aktør?.ident
+            it.captured.aktør.aktorid shouldBe personidentDtoAktør?.ident
             it.captured.personidenter shouldBe personidenter.toString()
         }
     }
@@ -147,7 +147,7 @@ class PublisereEndringmeldingerTest {
         val personidenter = generereIdenter()
         val personidentDtoer = tilPersonidentDtoer(personidenter)
 
-        val aktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
+        val personidentDtoAktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
         teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident })
         teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer.map { it.ident })
@@ -165,7 +165,7 @@ class PublisereEndringmeldingerTest {
         }
 
         endringsmelding.asClue {
-            it.captured.aktørid shouldBe aktør?.ident
+            it.captured.aktør.aktorid shouldBe personidentDtoAktør?.ident
             it.captured.personidenter shouldBe personidenter.toString()
         }
     }
