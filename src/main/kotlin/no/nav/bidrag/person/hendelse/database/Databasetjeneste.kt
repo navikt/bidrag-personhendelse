@@ -131,11 +131,11 @@ class Databasetjeneste(
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = [Exception::class])
     fun henteAktørMedIdenterTilPersonerMedNyligOppdatertePersonopplysninger(): HashMap<Aktor, Set<String>> {
-        val aktører = hendelsemottakDao.aktørerTilPubliseringsklareOverførteHendelser(
-            LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
+        return tilHashMap(
+            hendelsemottakDao.hentePubliseringsklareOverførteHendelser(
+                LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
+            )
         )
-
-        return tilHashMap(aktører.map { a -> a.hendelsemottak.first() })
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = [Exception::class])
@@ -145,9 +145,7 @@ class Databasetjeneste(
         val publisertFør =
             LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
 
-        val aktører = kontoendringDao.henteAktørerForPublisering(mottattFør, publisertFør)
-
-        return tilHashMap(aktører.map { a -> a.kontoendring.first() })
+        return tilHashMap(kontoendringDao.henteKontoendringerForPublisering(mottattFør, publisertFør))
     }
 
     fun hentEksisterendeEllerOpprettNyAktør(aktørid: String): Aktor {

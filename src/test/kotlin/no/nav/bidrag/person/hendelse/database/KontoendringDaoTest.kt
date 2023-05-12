@@ -58,7 +58,7 @@ class KontoendringDaoTest {
         kontoendringDao.save(Kontoendring(aktør, aktør.aktorid, LocalDateTime.now().minusDays(1)))
 
         // hvis
-        val kontoeiere = kontoendringDao.henteAktørerForPublisering(
+        val kontoeiere = kontoendringDao.henteKontoendringerForPublisering(
             LocalDateTime.now().minusDays(1),
             LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
         )
@@ -66,7 +66,7 @@ class KontoendringDaoTest {
         // så
         assertSoftly {
             kontoeiere.size shouldBe 1
-            kontoeiere.first().aktorid shouldBe aktør.aktorid
+            kontoeiere.first().aktor.aktorid shouldBe aktør.aktorid
         }
     }
 }
