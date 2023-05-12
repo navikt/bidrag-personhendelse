@@ -457,8 +457,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
         val log: Logger = LoggerFactory.getLogger(this::class.java)
         val slog: Logger = LoggerFactory.getLogger("secureLogger")
 
-        const val MAKS_ANTALL_PERSONIDENTER = 20
-
         val tellerLeesahDuplikat: Counter = Metrics.counter(tellernavn("leesah.duplikat"))
 
         const val adressebeskyttelse = "adressebeskyttelse"

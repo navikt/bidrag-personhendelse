@@ -55,6 +55,10 @@
 
     <logger name="no.nav.bidrag.person.hendelse" level="INFO"/>
 
+    <logger name="org.springframework.core.log.LogAccessor">
+        <appender-ref ref="secureLog"/>
+    </logger>
+
     <logger name="com.zaxxer.hikari" level="debug" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>

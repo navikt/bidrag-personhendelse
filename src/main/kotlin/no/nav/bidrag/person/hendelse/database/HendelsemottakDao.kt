@@ -21,9 +21,13 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     @Nullable
     fun findByHendelseidAndStatus(hendelseid: String, status: Status): Hendelsemottak?
 
+    @Query("select hm.id from Hendelsemottak hm where hm.aktor.aktorid = :aktorid and hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT")
+    fun finnHendelsemottakIderMedStatusOverført(aktorid: String): Set<Long>
+
     @Query(
         "select hm.id from Hendelsemottak hm " +
-            "where hm.status = no.nav.bidrag.person.hendelse.database.Status.MOTTATT and hm.statustidspunkt < :statustidspunktFør"
+            "where hm.status in (no.nav.bidrag.person.hendelse.database.Status.MOTTATT, no.nav.bidrag.person.hendelse.database.Status.OVERFØRING_FEILET)  " +
+            "and hm.statustidspunkt < :statustidspunktFør"
     )
     fun idTilHendelserSomErKlarTilOverføring(statustidspunktFør: LocalDateTime): Set<Long>
 
@@ -32,7 +36,7 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
             "where (aktor.publisert is null or aktor.publisert < :publisertFør) " +
             " and aktor.id in (select hm.aktor.id from Hendelsemottak hm where hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT)"
     )
-    fun aktøridTilPubliseringsklareOverførteHendelser(publisertFør: LocalDateTime): List<Aktor>
+    fun aktørerTilPubliseringsklareOverførteHendelser(publisertFør: LocalDateTime): List<Aktor>
 
     @Query("select hm.id from Hendelsemottak hm where hm.status = :status and hm.statustidspunkt < :statustidspunktFør")
     fun henteIdTilHendelser(status: Status, statustidspunktFør: LocalDateTime): Set<Long>

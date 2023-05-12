@@ -160,7 +160,7 @@ class DatabasetjenesteTest {
 
             assertSoftly {
                 kontoendringFraDatabase.isPresent
-                kontoendringFraDatabase.get().status shouldBe StatusKontoendring.MOTTATT
+                kontoendringFraDatabase.get().status shouldBe Status.MOTTATT
                 kontoendringFraDatabase.get().aktor.aktorid shouldBe kontoeier
                 tidspunkterErInnenforVindu(tidspunktFørLagring, kontoendringFraDatabase.get().mottatt)
                 tidspunkterErInnenforVindu(tidspunktFørLagring, kontoendringFraDatabase.get().statustidspunkt)
@@ -185,8 +185,8 @@ class DatabasetjenesteTest {
             assertSoftly {
                 forrigeLagredeKontoendringsinnslag.isPresent
                 nyttLagretKontoendringsinnslag.isPresent
-                forrigeLagredeKontoendringsinnslag.get().status shouldBe StatusKontoendring.MOTTATT
-                nyttLagretKontoendringsinnslag.get().status shouldBe StatusKontoendring.MOTTATT
+                forrigeLagredeKontoendringsinnslag.get().status shouldBe Status.MOTTATT
+                nyttLagretKontoendringsinnslag.get().status shouldBe Status.MOTTATT
                 forrigeLagredeKontoendringsinnslag.get().aktor.aktorid shouldBe kontoeier
                 nyttLagretKontoendringsinnslag.get().aktor.aktorid shouldBe kontoeier
                 forrigeLagredeKontoendringsinnslag.get().mottatt.isBefore(nyttLagretKontoendringsinnslag.get().mottatt)
