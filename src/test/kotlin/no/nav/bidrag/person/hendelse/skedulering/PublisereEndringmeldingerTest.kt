@@ -9,9 +9,9 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
 import no.nav.bidrag.person.hendelse.Teststarter
+import no.nav.bidrag.person.hendelse.database.Aktor
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.BidragKafkaMeldingsprodusent
-import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.domene.Endringsmelding
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig
 import no.nav.bidrag.person.hendelse.testdata.TeststøtteMeldingsmottak
 import no.nav.bidrag.person.hendelse.testdata.generereIdenter
@@ -51,7 +51,7 @@ class PublisereEndringmeldingerTest {
             databasetjeneste,
             databasetjeneste.egenskaper
         )
-        every { meldingsprodusent.publisereEndringsmelding(any()) }
+        every { meldingsprodusent.publisereEndringsmelding(any(), any()) }
     }
 
     @Test
@@ -68,18 +68,13 @@ class PublisereEndringmeldingerTest {
 
         teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident }, mottattTidspunkt, tidspunktSistPublisert)
 
-        every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
+        every { meldingsprodusent.publisereEndringsmelding(any(), any()) } returns Unit
 
         // hvis
         publisereEndringsmeldinger.identifisereOgPublisere()
 
         // så
-        val endringsmelding = slot<Endringsmelding>()
-        verify(exactly = 1) {
-            meldingsprodusent.publisereEndringsmelding(
-                capture(endringsmelding)
-            )
-        }
+        verify(exactly = 1) { meldingsprodusent.publisereEndringsmelding(any(), any()) }
     }
 
     @Test
@@ -99,18 +94,13 @@ class PublisereEndringmeldingerTest {
             publisertTidspunktEtterVenteperiode
         )
 
-        every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
+        every { meldingsprodusent.publisereEndringsmelding(any(), any()) } returns Unit
 
         // hvis
         publisereEndringsmeldinger.identifisereOgPublisere()
 
         // så
-        val endringsmelding = slot<Endringsmelding>()
-        verify(exactly = 0) {
-            meldingsprodusent.publisereEndringsmelding(
-                capture(endringsmelding)
-            )
-        }
+        verify(exactly = 0) { meldingsprodusent.publisereEndringsmelding(any(), any()) }
     }
 
     @Test
@@ -122,23 +112,23 @@ class PublisereEndringmeldingerTest {
         val personidentDtoAktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
         teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer!!.map { it.ident })
-        every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
+        every { meldingsprodusent.publisereEndringsmelding(any(), any()) } returns Unit
 
         // hvis
         publisereEndringsmeldinger.identifisereOgPublisere()
 
         // så
-        val endringsmelding = slot<Endringsmelding>()
+        val aktør = slot<Aktor>()
+        val identer = slot<Set<String>>()
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
-                capture(endringsmelding)
+                capture(aktør),
+                capture(identer)
             )
         }
 
-        endringsmelding.asClue {
-            it.captured.aktør.aktorid shouldBe personidentDtoAktør?.ident
-            it.captured.personidenter shouldBe personidenter.toString()
-        }
+        aktør.asClue { it.captured.aktorid shouldBe personidentDtoAktør?.ident }
+        identer.asClue { it.captured.toString() shouldBe personidenter.toString() }
     }
 
     @Test
@@ -151,22 +141,22 @@ class PublisereEndringmeldingerTest {
 
         teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident })
         teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer.map { it.ident })
-        every { meldingsprodusent.publisereEndringsmelding(any()) } returns Unit
+        every { meldingsprodusent.publisereEndringsmelding(any(), any()) } returns Unit
 
         // hvis
         publisereEndringsmeldinger.identifisereOgPublisere()
 
         // så
-        val endringsmelding = slot<Endringsmelding>()
+        val aktør = slot<Aktor>()
+        val identer = slot<Set<String>>()
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
-                capture(endringsmelding)
+                capture(aktør),
+                capture(identer)
             )
         }
 
-        endringsmelding.asClue {
-            it.captured.aktør.aktorid shouldBe personidentDtoAktør?.ident
-            it.captured.personidenter shouldBe personidenter.toString()
-        }
+        aktør.asClue { it.captured.aktorid shouldBe personidentDtoAktør?.ident }
+        identer.asClue { it.captured shouldBe personidenter }
     }
 }

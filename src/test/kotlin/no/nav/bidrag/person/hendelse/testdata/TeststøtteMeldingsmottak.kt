@@ -30,7 +30,7 @@ class TeststøtteMeldingsmottak(val databasetjeneste: Databasetjeneste) {
         publisert: LocalDateTime? = null
     ): Kontoendring {
         val aktør = henteAktør(personidenter.first { it.length == 13 })
-        return databasetjeneste.kontoendringDao.save(Kontoendring(aktør, personidenter.toString(), mottatt))
+        return databasetjeneste.kontoendringDao.save(Kontoendring(aktør, personidenter.joinToString { it }, mottatt))
     }
 
     fun oppretteOgLagreHendelsemottak(personidenter: List<String>, status: Status = Status.OVERFØRT): Hendelsemottak {
@@ -40,7 +40,7 @@ class TeststøtteMeldingsmottak(val databasetjeneste: Databasetjeneste) {
             CRC32().value.toString(),
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.OPPRETTET,
-            personidenter.toString(),
+            personidenter.joinToString { it },
             aktør
         )
 

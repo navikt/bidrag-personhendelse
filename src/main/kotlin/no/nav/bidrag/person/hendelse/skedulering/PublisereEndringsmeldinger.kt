@@ -3,7 +3,6 @@ package no.nav.bidrag.person.hendelse.skedulering
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.BidragKafkaMeldingsprodusent
-import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.domene.Endringsmelding
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -41,7 +40,9 @@ class PublisereEndringsmeldinger(
         if (subsetMedAktører.size < aktørerForPublisering.size) log.info("Begrenser antall meldinger som skal publiseres til ${subsetMedAktører.size}")
 
         // Publisere melding til intern topic for samtlige personer med endringer
-        subsetMedAktører.forEach { bidragtopic.publisereEndringsmelding(Endringsmelding(it, aktørerForPublisering.getValue(it))) }
+        subsetMedAktører.forEach {
+            bidragtopic.publisereEndringsmelding(it, aktørerForPublisering.getValue(it))
+        }
     }
 
     companion object {

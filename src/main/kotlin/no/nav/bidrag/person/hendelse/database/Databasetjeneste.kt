@@ -17,6 +17,7 @@ class Databasetjeneste(
     open val kontoendringDao: KontoendringDao,
     val egenskaper: Egenskaper
 ) {
+
     fun oppdatereStatusPåHendelse(id: Long, nyStatus: Status) {
         val hendelse = hendelsemottakDao.findById(id)
         if (hendelse.isPresent) {
@@ -73,13 +74,12 @@ class Databasetjeneste(
 
     @Transactional(readOnly = false)
     fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
-        var listeMedPersonidenter = livshendelse.personidenter
+        var begrensetSettMedPersonidenter = begrenseAntallPersonidenter(livshendelse.personidenter.toSet())
 
-        if (livshendelse.personidenter.size > Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER) {
-            listeMedPersonidenter = listeMedPersonidenter.subList(0, Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER)
-            Livshendelsebehandler.log.warn(
-                "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} personidenter. " +
-                    "Kun de ${Livshendelsebehandler.MAKS_ANTALL_PERSONIDENTER} første arkiveres."
+        if (livshendelse.personidenter.size > MAKS_ANTALL_PERSONIDENTER) {
+            log.warn(
+                "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over $MAKS_ANTALL_PERSONIDENTER personidenter. " +
+                    "Kun de $MAKS_ANTALL_PERSONIDENTER første arkiveres."
             )
         }
 
@@ -103,7 +103,7 @@ class Databasetjeneste(
                 livshendelse.hendelseid,
                 livshendelse.opplysningstype,
                 livshendelse.endringstype,
-                listeMedPersonidenter.joinToString { it },
+                begrensetSettMedPersonidenter.joinToString { it },
                 lagretAktør,
                 livshendelse.opprettet,
                 livshendelse.tidligereHendelseid,
@@ -118,11 +118,19 @@ class Databasetjeneste(
     @Transactional(readOnly = false)
     fun lagreKontoendring(aktøridKontoeier: String, personidenter: Set<String>): Kontoendring {
         val aktør = hentEksisterendeEllerOpprettNyAktør(aktøridKontoeier)
-        return kontoendringDao.save(Kontoendring(aktør, personidenter.toString()))
+        val begrensetSettMedPersonidenter = begrenseAntallPersonidenter(personidenter.toSet())
+        if (personidenter.size > MAKS_ANTALL_PERSONIDENTER) {
+            slog.warn(
+                "Kontoendring mottatt for person med aktørident $aktøridKontoeier. Personen har over $MAKS_ANTALL_PERSONIDENTER personidenter. " +
+                    "Kun de $MAKS_ANTALL_PERSONIDENTER første lagres."
+            )
+        }
+
+        return kontoendringDao.save(Kontoendring(aktør, begrensetSettMedPersonidenter.joinToString { it }))
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = [Exception::class])
-    fun henteAktørMedIdenterTilPersonerMedNyligOppdatertePersonopplysninger(): HashMap<Aktor, String> {
+    fun henteAktørMedIdenterTilPersonerMedNyligOppdatertePersonopplysninger(): HashMap<Aktor, Set<String>> {
         val aktører = hendelsemottakDao.aktørerTilPubliseringsklareOverførteHendelser(
             LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
         )
@@ -131,7 +139,7 @@ class Databasetjeneste(
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = [Exception::class])
-    fun henteAktørMedIdenterTilKontoeiereMedNyligeKontoendringer(): HashMap<Aktor, String> {
+    fun henteAktørMedIdenterTilKontoeiereMedNyligeKontoendringer(): HashMap<Aktor, Set<String>> {
         val mottattFør =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
         val publisertFør =
@@ -172,13 +180,23 @@ class Databasetjeneste(
         }
     }
 
-    private fun tilHashMap(liste: List<Personhendelse>): HashMap<Aktor, String> {
-        var map = HashMap<Aktor, String>()
-        liste.forEach { map.put(it.aktor, it.personidenter) }
+    private fun tilHashMap(liste: List<Personhendelse>): HashMap<Aktor, Set<String>> {
+        var map = HashMap<Aktor, Set<String>>()
+        liste.forEach {
+            map.put(it.aktor, it.personidenter.split(',').map { ident -> ident.trim() }.toSet())
+        }
         return map
     }
 
     companion object {
+        const val MAKS_ANTALL_PERSONIDENTER = 20
+
         val log: Logger = LoggerFactory.getLogger(Livshendelsebehandler::class.java)
+        val slog: Logger = LoggerFactory.getLogger("secureLogger")
+
+        fun begrenseAntallPersonidenter(personidenter: Set<String>): Set<String> {
+            if (personidenter.size > MAKS_ANTALL_PERSONIDENTER) return personidenter.take(MAKS_ANTALL_PERSONIDENTER).toSet()
+            return personidenter
+        }
     }
 }
