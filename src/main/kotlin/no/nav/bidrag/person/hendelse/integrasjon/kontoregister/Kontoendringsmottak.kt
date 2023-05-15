@@ -32,7 +32,7 @@ class Kontoendringsmottak(val kontoendringsbehandler: Kontoendringsbehandler) {
         )
 
         if (harGyldigFormat(endringsmelding)) {
-            kontoendringsbehandler.lagreKontoendring(endringsmelding.kontohaver.toString())
+            kontoendringsbehandler.publisere(endringsmelding.kontohaver.toString())
             slog.info("Kontoendring lagret for kontoeier {}", endringsmelding.kontohaver)
         }
     }

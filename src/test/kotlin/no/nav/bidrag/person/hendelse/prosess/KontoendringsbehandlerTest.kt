@@ -6,10 +6,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
 import io.mockk.verify
-import no.nav.bidrag.person.hendelse.database.Aktor
-import no.nav.bidrag.person.hendelse.database.Databasetjeneste
-import no.nav.bidrag.person.hendelse.database.Kontoendring
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.person.BidragPersonklient
+import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.BidragKafkaMeldingsprodusent
 import no.nav.bidrag.person.hendelse.testdata.generereAktørid
 import no.nav.bidrag.person.hendelse.testdata.generererFødselsnummer
 import no.nav.bidrag.person.hendelse.testdata.tilPersonidentDtoer
@@ -21,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 class KontoendringsbehandlerTest {
 
     @MockK
-    lateinit var mockDatabasetjeneste: Databasetjeneste
+    lateinit var bidragKafkaMeldingsprodusent: BidragKafkaMeldingsprodusent
 
     @MockK
     lateinit var mockBidragPersonklient: BidragPersonklient
@@ -30,12 +28,12 @@ class KontoendringsbehandlerTest {
 
     @BeforeEach
     internal fun oppsett() {
-        kontoendringsbehandler = Kontoendringsbehandler(mockBidragPersonklient, mockDatabasetjeneste)
+        kontoendringsbehandler = Kontoendringsbehandler(mockBidragPersonklient, bidragKafkaMeldingsprodusent)
         clearAllMocks()
     }
 
     @Test
-    fun `skal lagre kontoendring`() {
+    fun `skal publisere endringsmeling ved mottak av kontoendring`() {
         // gitt
         val kontoeierAktørid = generereAktørid()
         val kontoeierFødselsnummer = generererFødselsnummer()
@@ -43,15 +41,15 @@ class KontoendringsbehandlerTest {
         val personidentDtoer = tilPersonidentDtoer(setOf(kontoeierAktørid, kontoeierFødselsnummer))
 
         every { mockBidragPersonklient.henteAlleIdenterForPerson(kontoeierFødselsnummer) } returns personidentDtoer
-        every { mockDatabasetjeneste.lagreKontoendring(kontoeierAktørid, setOf(kontoeierAktørid, kontoeierFødselsnummer)) } returns Kontoendring(Aktor(kontoeierAktørid), kontoeierAktørid)
+        every { bidragKafkaMeldingsprodusent.publisereEndringsmelding(any(), any()) } returns Unit
 
         // hvis
-        kontoendringsbehandler.lagreKontoendring(kontoeierFødselsnummer)
+        kontoendringsbehandler.publisere(kontoeierFødselsnummer)
 
         // så
         val kontoeier = slot<String>()
         verify(exactly = 1) {
-            mockDatabasetjeneste.lagreKontoendring(
+            bidragKafkaMeldingsprodusent.publisereEndringsmelding(
                 capture(kontoeier),
                 any()
             )

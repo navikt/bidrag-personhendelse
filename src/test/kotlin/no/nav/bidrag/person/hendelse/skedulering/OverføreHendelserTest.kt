@@ -7,10 +7,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
 import no.nav.bidrag.person.hendelse.Teststarter
-import no.nav.bidrag.person.hendelse.database.AktorDao
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.HendelsemottakDao
-import no.nav.bidrag.person.hendelse.database.KontoendringDao
 import no.nav.bidrag.person.hendelse.database.Status
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
@@ -36,11 +34,6 @@ class OverføreHendelserTest {
     @Autowired
     lateinit var hendelsemottakDao: HendelsemottakDao
 
-    @Autowired
-    lateinit var aktorDao: AktorDao
-
-    @Autowired
-    lateinit var kontoendringDao: KontoendringDao
     lateinit var databasetjeneste: Databasetjeneste
 
     @Autowired
@@ -55,7 +48,7 @@ class OverføreHendelserTest {
     fun initialisere() {
         MockKAnnotations.init(this)
         clearAllMocks()
-        databasetjeneste = Databasetjeneste(aktorDao, hendelsemottakDao, kontoendringDao, egenskaper)
+        databasetjeneste = Databasetjeneste(hendelsemottakDao, egenskaper)
         hendelsemottakDao.deleteAll()
         overføreHendelser = OverføreHendelser(databasetjeneste, egenskaper, meldingsprodusent)
         every { meldingsprodusent.sendeMeldinger(any(), any()) } returns 1

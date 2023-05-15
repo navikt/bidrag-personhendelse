@@ -1,7 +1,6 @@
 package no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic
 
 import com.google.gson.GsonBuilder
-import no.nav.bidrag.person.hendelse.database.Aktor
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.domene.Endringsmelding
 import org.slf4j.Logger
@@ -22,23 +21,21 @@ class BidragKafkaMeldingsprodusent(
         maxAttempts = 3,
         backoff = Backoff(delay = 1000, multiplier = 2.0)
     )
-    fun publisereEndringsmelding(aktør: Aktor, personidenter: Set<String>) {
-        publisereMelding(BIDRAG_PERSONHENDELSE_TOPIC, aktør, personidenter)
+    fun publisereEndringsmelding(aktørid: String, personidenter: Set<String>) {
+        publisereMelding(BIDRAG_PERSONHENDELSE_TOPIC, aktørid, personidenter)
     }
 
-    private fun publisereMelding(emne: String, aktør: Aktor, personidenter: Set<String>) {
-        slog.info("Publiserer endringsmelding for aktørid ${aktør.aktorid}")
-        val melding = tilJson(Endringsmelding(aktør.aktorid, personidenter))
-        var future = kafkaTemplate.send(emne, aktør.aktorid, melding)
+    private fun publisereMelding(emne: String, aktørid: String, personidenter: Set<String>) {
+        slog.info("Publiserer endringsmelding for aktørid $aktørid")
+        val melding = tilJson(Endringsmelding(aktørid, personidenter))
+        var future = kafkaTemplate.send(emne, aktørid, melding)
 
         future.whenComplete { result, ex ->
             if (ex != null) {
                 log.warn("Publisering av melding til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
                 slog.warn("Publisering av melding for aktørid ${result.producerRecord.key()} til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
             } else {
-                databasetjeneste.oppdaterePubliseringstidspunkt(aktør.aktorid)
-                databasetjeneste.oppdatereStatusPåHendelserEtterPublisering(aktør.aktorid)
-                databasetjeneste.oppdatereStatusPåKontoendringerEtterPublisering(aktør.aktorid)
+                databasetjeneste.oppdatereStatusPåHendelserEtterPublisering(aktørid)
             }
         }
     }

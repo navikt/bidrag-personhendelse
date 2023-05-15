@@ -33,7 +33,7 @@ class KontoendringsmottakTest {
         MockKAnnotations.init(this)
         clearAllMocks()
         kontoendringsmottak = Kontoendringsmottak(kontoendringsbehandler)
-        every { kontoendringsbehandler.lagreKontoendring(any()) } returns Unit
+        every { kontoendringsbehandler.publisere(any()) } returns Unit
     }
 
     @Test
@@ -57,7 +57,7 @@ class KontoendringsmottakTest {
         // så
         val personident = slot<String>()
         verify(exactly = 1) {
-            kontoendringsbehandler.lagreKontoendring(capture(personident))
+            kontoendringsbehandler.publisere(capture(personident))
         }
     }
 }
