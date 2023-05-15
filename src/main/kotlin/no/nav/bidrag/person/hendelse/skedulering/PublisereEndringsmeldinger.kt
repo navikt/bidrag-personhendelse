@@ -24,24 +24,18 @@ class PublisereEndringsmeldinger(
         lockAtMostFor = "\${publisere_personhendelser.lås.max}"
     )
     fun identifisereOgPublisere() {
-        // Hente aktør med personidenter til kontoeiere med nylige endringer
-        val aktørerKontoeiere = databasetjeneste.henteAktørMedIdenterTilKontoeiereMedNyligeKontoendringer()
-        log.info("Fant ${aktørerKontoeiere.size} unike kontoeiere med nylige kontoendringer.")
-
         // Hente aktør med personidenter til til personer med nylige endringer i personopplysninger
-        val aktørerPersonopplysninger = databasetjeneste.henteAktørMedIdenterTilPersonerMedNyligOppdatertePersonopplysninger()
+        val aktørerPersonopplysninger = databasetjeneste.hentePubliseringsklareHendelser()
+
         log.info("Fant ${aktørerPersonopplysninger.size} unike personer med nylige endringer i personopplysninger.")
 
-        val aktørerForPublisering = aktørerPersonopplysninger.plus(aktørerKontoeiere)
-        log.info("Identifiserte totalt ${aktørerForPublisering.size} unike personer som det skal publiseres endringsmeldinger for.")
+        val subsetMedAktørider = aktørerPersonopplysninger.keys.take(egenskaper.generelt.maksAntallMeldingerSomSendesTilBidragTopicOmGangen).toSet()
 
-        val subsetMedAktører = aktørerForPublisering.keys.take(egenskaper.generelt.maksAntallMeldingerSomSendesTilBidragTopicOmGangen).toSet()
-
-        if (subsetMedAktører.size < aktørerForPublisering.size) log.info("Begrenser antall meldinger som skal publiseres til ${subsetMedAktører.size}")
+        if (subsetMedAktørider.size < aktørerPersonopplysninger.size) log.info("Begrenser antall meldinger som skal publiseres til ${subsetMedAktørider.size}")
 
         // Publisere melding til intern topic for samtlige personer med endringer
-        subsetMedAktører.forEach {
-            bidragtopic.publisereEndringsmelding(it, aktørerForPublisering.getValue(it))
+        subsetMedAktørider.forEach {
+            bidragtopic.publisereEndringsmelding(it, aktørerPersonopplysninger.getValue(it))
         }
     }
 

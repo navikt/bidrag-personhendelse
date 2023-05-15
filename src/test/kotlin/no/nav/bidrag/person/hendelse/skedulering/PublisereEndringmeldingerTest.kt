@@ -9,7 +9,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
 import no.nav.bidrag.person.hendelse.Teststarter
-import no.nav.bidrag.person.hendelse.database.Aktor
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.BidragKafkaMeldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import java.time.LocalDateTime
 
 @ActiveProfiles(Testkonfig.PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
@@ -44,63 +42,12 @@ class PublisereEndringmeldingerTest {
         MockKAnnotations.init(this)
         clearAllMocks()
         databasetjeneste.hendelsemottakDao.deleteAll()
-        databasetjeneste.kontoendringDao.deleteAll()
-        databasetjeneste.aktorDao.deleteAll()
         publisereEndringsmeldinger = PublisereEndringsmeldinger(
             meldingsprodusent,
             databasetjeneste,
             databasetjeneste.egenskaper
         )
         every { meldingsprodusent.publisereEndringsmelding(any(), any()) }
-    }
-
-    @Test
-    fun `skal publisere endringsmelding for kontoendring med utløpt venteperiode etter mottak`() {
-        // gitt
-        val personidenter = generereIdenter()
-        val personidentDtoer = tilPersonidentDtoer(personidenter)
-
-        val mottattTidspunkt = LocalDateTime.now()
-            .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 1)
-
-        val tidspunktSistPublisert = LocalDateTime.now()
-            .minusHours(databasetjeneste.egenskaper.generelt.antallTimerSidenForrigePublisering.toLong() - 1)
-
-        teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident }, mottattTidspunkt, tidspunktSistPublisert)
-
-        every { meldingsprodusent.publisereEndringsmelding(any(), any()) } returns Unit
-
-        // hvis
-        publisereEndringsmeldinger.identifisereOgPublisere()
-
-        // så
-        verify(exactly = 1) { meldingsprodusent.publisereEndringsmelding(any(), any()) }
-    }
-
-    @Test
-    fun `skal ikke publisere endringsmelding for kontoendring for person med ikke utløpt venteperiode mellom publiseringer`() {
-        // gitt
-        val personidenter = generereIdenter()
-        val personidentDtoer = tilPersonidentDtoer(personidenter)
-
-        var mottattTidspunktIVenteperiode = LocalDateTime.now()
-            .minusMinutes(databasetjeneste.egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 1)
-        var publisertTidspunktEtterVenteperiode = LocalDateTime.now()
-            .minusHours(databasetjeneste.egenskaper.generelt.antallTimerSidenForrigePublisering.toLong() + 1)
-
-        teststøtteMeldingsmottak.oppretteOgLagreKontoendring(
-            personidentDtoer!!.map { it.ident },
-            mottattTidspunktIVenteperiode,
-            publisertTidspunktEtterVenteperiode
-        )
-
-        every { meldingsprodusent.publisereEndringsmelding(any(), any()) } returns Unit
-
-        // hvis
-        publisereEndringsmeldinger.identifisereOgPublisere()
-
-        // så
-        verify(exactly = 0) { meldingsprodusent.publisereEndringsmelding(any(), any()) }
     }
 
     @Test
@@ -118,16 +65,16 @@ class PublisereEndringmeldingerTest {
         publisereEndringsmeldinger.identifisereOgPublisere()
 
         // så
-        val aktør = slot<Aktor>()
+        val aktørid = slot<String>()
         val identer = slot<Set<String>>()
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
-                capture(aktør),
+                capture(aktørid),
                 capture(identer)
             )
         }
 
-        aktør.asClue { it.captured.aktorid shouldBe personidentDtoAktør?.ident }
+        aktørid.asClue { it.captured shouldBe personidentDtoAktør?.ident }
         identer.asClue { it.captured.toString() shouldBe personidenter.toString() }
     }
 
@@ -139,24 +86,23 @@ class PublisereEndringmeldingerTest {
 
         val personidentDtoAktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
-        teststøtteMeldingsmottak.oppretteOgLagreKontoendring(personidentDtoer!!.map { it.ident })
-        teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer.map { it.ident })
+        teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidentDtoer!!.map { it.ident })
         every { meldingsprodusent.publisereEndringsmelding(any(), any()) } returns Unit
 
         // hvis
         publisereEndringsmeldinger.identifisereOgPublisere()
 
         // så
-        val aktør = slot<Aktor>()
+        val aktørid = slot<String>()
         val identer = slot<Set<String>>()
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
-                capture(aktør),
+                capture(aktørid),
                 capture(identer)
             )
         }
 
-        aktør.asClue { it.captured.aktorid shouldBe personidentDtoAktør?.ident }
+        aktørid.asClue { it.captured shouldBe personidentDtoAktør?.ident }
         identer.asClue { it.captured shouldBe personidenter }
     }
 }

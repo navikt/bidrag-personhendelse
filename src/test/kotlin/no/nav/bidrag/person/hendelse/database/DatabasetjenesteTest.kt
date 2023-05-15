@@ -26,9 +26,6 @@ class DatabasetjenesteTest {
     lateinit var hendelsemottakDao: HendelsemottakDao
 
     @Autowired
-    lateinit var kontoendringDao: KontoendringDao
-
-    @Autowired
     lateinit var databasetjeneste: Databasetjeneste
 
     @Nested
@@ -134,70 +131,6 @@ class DatabasetjenesteTest {
             assertSoftly {
                 lagretNyHendelseEtterKansellering.isPresent
                 lagretNyHendelseEtterKansellering.get().status shouldBe Status.MOTTATT
-            }
-        }
-    }
-
-    @Nested
-    inner class Kontoendring {
-
-        @BeforeEach
-        fun initialisere() {
-            kontoendringDao.deleteAll()
-        }
-
-        @Test
-        fun `lagre kontoendring for ny kontoeier`() {
-            // gitt
-            var kontoeier = "123456"
-            var tidspunktFørLagring = LocalDateTime.now()
-
-            // hvis
-            var kontoendring = databasetjeneste.lagreKontoendring(kontoeier, setOf(kontoeier))
-
-            // så
-            var kontoendringFraDatabase = kontoendringDao.findById(kontoendring.id)
-
-            assertSoftly {
-                kontoendringFraDatabase.isPresent
-                kontoendringFraDatabase.get().status shouldBe Status.MOTTATT
-                kontoendringFraDatabase.get().aktor.aktorid shouldBe kontoeier
-                tidspunkterErInnenforVindu(tidspunktFørLagring, kontoendringFraDatabase.get().mottatt)
-                tidspunkterErInnenforVindu(tidspunktFørLagring, kontoendringFraDatabase.get().statustidspunkt)
-                kontoendringFraDatabase.get().aktor.publisert shouldBe null
-            }
-        }
-
-        @Test
-        fun `lagre kontoendring for kontoeier med eksisterende mottatt-innslag i databasen`() {
-            // gitt
-            var kontoeier = "123456"
-            var tidspunktFørLagring = LocalDateTime.now()
-            var tidligereMottattKontoendring = databasetjeneste.lagreKontoendring(kontoeier, setOf(kontoeier))
-
-            // hvis
-            var nyttKontoendringsinnslag = databasetjeneste.lagreKontoendring(kontoeier, setOf(kontoeier))
-
-            // så
-            var forrigeLagredeKontoendringsinnslag = kontoendringDao.findById(tidligereMottattKontoendring.id)
-            var nyttLagretKontoendringsinnslag = kontoendringDao.findById(nyttKontoendringsinnslag.id)
-
-            assertSoftly {
-                forrigeLagredeKontoendringsinnslag.isPresent
-                nyttLagretKontoendringsinnslag.isPresent
-                forrigeLagredeKontoendringsinnslag.get().status shouldBe Status.MOTTATT
-                nyttLagretKontoendringsinnslag.get().status shouldBe Status.MOTTATT
-                forrigeLagredeKontoendringsinnslag.get().aktor.aktorid shouldBe kontoeier
-                nyttLagretKontoendringsinnslag.get().aktor.aktorid shouldBe kontoeier
-                forrigeLagredeKontoendringsinnslag.get().mottatt.isBefore(nyttLagretKontoendringsinnslag.get().mottatt)
-                tidspunkterErInnenforVindu(tidspunktFørLagring, nyttLagretKontoendringsinnslag.get().mottatt)
-                tidspunkterErInnenforVindu(
-                    tidspunktFørLagring,
-                    forrigeLagredeKontoendringsinnslag.get().statustidspunkt
-                )
-                tidspunkterErInnenforVindu(tidspunktFørLagring, nyttLagretKontoendringsinnslag.get().statustidspunkt)
-                forrigeLagredeKontoendringsinnslag.get().aktor.publisert shouldBe null
-                nyttLagretKontoendringsinnslag.get().aktor.publisert shouldBe null
             }
         }
     }

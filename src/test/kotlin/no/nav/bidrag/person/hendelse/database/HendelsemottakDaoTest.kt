@@ -22,21 +22,17 @@ class HendelsemottakDaoTest {
     @Autowired
     lateinit var hendelsemottakDao: HendelsemottakDao
 
-    @Autowired
-    lateinit var aktorDao: AktorDao
-
     @Test
     fun skalLagreHendelse() {
         // gitt
         var personidenter = listOf("12345678910", "1234567891013")
         var aktørid = personidenter.first { it.length == 13 }
-        var aktør = aktorDao.save(Aktor(aktørid))
 
         var hendelseid = "123"
         var opplysningstype = Livshendelse.Opplysningstype.SIVILSTAND_V1
         var endringstype = Livshendelse.Endringstype.OPPRETTET
 
-        var hendelsemottak = Hendelsemottak(hendelseid, opplysningstype, endringstype, personidenter.toString(), aktør)
+        var hendelsemottak = Hendelsemottak(hendelseid, opplysningstype, endringstype, personidenter.toString(), aktørid)
 
         // hvis
         hendelsemottakDao.save(hendelsemottak)

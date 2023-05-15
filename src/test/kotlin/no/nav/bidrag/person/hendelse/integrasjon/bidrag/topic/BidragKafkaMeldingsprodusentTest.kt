@@ -8,7 +8,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import no.nav.bidrag.person.hendelse.Teststarter
-import no.nav.bidrag.person.hendelse.database.Aktor
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig
 import org.assertj.core.api.Assertions
@@ -42,17 +41,17 @@ class BidragKafkaMeldingsprodusentTest {
     @Test
     fun `skal produsere meldinger på riktig format`() {
         // gitt
-        val aktør = Aktor("123")
+        val aktørid = "123"
         val completeableFuture: CompletableFuture<SendResult<String, String>> = mockk(relaxed = true)
         every { kafkaTemplate.send(any(), any(), any()) } returns completeableFuture
 
         // hvis
-        bidragKafkaMeldingsprodusent.publisereEndringsmelding(aktør, setOf("875", aktør.aktorid))
+        bidragKafkaMeldingsprodusent.publisereEndringsmelding(aktørid, setOf("875", aktørid))
 
         // så
         val melding = slot<String>()
         verify(exactly = 1) {
-            kafkaTemplate.send(BidragKafkaMeldingsprodusent.BIDRAG_PERSONHENDELSE_TOPIC, aktør.aktorid, capture(melding))
+            kafkaTemplate.send(BidragKafkaMeldingsprodusent.BIDRAG_PERSONHENDELSE_TOPIC, aktørid, capture(melding))
         }
 
         val streng = "{\"aktørid\":\"123\",\"personidenter\":[\"875\",\"123\"]}"

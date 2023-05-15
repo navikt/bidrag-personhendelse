@@ -19,7 +19,7 @@ import java.util.UUID
 
 @ActiveProfiles(Testkonfig.PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
-open class SletteUtgåtteHendelserTest {
+class SletteUtgåtteHendelserTest {
 
     val personidenter = listOf("12345678901", "1234567890123")
 
@@ -36,7 +36,7 @@ open class SletteUtgåtteHendelserTest {
     lateinit var sletteUtgåtteHendelser: SletteUtgåtteHendelser
 
     @Test
-    fun skalSletteKansellerteOgOverførteHendelser() {
+    fun skalSletteKansellerteOgPubliserteHendelser() {
         // gitt
         var kansellertHendelse1 = oppretteOgLagreHendelse(
             Status.KANSELLERT,
@@ -55,16 +55,16 @@ open class SletteUtgåtteHendelserTest {
             LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2)
         )
         var mottattHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT, LocalDateTime.now())
-        var overførtHendelse1 = oppretteOgLagreHendelse(
-            Status.OVERFØRT,
+        var publisertHendelse1 = oppretteOgLagreHendelse(
+            Status.PUBLISERT,
             LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1)
         )
-        var overførtHendelse2 = oppretteOgLagreHendelse(
-            Status.OVERFØRT,
+        var publisertHendelse2 = oppretteOgLagreHendelse(
+            Status.PUBLISERT,
             LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2)
         )
-        var overførtHendelseUtenforSlettevindu = oppretteOgLagreHendelse(
-            Status.OVERFØRT,
+        var publisertHendelseUtenforSlettevindu = oppretteOgLagreHendelse(
+            Status.PUBLISERT,
             LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2)
         )
 
@@ -78,9 +78,9 @@ open class SletteUtgåtteHendelserTest {
             assertThat(hendelsemottakDao.findById(kansellertHendelseUtenforSlettevindu.id)).isPresent
             assertThat(hendelsemottakDao.findById(mottattHendelseInnenforSlettevindu.id)).isPresent
             assertThat(hendelsemottakDao.findById(mottattHendelseUtenforSlettevindu.id)).isPresent
-            assertThat(hendelsemottakDao.findById(overførtHendelse1.id)).isEmpty
-            assertThat(hendelsemottakDao.findById(overførtHendelse2.id)).isEmpty
-            assertThat(hendelsemottakDao.findById(overførtHendelseUtenforSlettevindu.id)).isPresent
+            assertThat(hendelsemottakDao.findById(publisertHendelse1.id)).isEmpty
+            assertThat(hendelsemottakDao.findById(publisertHendelse2.id)).isEmpty
+            assertThat(hendelsemottakDao.findById(publisertHendelseUtenforSlettevindu.id)).isPresent
         }
     }
 

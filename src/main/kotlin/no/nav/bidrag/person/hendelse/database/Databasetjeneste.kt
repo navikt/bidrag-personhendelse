@@ -6,15 +6,12 @@ import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
 class Databasetjeneste(
-    open val aktorDao: AktorDao,
     open val hendelsemottakDao: HendelsemottakDao,
-    open val kontoendringDao: KontoendringDao,
     val egenskaper: Egenskaper
 ) {
 
@@ -25,16 +22,6 @@ class Databasetjeneste(
             hendelsemottak.status = nyStatus
             hendelsemottak.statustidspunkt = LocalDateTime.now()
             this.hendelsemottakDao.save(hendelsemottak)
-        }
-    }
-
-    fun oppdatereStatusPåKontoendring(id: Long, nyStatus: Status) {
-        val kontoendring = kontoendringDao.findById(id)
-        if (kontoendring.isPresent) {
-            val kontoendring = kontoendring.get()
-            kontoendring.status = nyStatus
-            kontoendring.statustidspunkt = LocalDateTime.now()
-            this.kontoendringDao.save(kontoendring)
         }
     }
 
@@ -51,24 +38,6 @@ class Databasetjeneste(
 
         for (id in ider) {
             oppdatereStatusPåHendelse(id, Status.PUBLISERT)
-        }
-    }
-
-    @Transactional
-    fun oppdatereStatusPåKontoendringerEtterPublisering(aktørid: String) {
-        var ider = kontoendringDao.finnKontoendringsiderMedStatusOverført(aktørid)
-
-        for (id in ider) {
-            oppdatereStatusPåKontoendring(id, Status.PUBLISERT)
-        }
-    }
-
-    @Transactional
-    fun oppdaterePubliseringstidspunkt(aktørid: String) {
-        var aktør = aktorDao.findByAktorid(aktørid)
-
-        if (aktør.isPresent) {
-            aktør.get().publisert = LocalDateTime.now()
         }
     }
 
@@ -96,15 +65,13 @@ class Databasetjeneste(
             status = Status.KANSELLERT
         }
 
-        val lagretAktør = aktorDao.findByAktorid(livshendelse.aktorid).orElseGet { aktorDao.save(Aktor(livshendelse.aktorid)) }
-
         return hendelsemottakDao.save(
             Hendelsemottak(
                 livshendelse.hendelseid,
                 livshendelse.opplysningstype,
                 livshendelse.endringstype,
                 begrensetSettMedPersonidenter.joinToString { it },
-                lagretAktør,
+                livshendelse.aktorid,
                 livshendelse.opprettet,
                 livshendelse.tidligereHendelseid,
                 Livshendelse.tilJson(livshendelse),
@@ -115,46 +82,16 @@ class Databasetjeneste(
         )
     }
 
-    @Transactional(readOnly = false)
-    fun lagreKontoendring(aktøridKontoeier: String, personidenter: Set<String>): Kontoendring {
-        val aktør = hentEksisterendeEllerOpprettNyAktør(aktøridKontoeier)
-        val begrensetSettMedPersonidenter = begrenseAntallPersonidenter(personidenter.toSet())
-        if (personidenter.size > MAKS_ANTALL_PERSONIDENTER) {
-            slog.warn(
-                "Kontoendring mottatt for person med aktørident $aktøridKontoeier. Personen har over $MAKS_ANTALL_PERSONIDENTER personidenter. " +
-                    "Kun de $MAKS_ANTALL_PERSONIDENTER første lagres."
-            )
+    fun hentePubliseringsklareHendelser(): HashMap<String, Set<String>> {
+        return tilHashMap(hendelsemottakDao.hentePubliseringsklareOverførteHendelser())
+    }
+
+    private fun tilHashMap(liste: Set<Hendelsemottak>): HashMap<String, Set<String>> {
+        var map = HashMap<String, Set<String>>()
+        liste.forEach {
+            map.put(it.aktorid, it.personidenter.split(',').map { ident -> ident.trim() }.toSet())
         }
-
-        return kontoendringDao.save(Kontoendring(aktør, begrensetSettMedPersonidenter.joinToString { it }))
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = [Exception::class])
-    fun henteAktørMedIdenterTilPersonerMedNyligOppdatertePersonopplysninger(): HashMap<Aktor, Set<String>> {
-        return tilHashMap(
-            hendelsemottakDao.hentePubliseringsklareOverførteHendelser(
-                LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
-            )
-        )
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = [Exception::class])
-    fun henteAktørMedIdenterTilKontoeiereMedNyligeKontoendringer(): HashMap<Aktor, Set<String>> {
-        val mottattFør =
-            LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong())
-        val publisertFør =
-            LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
-
-        return tilHashMap(kontoendringDao.henteKontoendringerForPublisering(mottattFør, publisertFør))
-    }
-
-    fun hentEksisterendeEllerOpprettNyAktør(aktørid: String): Aktor {
-        val eksisterendeAktør = aktorDao.findByAktorid(aktørid)
-        return if (eksisterendeAktør.isPresent) {
-            eksisterendeAktør.get()
-        } else {
-            aktorDao.save(Aktor(aktørid))
-        }
+        return map
     }
 
     private fun kansellereTidligereHendelse(livshendelse: Livshendelse): Status {
@@ -178,19 +115,10 @@ class Databasetjeneste(
         }
     }
 
-    private fun tilHashMap(liste: List<Personhendelse>): HashMap<Aktor, Set<String>> {
-        var map = HashMap<Aktor, Set<String>>()
-        liste.forEach {
-            map.put(it.aktor, it.personidenter.split(',').map { ident -> ident.trim() }.toSet())
-        }
-        return map
-    }
-
     companion object {
         const val MAKS_ANTALL_PERSONIDENTER = 20
 
         val log: Logger = LoggerFactory.getLogger(Livshendelsebehandler::class.java)
-        val slog: Logger = LoggerFactory.getLogger("secureLogger")
 
         fun begrenseAntallPersonidenter(personidenter: Set<String>): Set<String> {
             if (personidenter.size > MAKS_ANTALL_PERSONIDENTER) return personidenter.take(MAKS_ANTALL_PERSONIDENTER).toSet()

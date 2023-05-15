@@ -30,18 +30,18 @@ class SletteUtgåtteHendelser(
 
         var kansellerteHendelser =
             databasetjeneste.hendelsemottakDao.henteIdTilHendelser(Status.KANSELLERT, statusoppdateringFør)
-        var overførteHendelser =
-            databasetjeneste.hendelsemottakDao.henteIdTilHendelser(Status.OVERFØRT, statusoppdateringFør)
+        var publiserteHendelser =
+            databasetjeneste.hendelsemottakDao.henteIdTilHendelser(Status.PUBLISERT, statusoppdateringFør)
 
-        log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${overførteHendelser.size} overførte hendelser som skal slettes fra databasen")
+        log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${publiserteHendelser.size} publiserte hendelser som skal slettes fra databasen")
 
         var antallSlettedeKansellerteHendelser = sletteHendelser(kansellerteHendelser, "kansellerte")
         log.info("Totalt ble $antallSlettedeKansellerteHendelser av ${kansellerteHendelser.size} identifiserte kansellerte hendelser slettet")
 
-        var antallSLettedeOverførteHendelser = sletteHendelser(overførteHendelser, "overførte")
-        log.info("Totalt ble $antallSLettedeOverførteHendelser av ${overførteHendelser.size} identifiserte overførteHendelser hendelser slettet")
+        var antallSLettedePubliserteHendelser = sletteHendelser(publiserteHendelser, "publiserte")
+        log.info("Totalt ble $antallSLettedePubliserteHendelser av ${publiserteHendelser.size} identifiserte publiserte hendelser slettet")
 
-        if (kansellerteHendelser.size.toLong() + overførteHendelser.size.toLong() == antallSlettedeKansellerteHendelser + antallSLettedeOverførteHendelser) {
+        if (kansellerteHendelser.size.toLong() + publiserteHendelser.size.toLong() == antallSlettedeKansellerteHendelser + antallSLettedePubliserteHendelser) {
             log.info("Alle de identifiserte hendelsene ble slettet.")
         } else {
             log.warn("Ikke alle de identifiserte hendelsene ble slettet.")

@@ -1,18 +1,12 @@
 package no.nav.bidrag.person.hendelse.database
 
-import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.Index
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToMany
-import jakarta.persistence.Table
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import java.time.LocalDateTime
 
@@ -21,7 +15,7 @@ annotation class NoArg
 @NoArg
 abstract class Personhendelse(
     open var personidenter: String,
-    open var aktor: Aktor
+    open var aktørid: String
 )
 
 @Entity
@@ -33,9 +27,9 @@ class Hendelsemottak(
     @Enumerated(EnumType.STRING)
     val endringstype: Livshendelse.Endringstype,
     @Column(name = "personidenter", nullable = false)
-    override var personidenter: String,
-    @ManyToOne(cascade = arrayOf(CascadeType.MERGE))
-    override var aktor: Aktor,
+    val personidenter: String,
+    @Column(name = "aktorid", nullable = false)
+    val aktorid: String,
     @Column(name = "opprettet", nullable = false, updatable = false)
     val opprettet: LocalDateTime = LocalDateTime.now(),
     val tidligereHendelseid: String? = null,
@@ -50,51 +44,7 @@ class Hendelsemottak(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
-) : Personhendelse(personidenter, aktor)
-
-@Entity
-@Table(indexes = [Index(name = "index_kontoendring_aktor_id", columnList = "aktor_id", unique = false)])
-class Kontoendring(
-    @ManyToOne(cascade = arrayOf(CascadeType.MERGE))
-    override var aktor: Aktor,
-    @Column(name = "personidenter", nullable = false)
-    override var personidenter: String,
-    @Column(name = "mottatt", nullable = false)
-    val mottatt: LocalDateTime = LocalDateTime.now(),
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    var status: Status = Status.MOTTATT,
-    @Column(name = "statustidspunkt", nullable = false)
-    var statustidspunkt: LocalDateTime = LocalDateTime.now(),
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0L
-) : Personhendelse(personidenter, aktor)
-
-@Entity
-class Aktor(
-    @Column(nullable = false)
-    val aktorid: String,
-    @Column
-    var publisert: LocalDateTime? = null,
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = 0,
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "aktor", cascade = arrayOf(CascadeType.MERGE))
-    val hendelsemottak: Set<Hendelsemottak> = HashSet(),
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "aktor", cascade = arrayOf(CascadeType.MERGE))
-    val kontoendring: Set<Kontoendring> = HashSet()
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Aktor) return false
-        return aktorid == other.aktorid
-    }
-
-    override fun hashCode(): Int {
-        return aktorid.hashCode() * 31
-    }
-}
+)
 
 enum class Status {
     MOTTATT,
