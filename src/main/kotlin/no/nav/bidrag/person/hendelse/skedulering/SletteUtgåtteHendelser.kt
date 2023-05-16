@@ -36,7 +36,7 @@ class SletteUtgåtteHendelser(
         log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${publiserteHendelser.size} publiserte hendelser som skal slettes fra databasen")
 
         val antallSlettedeKansellerteHendelser = sletteHendelser(kansellerteHendelser, "kansellerte")
-        if (kansellerteHendelser.size > 0 ) log.info("Totalt ble $antallSlettedeKansellerteHendelser av ${kansellerteHendelser.size} identifiserte kansellerte hendelser slettet")
+        if (kansellerteHendelser.size > 0) log.info("Totalt ble $antallSlettedeKansellerteHendelser av ${kansellerteHendelser.size} identifiserte kansellerte hendelser slettet")
 
         val antallSLettedePubliserteHendelser = sletteHendelser(publiserteHendelser, "publiserte")
         if (publiserteHendelser.size > 0) log.info("Totalt ble $antallSLettedePubliserteHendelser av ${publiserteHendelser.size} identifiserte publiserte hendelser slettet")
