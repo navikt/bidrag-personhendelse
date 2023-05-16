@@ -18,32 +18,32 @@
         <revision>1.0</revision>
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
-        <bidrag-commons.version>20230427084654_4121ef0</bidrag-commons.version>
-        <bidrag-transport.version>20230505084652_740c713</bidrag-transport.version>
+        <bidrag-commons.version>20230510130746_8b93e85</bidrag-commons.version>
+        <bidrag-transport.version>20230508100903_0aa6729</bidrag-transport.version>
         <google.gson.version>2.10.1</google.gson.version>
         <hibernate-validator.version>8.0.0.Final</hibernate-validator.version>
         <java.version>17</java.version>
         <jvmTarget>17</jvmTarget>
         <javax.jms-api.version>2.0.1</javax.jms-api.version>
-        <kotlin.version>1.7.20</kotlin.version>
-        <flyway-maven-plugin.version>9.11.0</flyway-maven-plugin.version>
-        <mockk.version>1.12.5</mockk.version>
-        <apache.httpcore.version>4.4.15</apache.httpcore.version>
-        <apache.httpclient.version>4.5.13</apache.httpclient.version>
-        <apache.avro.version>1.11.0</apache.avro.version>
+        <kotlin.version>1.8.21</kotlin.version>
+        <flyway-maven-plugin.version>9.16.3</flyway-maven-plugin.version>
+        <mockk.version>1.13.5</mockk.version>
+        <apache.httpcore.version>4.4.16</apache.httpcore.version>
+        <apache.httpclient.version>4.5.14</apache.httpclient.version>
+        <apache.avro.version>1.11.1</apache.avro.version>
         <availability.version>4.2.0</availability.version>
-        <confluent.version>6.2.7</confluent.version>
+        <confluent.version>7.4.0</confluent.version>
         <ibm.mq.allclient.version>9.2.5.0</ibm.mq.allclient.version>
         <prosessering.version>1.20220624132237_7f5ba9c</prosessering.version>
-        <logback.encoder.version>6.6</logback.encoder.version>
-        <spring.cloud.version>4.0.0</spring.cloud.version>
-        <spring-cloud-gcp.version>3.4.1</spring-cloud-gcp.version>
+        <logback.encoder.version>7.3</logback.encoder.version>
+        <spring.cloud.version>4.0.2</spring.cloud.version>
+        <spring-cloud-gcp.version>4.3.0</spring-cloud-gcp.version>
         <unleash-client-java.version>4.4.1</unleash-client-java.version>
-        <shedlock.version>5.1.0</shedlock.version>
-        <kotest.version>5.5.4</kotest.version>
+        <shedlock.version>5.3.0</shedlock.version>
+        <kotest.version>5.6.1</kotest.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.servlet-api.version>5.0.0</jakarta.servlet-api.version>
-        <token-support.version>3.0.10</token-support.version>
+        <token-support.version>3.0.12</token-support.version>
     </properties>
 
     <dependencyManagement>
