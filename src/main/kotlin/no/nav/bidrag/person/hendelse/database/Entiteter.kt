@@ -24,7 +24,7 @@ class Aktor(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = 0,
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "aktor", cascade = arrayOf(CascadeType.MERGE))
-    val hendelsemottak: Set<Hendelsemottak> = HashSet()
+    val hendelsemottak: Set<Hendelsemottak> = HashSet(),
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -62,7 +62,7 @@ class Hendelsemottak(
     var statustidspunkt: LocalDateTime = LocalDateTime.now(),
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0L
+    val id: Long = 0L,
 )
 
 enum class Status {
@@ -70,5 +70,5 @@ enum class Status {
     KANSELLERT,
     OVERFØRT,
     OVERFØRING_FEILET,
-    PUBLISERT
+    PUBLISERT,
 }

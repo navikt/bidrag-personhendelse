@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 class Databasetjeneste(
     open val aktorDao: AktorDao,
     open val hendelsemottakDao: HendelsemottakDao,
-    val egenskaper: Egenskaper
+    val egenskaper: Egenskaper,
 ) {
 
     fun oppdatereStatusPåHendelse(id: Long, nyStatus: Status) {
@@ -59,7 +59,7 @@ class Databasetjeneste(
         if (livshendelse.personidenter.size > MAKS_ANTALL_PERSONIDENTER) {
             log.warn(
                 "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over $MAKS_ANTALL_PERSONIDENTER personidenter. " +
-                    "Kun de $MAKS_ANTALL_PERSONIDENTER første arkiveres."
+                    "Kun de $MAKS_ANTALL_PERSONIDENTER første arkiveres.",
             )
         }
 
@@ -90,8 +90,8 @@ class Databasetjeneste(
                 Livshendelse.tilJson(livshendelse),
                 livshendelse.master,
                 livshendelse.offset,
-                status
-            )
+                status,
+            ),
         )
     }
 
@@ -99,8 +99,8 @@ class Databasetjeneste(
     fun hentePubliseringsklareHendelser(): HashMap<Aktor, Set<String>> {
         return tilHashMap(
             hendelsemottakDao.hentePubliseringsklareOverførteHendelser(
-                LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong())
-            )
+                LocalDateTime.now().minusHours(egenskaper.generelt.antallTimerSidenForrigePublisering.toLong()),
+            ),
         )
     }
 
@@ -120,7 +120,7 @@ class Databasetjeneste(
 
         return if (Status.KANSELLERT == tidligereHendelseMedStatusMottatt?.status) {
             log.info(
-                "Livshendelse med hendelseid ${tidligereHendelseMedStatusMottatt.hendelseid} ble erstattet av livshendelse med hendelseid ${livshendelse.hendelseid} og endringstype ${livshendelse.endringstype}."
+                "Livshendelse med hendelseid ${tidligereHendelseMedStatusMottatt.hendelseid} ble erstattet av livshendelse med hendelseid ${livshendelse.hendelseid} og endringstype ${livshendelse.endringstype}.",
             )
 
             if (Livshendelse.Endringstype.KORRIGERT != livshendelse.endringstype) {

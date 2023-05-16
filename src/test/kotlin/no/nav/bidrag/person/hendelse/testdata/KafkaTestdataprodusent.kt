@@ -6,7 +6,7 @@ import org.springframework.kafka.core.KafkaTemplate
 
 @Profile("lokal")
 class KafkaTestdataprodusent(
-    @Qualifier("testdata") val kafkaTemplateTestdata: KafkaTemplate<String, String>
+    @Qualifier("testdata") val kafkaTemplateTestdata: KafkaTemplate<String, String>,
 ) {
 
     val topicLivshendelser: String = "aapen-person-pdl-leesah-v1"

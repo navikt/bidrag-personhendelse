@@ -40,32 +40,32 @@ class SletteUtgåtteHendelserTest {
         // gitt
         var kansellertHendelse1 = oppretteOgLagreHendelse(
             Status.KANSELLERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1)
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1),
         )
         var kansellertHendelse2 = oppretteOgLagreHendelse(
             Status.KANSELLERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2)
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2),
         )
         var kansellertHendelseUtenforSlettevindu = oppretteOgLagreHendelse(
             Status.KANSELLERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2)
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2),
         )
         var mottattHendelseInnenforSlettevindu = oppretteOgLagreHendelse(
             Status.MOTTATT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2)
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2),
         )
         var mottattHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT, LocalDateTime.now())
         var publisertHendelse1 = oppretteOgLagreHendelse(
             Status.PUBLISERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1)
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1),
         )
         var publisertHendelse2 = oppretteOgLagreHendelse(
             Status.PUBLISERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2)
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2),
         )
         var publisertHendelseUtenforSlettevindu = oppretteOgLagreHendelse(
             Status.PUBLISERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2)
+            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2),
         )
 
         // hvis
@@ -93,7 +93,7 @@ class SletteUtgåtteHendelserTest {
                 Livshendelse.Endringstype.OPPRETTET,
                 personidenter,
                 personidenter.first { it.length == 13 },
-                LocalDateTime.now()
+                LocalDateTime.now(),
             )
         var kansellertHendelseSomSkalSlettes = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
         kansellertHendelseSomSkalSlettes.status = status

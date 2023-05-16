@@ -22,21 +22,21 @@ import java.time.Duration
 @ConditionalOnProperty(
     value = ["funksjonsbrytere.kafka.enabled"],
     havingValue = "true",
-    matchIfMissing = true
+    matchIfMissing = true,
 )
 class Kafkakonfig(val kafka: Kafka) {
 
     @Primary
     @ConfigurationProperties("spring.kafka")
     data class Kafka(
-        val bootstrapServers: String
+        val bootstrapServers: String,
     )
 
     @Bean
     fun kafkaLeesahListenerContainerFactory(
         properties: KafkaProperties,
         kafkaOmstartFeilhåndterer: KafkaOmstartFeilhåndterer,
-        environment: Environment
+        environment: Environment,
     ): ConcurrentKafkaListenerContainerFactory<Int, GenericRecord> {
         properties.properties[KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG] = "true"
         val factory = ConcurrentKafkaListenerContainerFactory<Int, GenericRecord>()
@@ -45,7 +45,7 @@ class Kafkakonfig(val kafka: Kafka) {
         factory.consumerFactory = DefaultKafkaConsumerFactory(
             properties.buildConsumerProperties().also {
                 it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = OffsetResetStrategy.EARLIEST.toString().lowercase()
-            }
+            },
         )
         factory.setCommonErrorHandler(kafkaOmstartFeilhåndterer)
         return factory

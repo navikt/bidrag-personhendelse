@@ -38,7 +38,7 @@ class KafkaOmstartFeilhåndtererTest {
                 RuntimeException("Feil i test"),
                 emptyList(),
                 consumer,
-                container
+                container,
             )
         }
             .hasMessageContaining("Stopper kafka container")
@@ -53,7 +53,7 @@ class KafkaOmstartFeilhåndtererTest {
                 RuntimeException(),
                 listOf(consumerRecord),
                 consumer,
-                container
+                container,
             )
         }
             .hasMessageContaining("Stopper kafka container")

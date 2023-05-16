@@ -69,7 +69,7 @@ class OverføreHendelserTest {
                 Livshendelse.Endringstype.OPPRETTET,
                 personidenter,
                 personidenter.first { it.length == 13 },
-                LocalDateTime.now()
+                LocalDateTime.now(),
             )
         var lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
         lagretHendelseVenteperiodeUtløpt.statustidspunkt =
@@ -84,7 +84,7 @@ class OverføreHendelserTest {
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
             personidenter.first { it.length == 13 },
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
         var lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
         lagretHendelserVenteperiodeIkkeUtløpt.statustidspunkt =
@@ -99,7 +99,7 @@ class OverføreHendelserTest {
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
             personidenter.first { it.length == 13 },
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
         var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
         var oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
@@ -115,12 +115,12 @@ class OverføreHendelserTest {
         verify(exactly = 1) {
             meldingsprodusent.sendeMeldinger(
                 egenskaper.integrasjon.wmq.queueNameLivshendelser,
-                capture(meldingerTilKø)
+                capture(meldingerTilKø),
             )
         }
         assertThat(meldingerTilKø.captured[0]).contains(hendelseMottattUtenforVenteperiode.hendelseid)
         assertThat(
-            databasetjeneste.hendelsemottakDao.findById(lagretHendelseVenteperiodeUtløpt.id).get().status
+            databasetjeneste.hendelsemottakDao.findById(lagretHendelseVenteperiodeUtløpt.id).get().status,
         ).isEqualTo(Status.OVERFØRING_FEILET)
     }
 
@@ -135,7 +135,7 @@ class OverføreHendelserTest {
                 Livshendelse.Endringstype.OPPRETTET,
                 personidenter,
                 personidenter.first { it.length == 13 },
-                LocalDateTime.now()
+                LocalDateTime.now(),
             )
         var lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
         lagretHendelseVenteperiodeUtløpt.statustidspunkt =
@@ -150,7 +150,7 @@ class OverføreHendelserTest {
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
             personidenter.first { it.length == 13 },
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
         var lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
         lagretHendelserVenteperiodeIkkeUtløpt.statustidspunkt =
@@ -165,7 +165,7 @@ class OverføreHendelserTest {
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
             personidenter.first { it.length == 13 },
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
         var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
         var oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
@@ -179,7 +179,7 @@ class OverføreHendelserTest {
         verify(exactly = 1) {
             meldingsprodusent.sendeMeldinger(
                 egenskaper.integrasjon.wmq.queueNameLivshendelser,
-                capture(meldingerTilKø)
+                capture(meldingerTilKø),
             )
         }
         assertThat(meldingerTilKø.captured[0]).contains(hendelseMottattUtenforVenteperiode.hendelseid)
@@ -196,7 +196,7 @@ class OverføreHendelserTest {
                 Livshendelse.Endringstype.OPPRETTET,
                 personidenter,
                 personidenter.first { it.length == 13 },
-                LocalDateTime.now()
+                LocalDateTime.now(),
             )
         var lagretHendelse1 = databasetjeneste.lagreHendelse(hendelse1)
         lagretHendelse1.statustidspunkt =
@@ -210,7 +210,7 @@ class OverføreHendelserTest {
             Livshendelse.Endringstype.ANNULLERT,
             personidenter,
             personidenter.first { it.length == 13 },
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
         var lagretHendelse2 = databasetjeneste.lagreHendelse(hendelse2)
         lagretHendelse2.statustidspunkt =
@@ -226,7 +226,7 @@ class OverføreHendelserTest {
         verify(exactly = 1) {
             meldingsprodusent.sendeMeldinger(
                 egenskaper.integrasjon.wmq.queueNameLivshendelser,
-                capture(meldingerTilKø)
+                capture(meldingerTilKø),
             )
         }
         assertThat(meldingerTilKø.captured[0]).contains(hendelse1.hendelseid)

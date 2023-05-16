@@ -28,7 +28,7 @@ class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
         e: Exception,
         records: List<ConsumerRecord<*, *>>?,
         consumer: Consumer<*, *>,
-        container: MessageListenerContainer
+        container: MessageListenerContainer,
     ) {
         Thread.sleep(1000)
 
@@ -37,19 +37,19 @@ class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
             scheduleRestart(
                 e,
                 container,
-                "Ukjent topic"
+                "Ukjent topic",
             )
         } else {
             records.first().run {
                 LOGGER.warn(
                     "Feil ved konsumering av melding fra ${this.topic()}. id ${this.key()}, " +
-                        "offset: ${this.offset()}, partition: ${this.partition()}"
+                        "offset: ${this.offset()}, partition: ${this.partition()}",
                 )
                 SECURE_LOGGER.warn("${this.topic()} - Problemer med prosessering av $records", e)
                 scheduleRestart(
                     e,
                     container,
-                    this.topic()
+                    this.topic(),
                 )
             }
         }
@@ -58,7 +58,7 @@ class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
     private fun scheduleRestart(
         e: Exception,
         container: MessageListenerContainer,
-        topic: String
+        topic: String,
     ) {
         val now = System.currentTimeMillis()
         if (now - lastError.getAndSet(now) > COUNTER_RESET_TIME) { // Sjekker om perioden som det ventes er større enn counter_reset_time
@@ -66,7 +66,7 @@ class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
                 LOGGER.error(
                     "Feil ved prosessering av kafkamelding for $topic. Container har restartet ${counter.get()} ganger og " +
                         "man må se på hvorfor record ikke kan leses. " +
-                        "Hvis denne meldingen gjentar seg hver ${Duration.ofMillis(LONG_SLEEP)} så klarer ikke tjenesten å hente seg inn"
+                        "Hvis denne meldingen gjentar seg hver ${Duration.ofMillis(LONG_SLEEP)} så klarer ikke tjenesten å hente seg inn",
                 )
             }
             counter.set(0)
@@ -88,7 +88,7 @@ class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
         throw KafkaException(
             "Stopper kafka container ${counter.get()} for $topic i ${Duration.ofMillis(stopTime)} antall feil $numErrors",
             KafkaException.Level.WARN,
-            e
+            e,
         )
     }
 

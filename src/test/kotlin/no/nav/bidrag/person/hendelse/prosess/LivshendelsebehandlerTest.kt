@@ -38,7 +38,7 @@ class LivshendelsebehandlerTest {
             hendelseId,
             Opplysningstype.DOEDSFALL_V1,
             Endringstype.OPPRETTET,
-            LocalDate.now()
+            LocalDate.now(),
         )
         service.prosesserNyHendelse(livshendelse)
     }
@@ -51,7 +51,7 @@ class LivshendelsebehandlerTest {
                 hendelseId,
                 Opplysningstype.UTFLYTTING_FRA_NORGE,
                 Endringstype.OPPRETTET,
-                Utflytting("SWE", null, LocalDate.now())
+                Utflytting("SWE", null, LocalDate.now()),
             )
 
         service.prosesserNyHendelse(livshendelse)
@@ -66,7 +66,7 @@ class LivshendelsebehandlerTest {
                 hendelseId,
                 Opplysningstype.SIVILSTAND_V1,
                 Endringstype.OPPRETTET,
-                Sivilstand("GIFT")
+                Sivilstand("GIFT"),
             )
 
         service.prosesserNyHendelse(livshendelse)
@@ -82,7 +82,7 @@ class LivshendelsebehandlerTest {
                 hendelseId,
                 Opplysningstype.FOEDSEL_V1,
                 Endringstype.OPPRETTET,
-                Foedsel("NOR", LocalDate.now())
+                Foedsel("NOR", LocalDate.now()),
             )
 
         service.prosesserNyHendelse(livshendelse)
@@ -101,7 +101,7 @@ class LivshendelsebehandlerTest {
                 hendelseId,
                 Opplysningstype.FOEDSEL_V1,
                 Endringstype.OPPRETTET,
-                Foedsel("POL", LocalDate.now())
+                Foedsel("POL", LocalDate.now()),
             )
 
         service.prosesserNyHendelse(livshendelse)
@@ -120,7 +120,7 @@ class LivshendelsebehandlerTest {
         hendelseId: String,
         opplysningstype: Opplysningstype,
         endringstype: Endringstype,
-        foedsel: Foedsel
+        foedsel: Foedsel,
     ): Livshendelse {
         return Livshendelse(
             hendelseId,
@@ -133,7 +133,7 @@ class LivshendelsebehandlerTest {
             null,
             null,
             null,
-            foedsel
+            foedsel,
         )
     }
 
@@ -141,7 +141,7 @@ class LivshendelsebehandlerTest {
         hendelseId: String,
         opplysningstype: Opplysningstype,
         endringstype: Endringstype,
-        dødsdato: LocalDate
+        dødsdato: LocalDate,
     ): Livshendelse {
         return Livshendelse(
             hendelseId,
@@ -151,7 +151,7 @@ class LivshendelsebehandlerTest {
             personidenter.first { it.length == 13 },
             LocalDateTime.now(),
             null,
-            dødsdato
+            dødsdato,
         )
     }
 
@@ -159,7 +159,7 @@ class LivshendelsebehandlerTest {
         hendelseId: String,
         opplysningstype: Opplysningstype,
         endringstype: Endringstype,
-        utflytting: Utflytting
+        utflytting: Utflytting,
     ): Livshendelse {
         return Livshendelse(
             hendelseId,
@@ -175,7 +175,7 @@ class LivshendelsebehandlerTest {
             null,
             null,
             null,
-            utflytting
+            utflytting,
         )
     }
 
@@ -183,7 +183,7 @@ class LivshendelsebehandlerTest {
         hendelseId: String,
         opplysningstype: Opplysningstype,
         endringstype: Endringstype,
-        sivilstand: Sivilstand
+        sivilstand: Sivilstand,
     ): Livshendelse {
         return Livshendelse(
             hendelseId,
@@ -200,7 +200,7 @@ class LivshendelsebehandlerTest {
             null,
             null,
             null,
-            sivilstand
+            sivilstand,
         )
     }
 }

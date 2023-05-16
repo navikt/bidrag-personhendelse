@@ -14,14 +14,14 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 class BidragKafkaMeldingsprodusent(
     private val kafkaTemplate: KafkaTemplate<String, String>,
-    private val databasetjeneste: Databasetjeneste
+    private val databasetjeneste: Databasetjeneste,
 
 ) {
     @Transactional
     @Retryable(
         value = [Exception::class],
         maxAttempts = 3,
-        backoff = Backoff(delay = 1000, multiplier = 2.0)
+        backoff = Backoff(delay = 1000, multiplier = 2.0),
     )
     fun publisereEndringsmelding(aktørid: String, personidenter: Set<String>) {
         publisereMelding(BIDRAG_PERSONHENDELSE_TOPIC, aktørid, personidenter)

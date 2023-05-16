@@ -51,7 +51,7 @@ class KontoendringsbehandlerTest {
         verify(exactly = 1) {
             bidragKafkaMeldingsprodusent.publisereEndringsmelding(
                 capture(kontoeier),
-                any()
+                any(),
             )
         }
     }

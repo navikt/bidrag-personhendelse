@@ -14,21 +14,21 @@ import org.springframework.stereotype.Service
 @ConditionalOnProperty(
     value = ["funksjonsbrytere.kafka.enabled"],
     havingValue = "true",
-    matchIfMissing = true
+    matchIfMissing = true,
 )
 class Kontoendringsmottak(val kontoendringsbehandler: Kontoendringsbehandler) {
     @KafkaListener(
         groupId = "kontoregister-person-endringsmelding-v2.bidrag",
         topics = ["okonomi.kontoregister-person-endringsmelding.v2"],
         id = "bidrag-person-hendelse-kontoregister-person-endringsmelding-v2",
-        idIsGroup = false
+        idIsGroup = false,
     )
     fun listen(@Payload endringsmelding: Endringsmelding, cr: ConsumerRecord<String, Endringsmelding>) {
         slog.info(
             "Kontoregisterendringsmelding mottatt: Record key={}, value={}, value={}",
             cr.key(),
             cr.value(),
-            cr.offset()
+            cr.offset(),
         )
 
         if (harGyldigFormat(endringsmelding)) {
