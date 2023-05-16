@@ -16,7 +16,6 @@ class PublisereEndringsmeldinger(
     val databasetjeneste: Databasetjeneste,
     val egenskaper: Egenskaper
 ) {
-    @Transactional
     @Scheduled(cron = "\${publisere_personhendelser.kjøreplan}")
     @SchedulerLock(
         name = "publisere_personhendelser",

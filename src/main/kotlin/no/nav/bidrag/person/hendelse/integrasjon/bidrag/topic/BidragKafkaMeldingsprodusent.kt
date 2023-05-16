@@ -9,6 +9,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class BidragKafkaMeldingsprodusent(
@@ -16,6 +17,7 @@ class BidragKafkaMeldingsprodusent(
     private val databasetjeneste: Databasetjeneste
 
 ) {
+    @Transactional
     @Retryable(
         value = [Exception::class],
         maxAttempts = 3,
