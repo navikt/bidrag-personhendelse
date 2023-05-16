@@ -36,15 +36,17 @@ class SletteUtgåtteHendelser(
         log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${publiserteHendelser.size} publiserte hendelser som skal slettes fra databasen")
 
         var antallSlettedeKansellerteHendelser = sletteHendelser(kansellerteHendelser, "kansellerte")
-        log.info("Totalt ble $antallSlettedeKansellerteHendelser av ${kansellerteHendelser.size} identifiserte kansellerte hendelser slettet")
+        if (kansellerteHendelser.size > 0 ) log.info("Totalt ble $antallSlettedeKansellerteHendelser av ${kansellerteHendelser.size} identifiserte kansellerte hendelser slettet")
 
         var antallSLettedePubliserteHendelser = sletteHendelser(publiserteHendelser, "publiserte")
-        log.info("Totalt ble $antallSLettedePubliserteHendelser av ${publiserteHendelser.size} identifiserte publiserte hendelser slettet")
+        if (publiserteHendelser.size > 0) log.info("Totalt ble $antallSLettedePubliserteHendelser av ${publiserteHendelser.size} identifiserte publiserte hendelser slettet")
 
-        if (kansellerteHendelser.size.toLong() + publiserteHendelser.size.toLong() == antallSlettedeKansellerteHendelser + antallSLettedePubliserteHendelser) {
-            log.info("Alle de identifiserte hendelsene ble slettet.")
-        } else {
-            log.warn("Ikke alle de identifiserte hendelsene ble slettet.")
+        if (kansellerteHendelser.size + publiserteHendelser.size > 0) {
+            if (kansellerteHendelser.size.toLong() + publiserteHendelser.size.toLong() == antallSlettedeKansellerteHendelser + antallSLettedePubliserteHendelser) {
+                log.info("Alle de identifiserte hendelsene ble slettet.")
+            } else {
+                log.warn("Ikke alle de identifiserte hendelsene ble slettet.")
+            }
         }
 
         sletteAktørerSomManglerReferanseTilHendelse()
@@ -52,7 +54,7 @@ class SletteUtgåtteHendelser(
 
     private fun sletteAktørerSomManglerReferanseTilHendelse() {
         var aktørerUtenReferanseTilHendelse = databasetjeneste.aktorDao.henteAktørerSomManglerReferanseTilHendelse()
-        log.info("Fant $aktørerUtenReferanseTilHendelse aktører uten referanse til hendelse - sletter disse.")
+        log.info("Fant ${aktørerUtenReferanseTilHendelse.size} aktører uten referanse til hendelse - sletter disse.")
         databasetjeneste.aktorDao.deleteAktorByIdIn(aktørerUtenReferanseTilHendelse)
         log.info("Alle de referanseløse aktørene ble slettet fra databasen.")
     }
