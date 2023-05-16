@@ -7,6 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
 import no.nav.bidrag.person.hendelse.Teststarter
+import no.nav.bidrag.person.hendelse.database.AktorDao
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.HendelsemottakDao
 import no.nav.bidrag.person.hendelse.database.Status
@@ -32,6 +33,9 @@ class OverføreHendelserTest {
     val personidenter = listOf("12345678901", "1234567890123")
 
     @Autowired
+    lateinit var aktorDao: AktorDao
+
+    @Autowired
     lateinit var hendelsemottakDao: HendelsemottakDao
 
     lateinit var databasetjeneste: Databasetjeneste
@@ -48,7 +52,7 @@ class OverføreHendelserTest {
     fun initialisere() {
         MockKAnnotations.init(this)
         clearAllMocks()
-        databasetjeneste = Databasetjeneste(hendelsemottakDao, egenskaper)
+        databasetjeneste = Databasetjeneste(aktorDao, hendelsemottakDao, egenskaper)
         hendelsemottakDao.deleteAll()
         overføreHendelser = OverføreHendelser(databasetjeneste, egenskaper, meldingsprodusent)
         every { meldingsprodusent.sendeMeldinger(any(), any()) } returns 1

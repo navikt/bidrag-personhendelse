@@ -26,7 +26,6 @@ class PublisereEndringsmeldinger(
     fun identifisereOgPublisere() {
         // Hente aktør med personidenter til til personer med nylige endringer i personopplysninger
         val aktørerPersonopplysninger = databasetjeneste.hentePubliseringsklareHendelser()
-
         log.info("Fant ${aktørerPersonopplysninger.size} unike personer med nylige endringer i personopplysninger.")
 
         val subsetMedAktørider = aktørerPersonopplysninger.keys.take(egenskaper.generelt.maksAntallMeldingerSomSendesTilBidragTopicOmGangen).toSet()
@@ -35,7 +34,7 @@ class PublisereEndringsmeldinger(
 
         // Publisere melding til intern topic for samtlige personer med endringer
         subsetMedAktørider.forEach {
-            bidragtopic.publisereEndringsmelding(it, aktørerPersonopplysninger.getValue(it))
+            bidragtopic.publisereEndringsmelding(it.aktorid, aktørerPersonopplysninger.getValue(it))
         }
     }
 

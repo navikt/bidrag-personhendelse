@@ -20,6 +20,9 @@ import org.springframework.test.context.ActiveProfiles
 class HendelsemottakDaoTest {
 
     @Autowired
+    lateinit var aktorDao: AktorDao
+
+    @Autowired
     lateinit var hendelsemottakDao: HendelsemottakDao
 
     @Test
@@ -27,12 +30,13 @@ class HendelsemottakDaoTest {
         // gitt
         var personidenter = listOf("12345678910", "1234567891013")
         var aktørid = personidenter.first { it.length == 13 }
+        var aktør = aktorDao.save(Aktor(aktørid))
 
         var hendelseid = "123"
         var opplysningstype = Livshendelse.Opplysningstype.SIVILSTAND_V1
         var endringstype = Livshendelse.Endringstype.OPPRETTET
 
-        var hendelsemottak = Hendelsemottak(hendelseid, opplysningstype, endringstype, personidenter.toString(), aktørid)
+        var hendelsemottak = Hendelsemottak(hendelseid, opplysningstype, endringstype, personidenter.toString(), aktør)
 
         // hvis
         hendelsemottakDao.save(hendelsemottak)

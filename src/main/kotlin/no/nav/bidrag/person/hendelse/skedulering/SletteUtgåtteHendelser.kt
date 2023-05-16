@@ -46,6 +46,15 @@ class SletteUtgåtteHendelser(
         } else {
             log.warn("Ikke alle de identifiserte hendelsene ble slettet.")
         }
+
+        sletteAktørerSomManglerReferanseTilHendelse()
+    }
+
+    private fun sletteAktørerSomManglerReferanseTilHendelse() {
+        var aktørerUtenReferanseTilHendelse = databasetjeneste.aktorDao.henteAktørerSomManglerReferanseTilHendelse()
+        log.info("Fant $aktørerUtenReferanseTilHendelse aktører uten referanse til hendelse - sletter disse.")
+        databasetjeneste.aktorDao.deleteAktorByIdIn(aktørerUtenReferanseTilHendelse)
+        log.info("Alle de referanseløse aktørene ble slettet fra databasen.")
     }
 
     private fun sletteHendelser(ider: Set<Long>, hendelsebeskrivelse: String): Long {

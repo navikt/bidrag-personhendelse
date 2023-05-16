@@ -35,6 +35,7 @@ class BidragKafkaMeldingsprodusent(
                 log.warn("Publisering av melding til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
                 slog.warn("Publisering av melding for aktørid ${result.producerRecord.key()} til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
             } else {
+                databasetjeneste.oppdaterePubliseringstidspunkt(aktørid)
                 databasetjeneste.oppdatereStatusPåHendelserEtterPublisering(aktørid)
             }
         }
