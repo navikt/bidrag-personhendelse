@@ -30,7 +30,7 @@ class BidragKafkaMeldingsprodusent(
     private fun publisereMelding(emne: String, aktørid: String, personidenter: Set<String>) {
         slog.info("Publiserer endringsmelding for aktørid $aktørid")
         val melding = tilJson(Endringsmelding(aktørid, personidenter))
-        var future = kafkaTemplate.send(emne, aktørid, melding)
+        val future = kafkaTemplate.send(emne, aktørid, melding)
 
         future.whenComplete { result, ex ->
             if (ex != null) {

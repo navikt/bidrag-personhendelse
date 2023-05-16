@@ -29,7 +29,7 @@ class Databasetjeneste(
 
     @Transactional
     fun oppdaterePubliseringstidspunkt(aktørid: String) {
-        var aktør = aktorDao.findByAktorid(aktørid)
+        val aktør = aktorDao.findByAktorid(aktørid)
 
         if (aktør.isPresent) {
             aktør.get().publisert = LocalDateTime.now()
@@ -45,7 +45,7 @@ class Databasetjeneste(
 
     @Transactional
     fun oppdatereStatusPåHendelserEtterPublisering(aktørid: String) {
-        var ider = hendelsemottakDao.finnHendelsemottakIderMedStatusOverført(aktørid)
+        val ider = hendelsemottakDao.finnHendelsemottakIderMedStatusOverført(aktørid)
 
         for (id in ider) {
             oppdatereStatusPåHendelse(id, Status.PUBLISERT)
@@ -54,7 +54,7 @@ class Databasetjeneste(
 
     @Transactional(readOnly = false)
     fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
-        var begrensetSettMedPersonidenter = begrenseAntallPersonidenter(livshendelse.personidenter.toSet())
+        val begrensetSettMedPersonidenter = begrenseAntallPersonidenter(livshendelse.personidenter.toSet())
 
         if (livshendelse.personidenter.size > MAKS_ANTALL_PERSONIDENTER) {
             log.warn(
@@ -105,7 +105,7 @@ class Databasetjeneste(
     }
 
     private fun tilHashMap(liste: Set<Hendelsemottak>): HashMap<Aktor, Set<String>> {
-        var map = HashMap<Aktor, Set<String>>()
+        val map = HashMap<Aktor, Set<String>>()
         liste.forEach {
             map.put(it.aktor, it.personidenter.split(',').map { ident -> ident.trim() }.toSet())
         }
