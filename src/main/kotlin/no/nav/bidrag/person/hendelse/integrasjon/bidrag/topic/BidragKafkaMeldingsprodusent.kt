@@ -9,6 +9,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class BidragKafkaMeldingsprodusent(
@@ -16,6 +17,7 @@ class BidragKafkaMeldingsprodusent(
     private val databasetjeneste: Databasetjeneste
 
 ) {
+    @Transactional
     @Retryable(
         value = [Exception::class],
         maxAttempts = 3,
@@ -28,13 +30,14 @@ class BidragKafkaMeldingsprodusent(
     private fun publisereMelding(emne: String, aktørid: String, personidenter: Set<String>) {
         slog.info("Publiserer endringsmelding for aktørid $aktørid")
         val melding = tilJson(Endringsmelding(aktørid, personidenter))
-        var future = kafkaTemplate.send(emne, aktørid, melding)
+        val future = kafkaTemplate.send(emne, aktørid, melding)
 
         future.whenComplete { result, ex ->
             if (ex != null) {
                 log.warn("Publisering av melding til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
                 slog.warn("Publisering av melding for aktørid ${result.producerRecord.key()} til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
             } else {
+                databasetjeneste.oppdaterePubliseringstidspunkt(aktørid)
                 databasetjeneste.oppdatereStatusPåHendelserEtterPublisering(aktørid)
             }
         }

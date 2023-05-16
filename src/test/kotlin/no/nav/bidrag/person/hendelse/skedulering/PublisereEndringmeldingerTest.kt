@@ -42,6 +42,7 @@ class PublisereEndringmeldingerTest {
         MockKAnnotations.init(this)
         clearAllMocks()
         databasetjeneste.hendelsemottakDao.deleteAll()
+        databasetjeneste.aktorDao.deleteAll()
         publisereEndringsmeldinger = PublisereEndringsmeldinger(
             meldingsprodusent,
             databasetjeneste,
