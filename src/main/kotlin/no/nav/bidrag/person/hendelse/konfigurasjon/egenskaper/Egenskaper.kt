@@ -12,7 +12,7 @@ data class Generelt(
     val antallTimerSidenForrigePublisering: Int = 8,
     val maksAntallMeldingerSomOverfoeresTilBisysOmGangen: Int = 6500,
     val maksAntallMeldingerSomSendesTilBidragTopicOmGangen: Int = 2000,
-    val bolkstoerrelseVedSletting: Int = 65000
+    val bolkstoerrelseVedSletting: Int = 65000,
 )
 
 @ConfigurationProperties("egenskaper.integrasjon")
@@ -28,7 +28,7 @@ data class Wmq(
     val password: String,
     val timeout: Int,
     val applicationName: String,
-    val queueNameLivshendelser: String
+    val queueNameLivshendelser: String,
 )
 
 @ConfigurationProperties("egenskaper.integrasjon.bidrag-person")

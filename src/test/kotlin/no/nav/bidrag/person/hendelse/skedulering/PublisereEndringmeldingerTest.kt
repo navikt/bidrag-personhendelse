@@ -46,7 +46,7 @@ class PublisereEndringmeldingerTest {
         publisereEndringsmeldinger = PublisereEndringsmeldinger(
             meldingsprodusent,
             databasetjeneste,
-            databasetjeneste.egenskaper
+            databasetjeneste.egenskaper,
         )
         every { meldingsprodusent.publisereEndringsmelding(any(), any()) }
     }
@@ -71,7 +71,7 @@ class PublisereEndringmeldingerTest {
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
                 capture(aktørid),
-                capture(identer)
+                capture(identer),
             )
         }
 
@@ -99,7 +99,7 @@ class PublisereEndringmeldingerTest {
         verify(exactly = 1) {
             meldingsprodusent.publisereEndringsmelding(
                 capture(aktørid),
-                capture(identer)
+                capture(identer),
             )
         }
 

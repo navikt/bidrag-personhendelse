@@ -13,14 +13,14 @@ import java.time.LocalDate
 @Component
 class SletteUtgåtteHendelser(
     open val databasetjeneste: Databasetjeneste,
-    open val egenskaper: Egenskaper
+    open val egenskaper: Egenskaper,
 
 ) {
     @Scheduled(cron = "\${slette_hendelser.kjøreplan}")
     @SchedulerLock(
         name = "slette_hendelser",
         lockAtLeastFor = "\${slette_hendelser.lås.min}",
-        lockAtMostFor = "\${slette_hendelser.lås.max}"
+        lockAtMostFor = "\${slette_hendelser.lås.max}",
     )
     fun sletteUtgåtteHendelserFraDatabase() {
         val statusoppdateringFør = LocalDate.now().atStartOfDay()

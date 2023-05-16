@@ -48,7 +48,7 @@ class DatabasetjenesteTest {
                     Endringstype.OPPRETTET,
                     personidenter,
                     personidenter.first { it.length == 13 },
-                    LocalDateTime.now()
+                    LocalDateTime.now(),
                 )
             var lagretOpprinneligHendelse = databasetjeneste.lagreHendelse(opprinneligHendelse)
 
@@ -60,7 +60,7 @@ class DatabasetjenesteTest {
                 personidenter,
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
-                hendelseidOpprinneligHendelse
+                hendelseidOpprinneligHendelse,
             )
 
             // hvis
@@ -91,7 +91,7 @@ class DatabasetjenesteTest {
                     Endringstype.OPPHOERT,
                     personidenter,
                     personidenter.first { it.length == 13 },
-                    LocalDateTime.now()
+                    LocalDateTime.now(),
                 )
 
             // hvis
@@ -117,7 +117,7 @@ class DatabasetjenesteTest {
                 personidenter,
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
-                hendelseidOpprinneligHendelse
+                hendelseidOpprinneligHendelse,
             )
 
             // hvis

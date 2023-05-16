@@ -18,7 +18,7 @@ import java.net.URI
 @Component
 class BidragPersonklient(
     @Value("\${egenskaper.integrasjon.bidrag-person.url}") val bidragPersonUrl: URI,
-    @Qualifier("azure") val restTemplate: RestTemplate
+    @Qualifier("azure") val restTemplate: RestTemplate,
 ) : AbstractRestClient(restTemplate, "bidrag-person") {
 
     private fun createUri(path: String?) = UriComponentsBuilder.fromUri(bidragPersonUrl)

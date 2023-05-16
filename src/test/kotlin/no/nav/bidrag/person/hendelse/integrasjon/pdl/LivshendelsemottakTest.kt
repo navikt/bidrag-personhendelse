@@ -54,7 +54,7 @@ class LivshendelsemottakTest {
         var cr = ConsumerRecord(
             "pdl.leesah-v1", 1, 229055,
             Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-            personhendelse, RecordHeaders(), Optional.of(0)
+            personhendelse, RecordHeaders(), Optional.of(0),
         )
 
         // hvis
@@ -73,7 +73,7 @@ class LivshendelsemottakTest {
         var cr = ConsumerRecord(
             "pdl.leesah-v1", 1, 229055,
             Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-            personhendelse, RecordHeaders(), Optional.of(0)
+            personhendelse, RecordHeaders(), Optional.of(0),
         )
 
         // hvis
@@ -94,7 +94,7 @@ class LivshendelsemottakTest {
         var cr = ConsumerRecord(
             "pdl.leesah-v1", 1, 229055,
             Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-            personhendelse, RecordHeaders(), Optional.of(0)
+            personhendelse, RecordHeaders(), Optional.of(0),
         )
 
         // hvis
@@ -115,7 +115,7 @@ class LivshendelsemottakTest {
         var cr = ConsumerRecord(
             "pdl.leesah-v1", 1, 229055,
             Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-            personhendelse, RecordHeaders(), Optional.of(0)
+            personhendelse, RecordHeaders(), Optional.of(0),
         )
 
         // hvis
@@ -128,13 +128,13 @@ class LivshendelsemottakTest {
         assertThat(livshendelseSomSendesTilBehandling.captured).isNotNull
         assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.FOLKEREGISTERIDENTIFIKATOR_V1)
         assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.identifikasjonsnummer).isEqualTo(
-            personhendelse.folkeregisteridentifikator.identifikasjonsnummer
+            personhendelse.folkeregisteridentifikator.identifikasjonsnummer,
         )
         assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.type).isEqualTo(
-            personhendelse.folkeregisteridentifikator.type
+            personhendelse.folkeregisteridentifikator.type,
         )
         assertThat(livshendelseSomSendesTilBehandling.captured.folkeregisteridentifikator?.status).isEqualTo(
-            personhendelse.folkeregisteridentifikator.status
+            personhendelse.folkeregisteridentifikator.status,
         )
     }
 
@@ -146,7 +146,7 @@ class LivshendelsemottakTest {
         var cr = ConsumerRecord(
             "pdl.leesah-v1", 1, 229055,
             Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-            personhendelse, RecordHeaders(), Optional.of(0)
+            personhendelse, RecordHeaders(), Optional.of(0),
         )
 
         // hvis
@@ -168,7 +168,7 @@ class LivshendelsemottakTest {
         var cr = ConsumerRecord(
             "pdl.leesah-v1", 1, 229055,
             Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-            personhendelse, RecordHeaders(), Optional.of(0)
+            personhendelse, RecordHeaders(), Optional.of(0),
         )
 
         // hvis
@@ -189,7 +189,7 @@ class LivshendelsemottakTest {
         var cr = ConsumerRecord(
             "pdl.leesah-v1", 1, 229055,
             Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-            personhendelse, RecordHeaders(), Optional.of(0)
+            personhendelse, RecordHeaders(), Optional.of(0),
         )
 
         // hvis
@@ -210,7 +210,7 @@ class LivshendelsemottakTest {
         var cr = ConsumerRecord(
             "pdl.leesah-v1", 1, 229055,
             Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-            personhendelse, RecordHeaders(), Optional.of(0)
+            personhendelse, RecordHeaders(), Optional.of(0),
         )
 
         // hvis
@@ -232,7 +232,7 @@ class LivshendelsemottakTest {
         var cr = ConsumerRecord(
             "pdl.leesah-v1", 1, 229055,
             Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-            personhendelse, RecordHeaders(), Optional.of(0)
+            personhendelse, RecordHeaders(), Optional.of(0),
         )
 
         // hvis
@@ -254,7 +254,7 @@ class LivshendelsemottakTest {
         var cr = ConsumerRecord(
             "pdl.leesah-v1", 1, 229055,
             Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-            personhendelse, RecordHeaders(), Optional.of(0)
+            personhendelse, RecordHeaders(), Optional.of(0),
         )
 
         // hvis

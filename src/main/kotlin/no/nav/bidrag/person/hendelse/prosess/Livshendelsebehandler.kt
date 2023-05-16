@@ -34,12 +34,12 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
                 livshendelse.hendelseid,
-                livshendelse.opplysningstype
+                livshendelse.opplysningstype,
             )
         ) {
             tellerLeesahDuplikat.increment()
             log.info(
-                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne.",
             )
             return
         }
@@ -61,19 +61,19 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
                 livshendelse.hendelseid,
-                livshendelse.opplysningstype
+                livshendelse.opplysningstype,
             )
         ) {
             tellerLeesahDuplikat.increment()
             log.info(
-                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne.",
             )
             return
         }
 
         sikkerLoggingAvLivshendelse(
             livshendelse,
-            "Type: ${livshendelse.verge?.type}, omfang: ${livshendelse.verge?.vergeEllerFullmektig?.omfang}"
+            "Type: ${livshendelse.verge?.type}, omfang: ${livshendelse.verge?.vergeEllerFullmektig?.omfang}",
         )
 
         when (livshendelse.endringstype) {
@@ -93,12 +93,12 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
                 livshendelse.hendelseid,
-                livshendelse.opplysningstype
+                livshendelse.opplysningstype,
             )
         ) {
             tellerLeesahDuplikat.increment()
             log.info(
-                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne.",
             )
             return
         }
@@ -118,12 +118,12 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
                 livshendelse.hendelseid,
-                livshendelse.opplysningstype
+                livshendelse.opplysningstype,
             )
         ) {
             tellerLeesahDuplikat.increment()
             log.info(
-                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne.",
             )
             return
         }
@@ -166,12 +166,12 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
                 livshendelse.hendelseid,
-                livshendelse.opplysningstype
+                livshendelse.opplysningstype,
             )
         ) {
             tellerLeesahDuplikat.increment()
             log.info(
-                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne.",
             )
             return
         }
@@ -206,12 +206,12 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
                 livshendelse.hendelseid,
-                livshendelse.opplysningstype
+                livshendelse.opplysningstype,
             )
         ) {
             tellerLeesahDuplikat.increment()
             log.info(
-                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.hendelseid}. Ignorerer denne."
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.hendelseid}. Ignorerer denne.",
             )
             return
         }
@@ -227,7 +227,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
                 sikkerLoggingAvLivshendelse(
                     livshendelse,
-                    "Fraflyttingsland: ${livshendelse.innflytting?.fraflyttingsland}"
+                    "Fraflyttingsland: ${livshendelse.innflytting?.fraflyttingsland}",
                 )
                 databasetjeneste.lagreHendelse(livshendelse)
             }
@@ -249,12 +249,12 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
                 livshendelse.hendelseid,
-                livshendelse.opplysningstype
+                livshendelse.opplysningstype,
             )
         ) {
             tellerLeesahDuplikat.increment()
             log.info(
-                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne.",
             )
             return
         }
@@ -294,12 +294,12 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
                 livshendelse.hendelseid,
-                livshendelse.opplysningstype
+                livshendelse.opplysningstype,
             )
         ) {
             tellerLeesahDuplikat.increment()
             log.info(
-                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne.",
             )
             return
         }
@@ -349,12 +349,12 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
                 livshendelse.hendelseid,
-                livshendelse.opplysningstype
+                livshendelse.opplysningstype,
             )
         ) {
             tellerLeesahDuplikat.increment()
             log.info(
-                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne.",
             )
             return
         }
@@ -370,7 +370,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
                 sikkerLoggingAvLivshendelse(
                     livshendelse,
-                    "utflyttingsdato: ${livshendelse.utflytting?.utflyttingsdato}"
+                    "utflyttingsdato: ${livshendelse.utflytting?.utflyttingsdato}",
                 )
                 databasetjeneste.lagreHendelse(livshendelse)
             }
@@ -393,12 +393,12 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
 
         if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
                 livshendelse.hendelseid,
-                livshendelse.opplysningstype
+                livshendelse.opplysningstype,
             )
         ) {
             tellerLeesahDuplikat.increment()
             log.info(
-                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne."
+                "Mottok duplikat livshendelse (hendelseid: ${livshendelse.hendelseid}) med opplysningstype ${livshendelse.opplysningstype}. Ignorerer denne.",
             )
             return
         }
@@ -414,7 +414,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Endringstype.OPPRETTET, Endringstype.KORRIGERT -> {
                 sikkerLoggingAvLivshendelse(
                     livshendelse,
-                    "sivilstandDato: ${livshendelse.sivilstand?.bekreftelsesdato}"
+                    "sivilstandDato: ${livshendelse.sivilstand?.bekreftelsesdato}",
                 )
                 databasetjeneste.lagreHendelse(livshendelse)
             }
@@ -438,7 +438,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
                 "offset: ${livshendelse.offset}, " +
                 "opplysningstype: ${livshendelse.opplysningstype}, " +
                 "aktørid: ${livshendelse.hentGjeldendeAktørid()}, " +
-                "endringstype: ${livshendelse.endringstype}, $ekstraInfo"
+                "endringstype: ${livshendelse.endringstype}, $ekstraInfo",
         )
     }
 

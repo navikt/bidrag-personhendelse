@@ -58,7 +58,7 @@ class SchedulerConfiguration {
                 .withTableName("shedlock")
                 .withColumnNames(JdbcTemplateLockProvider.ColumnNames("name", "lock_until", "locked_at", "locked_by"))
                 .withJdbcTemplate(JdbcTemplate(dataSource))
-                .build()
+                .build(),
         )
     }
 }

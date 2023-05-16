@@ -26,7 +26,7 @@ data class Livshendelse(
     val verge: VergeEllerFremtidsfullmakt? = null,
     val adressebeskyttelse: Gradering? = null,
     val offset: Long = 0L,
-    val master: String = "PDL"
+    val master: String = "PDL",
 
 ) {
 
@@ -36,7 +36,7 @@ data class Livshendelse(
         STRENGT_FORTROLIG_UTLAND,
         STRENGT_FORTROLIG,
         FORTROLIG,
-        UGRADERT
+        UGRADERT,
     }
 
     enum class Endringstype {

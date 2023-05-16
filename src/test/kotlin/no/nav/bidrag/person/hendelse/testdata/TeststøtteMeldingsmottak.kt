@@ -29,7 +29,7 @@ class TeststøtteMeldingsmottak(val databasetjeneste: Databasetjeneste) {
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
             Livshendelse.Endringstype.OPPRETTET,
             personidenter.joinToString { it },
-            aktør
+            aktør,
         )
 
         mottattHendelse.status = status

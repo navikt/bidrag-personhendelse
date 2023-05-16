@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 class OverføreHendelser(
     open val databasetjeneste: Databasetjeneste,
     open val egenskaper: Egenskaper,
-    open val meldingsprodusent: BisysMeldingsprodusjon
+    open val meldingsprodusent: BisysMeldingsprodusjon,
 ) {
 
     @Transactional
@@ -25,7 +25,7 @@ class OverføreHendelser(
     @SchedulerLock(
         name = "overføre_hendelser",
         lockAtLeastFor = "\${overføre_hendelser.lås.min}",
-        lockAtMostFor = "\${overføre_hendelser.lås.max}"
+        lockAtMostFor = "\${overføre_hendelser.lås.max}",
     )
     fun overføreHendelserTilBisys() {
         val sisteStatusoppdateringFør =
@@ -37,8 +37,8 @@ class OverføreHendelser(
         log.info(
             henteLoggmelding(
                 hendelserKlarTilOverføring.size,
-                egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen
-            )
+                egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen,
+            ),
         )
 
         // Begrenser antall hendelser som skal videresendes
@@ -48,7 +48,7 @@ class OverføreHendelser(
         try {
             val antallOverført: Int = meldingsprodusent.sendeMeldinger(
                 egenskaper.integrasjon.wmq.queueNameLivshendelser,
-                databasetjeneste.hendelsemottakDao.findAllById(hendelserSomOverføresIDenneOmgang).map { it.hendelse }
+                databasetjeneste.hendelsemottakDao.findAllById(hendelserSomOverføresIDenneOmgang).map { it.hendelse },
             )
             databasetjeneste.oppdatereStatusPåHendelser(hendelserSomOverføresIDenneOmgang, Status.OVERFØRT)
             log.info("Overføring fullført (for antall: $antallOverført)")

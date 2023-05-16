@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component
 class PublisereEndringsmeldinger(
     val bidragtopic: BidragKafkaMeldingsprodusent,
     val databasetjeneste: Databasetjeneste,
-    val egenskaper: Egenskaper
+    val egenskaper: Egenskaper,
 ) {
     @Scheduled(cron = "\${publisere_personhendelser.kjøreplan}")
     @SchedulerLock(
         name = "publisere_personhendelser",
         lockAtLeastFor = "\${publisere_personhendelser.lås.min}",
-        lockAtMostFor = "\${publisere_personhendelser.lås.max}"
+        lockAtMostFor = "\${publisere_personhendelser.lås.max}",
     )
     fun identifisereOgPublisere() {
         // Hente aktør med personidenter til til personer med nylige endringer i personopplysninger

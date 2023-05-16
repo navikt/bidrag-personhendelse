@@ -34,7 +34,7 @@ import java.util.stream.Collectors
 @ConditionalOnProperty(
     value = ["funksjonsbrytere.kafka.enabled"],
     havingValue = "true",
-    matchIfMissing = true
+    matchIfMissing = true,
 )
 class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
 
@@ -47,7 +47,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         topics = ["pdl.leesah-v1"],
         id = "bidrag-person-hendelse.leesah-v1",
         idIsGroup = false,
-        containerFactory = "kafkaLeesahListenerContainerFactory"
+        containerFactory = "kafkaLeesahListenerContainerFactory",
     )
     fun listen(@Payload personhendelse: Personhendelse, cr: ConsumerRecord<String, Personhendelse>) {
         log.info("Livshendelse med hendelseid {} mottatt.", personhendelse.hendelseId)
@@ -90,7 +90,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             henteVerge(personhendelse.vergemaalEllerFremtidsfullmakt),
             henteAdressebeskyttelse(personhendelse.adressebeskyttelse),
             cr.offset(),
-            personhendelse.master.toString()
+            personhendelse.master.toString(),
         )
 
         try {
@@ -110,7 +110,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         } catch (iae: IllegalArgumentException) {
             log.info(
                 "Mottok livshendelse med opplysningstype ({}) fra PDL. Denne ignoreres av løsningen.",
-                pdlOpplysningstype.toString()
+                pdlOpplysningstype.toString(),
             )
             Livshendelse.Opplysningstype.IKKE_STØTTET
         }
@@ -166,7 +166,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             Folkeregisteridentifikator(
                 folkeregisteridentifikator.identifikasjonsnummer?.toString(),
                 folkeregisteridentifikator.type?.toString(),
-                folkeregisteridentifikator.status?.toString()
+                folkeregisteridentifikator.status?.toString(),
             )
         }
     }
@@ -194,14 +194,14 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             var originaltNavn = OriginaltNavn(
                 navn.originaltNavn?.fornavn?.toString(),
                 navn.originaltNavn?.mellomnavn?.toString(),
-                navn.originaltNavn?.etternavn?.toString()
+                navn.originaltNavn?.etternavn?.toString(),
             )
             Navn(
                 navn.fornavn?.toString(),
                 navn.mellomnavn?.toString(),
                 navn.etternavn?.toString(),
                 originaltNavn,
-                navn.gyldigFraOgMed
+                navn.gyldigFraOgMed,
             )
         }
     }
@@ -213,7 +213,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             Utflytting(
                 utflytting.tilflyttingsland?.toString(),
                 utflytting.tilflyttingsstedIUtlandet?.toString(),
-                utflytting.utflyttingsdato
+                utflytting.utflyttingsdato,
             )
         }
     }
@@ -233,7 +233,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             var vergeEllerFullmektig = VergeEllerFullmektig(
                 verge.vergeEllerFullmektig?.motpartsPersonident?.toString(),
                 verge.vergeEllerFullmektig?.omfang.toString(),
-                verge.vergeEllerFullmektig?.omfangetErInnenPersonligOmraade
+                verge.vergeEllerFullmektig?.omfangetErInnenPersonligOmraade,
             )
             VergeEllerFremtidsfullmakt(verge.type?.toString(), verge.embete?.toString(), vergeEllerFullmektig)
         }

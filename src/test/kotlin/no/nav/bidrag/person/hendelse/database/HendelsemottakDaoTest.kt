@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest(
     classes = [Teststarter::class],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
