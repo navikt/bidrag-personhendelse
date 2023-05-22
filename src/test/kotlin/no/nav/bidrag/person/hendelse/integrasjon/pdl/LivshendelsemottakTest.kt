@@ -270,6 +270,89 @@ class LivshendelsemottakTest {
         assertThat(livshendelseSomSendesTilBehandling.captured.tidligereHendelseid).isEqualTo(personhendelse.tidligereHendelseId)
     }
 
+    @Test
+    fun `skal håndtere manglende aktørid`() {
+        // gitt
+        var personidenterUtenAktørid = listOf(
+            "12345678918",
+            "12345678919",
+            "12345678910",
+            "23456789101235",
+            "22345678910",
+
+        )
+
+        var personhendelse = henteMetadataTilPersonhendelse(personidenterUtenAktørid)
+        var sivilstand =
+            no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now())
+                .setType("GIFT").build()
+        personhendelse.sivilstand = sivilstand
+        personhendelse.opplysningstype = Opplysningstype.SIVILSTAND_V1.name
+
+        var cr = ConsumerRecord(
+            "pdl.leesah-v1", 1, 229055,
+            Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
+            personhendelse, RecordHeaders(), Optional.of(0),
+        )
+
+        // hvis
+        livshendelsemottak.listen(personhendelse, cr)
+
+        // så
+        verify(exactly = 0) { livshendelsebehandler.prosesserNyHendelse(any()) }
+    }
+
+    @Test
+    fun `skal håndtere høyt antall personidenter`() {
+        // gitt
+        var langRekkePersonidenter = listOf(
+            "12345678910",
+            "12345678911",
+            "12345678912",
+            "12345678913",
+            "12345678914",
+            "12345678915",
+            "12345678916",
+            "12345678917",
+            "12345678918",
+            "12345678919",
+            "12345678910",
+            "2345678910123",
+            "22345678910",
+            "22345678911",
+            "22345678912",
+            "22345678913",
+            "22345678914",
+            "22345678915",
+            "32345678913",
+            "32345678914",
+            "32345678915",
+        )
+
+        var personhendelse = henteMetadataTilPersonhendelse(langRekkePersonidenter)
+        var sivilstand =
+            no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now())
+                .setType("GIFT").build()
+        personhendelse.sivilstand = sivilstand
+        personhendelse.opplysningstype = Opplysningstype.SIVILSTAND_V1.name
+
+        var cr = ConsumerRecord(
+            "pdl.leesah-v1", 1, 229055,
+            Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
+            personhendelse, RecordHeaders(), Optional.of(0),
+        )
+
+        // hvis
+        livshendelsemottak.listen(personhendelse, cr)
+
+        // så
+        val livshendelseSomSendesTilBehandling = slot<Livshendelse>()
+        verify(exactly = 1) { livshendelsebehandler.prosesserNyHendelse(capture(livshendelseSomSendesTilBehandling)) }
+        assertThat(livshendelseSomSendesTilBehandling.captured.opplysningstype).isEqualTo(Opplysningstype.SIVILSTAND_V1)
+        assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.bekreftelsesdato).isEqualTo(personhendelse.sivilstand.bekreftelsesdato)
+        assertThat(livshendelseSomSendesTilBehandling.captured.sivilstand?.sivilstand).isEqualTo(personhendelse.sivilstand.type)
+    }
+
     companion object {
         fun henteIkkeStøttetOpplysingstype(): Personhendelse {
             var personhendelse = henteMetadataTilPersonhendelse()
@@ -370,7 +453,10 @@ class LivshendelsemottakTest {
         }
 
         internal fun henteMetadataTilPersonhendelse(): Personhendelse {
-            var personidenter = listOf("2541031559331", "07486302423")
+            return henteMetadataTilPersonhendelse(listOf("2541031559331", "07486302423"))
+        }
+
+        internal fun henteMetadataTilPersonhendelse(personidenter: List<String>): Personhendelse {
             var personhendelse = Personhendelse.newBuilder()
                 .setHendelseId("567f35f1-b5c0-4457-8848-01d897d78bba")
                 .setPersonidenter(personidenter)

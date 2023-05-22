@@ -78,6 +78,8 @@ class Databasetjeneste(
 
         val lagretAktør = aktorDao.findByAktorid(livshendelse.aktorid).orElseGet { aktorDao.save(Aktor(livshendelse.aktorid)) }
 
+        val begrensetSett = begrensetSettMedPersonidenter.joinToString { it }
+
         return hendelsemottakDao.save(
             Hendelsemottak(
                 livshendelse.hendelseid,
@@ -134,7 +136,7 @@ class Databasetjeneste(
     }
 
     companion object {
-        const val MAKS_ANTALL_PERSONIDENTER = 20
+        const val MAKS_ANTALL_PERSONIDENTER = 19
 
         val log: Logger = LoggerFactory.getLogger(Livshendelsebehandler::class.java)
 
