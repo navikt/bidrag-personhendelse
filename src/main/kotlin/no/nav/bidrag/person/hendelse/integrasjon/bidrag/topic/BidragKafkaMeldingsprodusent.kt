@@ -2,7 +2,9 @@ package no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic
 
 import com.google.gson.GsonBuilder
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
+import no.nav.bidrag.person.hendelse.exception.PubliseringFeiletException
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.domene.Endringsmelding
+import org.apache.kafka.common.KafkaException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate
@@ -30,16 +32,22 @@ class BidragKafkaMeldingsprodusent(
     private fun publisereMelding(emne: String, aktørid: String, personidenter: Set<String>) {
         slog.info("Publiserer endringsmelding for aktørid $aktørid")
         val melding = tilJson(Endringsmelding(aktørid, personidenter))
-        val future = kafkaTemplate.send(emne, aktørid, melding)
+        try {
+            val future = kafkaTemplate.send(emne, aktørid, melding)
 
-        future.whenComplete { result, ex ->
-            if (ex != null) {
-                log.warn("Publisering av melding til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
-                slog.warn("Publisering av melding for aktørid ${result.producerRecord.key()} til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
-            } else {
-                databasetjeneste.oppdaterePubliseringstidspunkt(aktørid)
-                databasetjeneste.oppdatereStatusPåHendelserEtterPublisering(aktørid)
+            future.whenComplete { result, ex ->
+                if (ex != null) {
+                    log.warn("Publisering av melding til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
+                    slog.warn("Publisering av melding for aktørid ${result.producerRecord.key()} til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
+                } else {
+                    databasetjeneste.oppdaterePubliseringstidspunkt(aktørid)
+                    databasetjeneste.oppdatereStatusPåHendelserEtterPublisering(aktørid)
+                }
             }
+        } catch (e: KafkaException) {
+            // Fanger exception for å unngå at meldingsinnhold logges i åpen logg.
+            slog.error("Publisering av melding for aktørid $aktørid feilet med feilmedlding: ${e.message}")
+            throw PubliseringFeiletException("Publisering av melding med nøkkel $aktørid til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
         }
     }
 

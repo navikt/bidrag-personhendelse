@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.NoSuchElementException
 import java.util.stream.Collectors
 
 @Service
@@ -65,7 +66,9 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             return
         }
 
-        if (personhendelse.personidenter?.first { it.length == 13 }.isNullOrEmpty()) {
+        try {
+            personhendelse.personidenter?.first { it.length == 13 }
+        } catch (nsee: NoSuchElementException) {
             log.warn("Mottok hendelse uten aktørid - avbryter videre prosessering")
             slog.warn("Fant ikke aktørid i hendelse med hendelseid: ${personhendelse.hendelseId} og personidenter: {${personhendelse.personidenter}}")
             return

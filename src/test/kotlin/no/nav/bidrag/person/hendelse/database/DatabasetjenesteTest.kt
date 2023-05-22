@@ -104,6 +104,52 @@ class DatabasetjenesteTest {
         }
 
         @Test
+        fun `skal håndtere høyt antall personidenter`() {
+            // gitt
+            var langRekkePersonidenter = listOf(
+                "12345678910",
+                "12345678911",
+                "12345678912",
+                "12345678913",
+                "12345678914",
+                "12345678915",
+                "12345678916",
+                "12345678917",
+                "12345678918",
+                "12345678919",
+                "12345678910",
+                "2345678910123",
+                "22345678910",
+                "22345678911",
+                "22345678912",
+                "22345678913",
+                "22345678914",
+                "22345678915",
+                "32345678913",
+                "32345678914",
+                "32345678915",
+            )
+            var hendelseid = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+            var hendelse =
+                Livshendelse(
+                    hendelseid,
+                    Opplysningstype.BOSTEDSADRESSE_V1,
+                    Endringstype.OPPHOERT,
+                    langRekkePersonidenter,
+                    personidenter.first { it.length == 13 },
+                    LocalDateTime.now(),
+                )
+
+            // hvis
+            var lagretHendelse = databasetjeneste.lagreHendelse(hendelse)
+
+            // så
+            assertSoftly {
+                lagretHendelse.status shouldBe Status.KANSELLERT
+            }
+        }
+
+        @Test
         @Transactional
         open fun tidligereHendelseidFinnesIkkeIDatabasen() {
             // gitt
@@ -133,9 +179,5 @@ class DatabasetjenesteTest {
                 lagretNyHendelseEtterKansellering.get().status shouldBe Status.MOTTATT
             }
         }
-    }
-
-    private fun tidspunkterErInnenforVindu(start: LocalDateTime, tidspunkt: LocalDateTime): Boolean {
-        return tidspunkt.isAfter(start) && tidspunkt.isBefore(LocalDateTime.now().plusSeconds(2))
     }
 }
