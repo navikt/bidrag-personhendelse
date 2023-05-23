@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Component
 class SletteUtgåtteHendelser(
@@ -49,12 +50,12 @@ class SletteUtgåtteHendelser(
             }
         }
 
-        sletteAktørerSomManglerReferanseTilHendelse()
+        sletteAktørerSomManglerReferanseTilHendelse(statusoppdateringFør)
     }
 
-    private fun sletteAktørerSomManglerReferanseTilHendelse() {
-        val aktørerUtenReferanseTilHendelse = databasetjeneste.aktorDao.henteAktørerSomManglerReferanseTilHendelse()
-        log.info("Fant ${aktørerUtenReferanseTilHendelse.size} aktører uten referanse til hendelse.")
+    private fun sletteAktørerSomManglerReferanseTilHendelse(publisertFør: LocalDateTime) {
+        val aktørerUtenReferanseTilHendelse = databasetjeneste.aktorDao.henteAktørerSomManglerReferanseTilHendelse(publisertFør)
+        log.info("Fant ${aktørerUtenReferanseTilHendelse.size} aktører uten referanse til hendelse og som ble sist publisert før $publisertFør.")
         databasetjeneste.aktorDao.deleteAktorByIdIn(aktørerUtenReferanseTilHendelse)
         if (aktørerUtenReferanseTilHendelse.size > 0) log.info("Alle de referanseløse aktørene ble slettet fra databasen.")
     }

@@ -39,11 +39,12 @@ class BidragKafkaMeldingsprodusent(
                 if (ex != null) {
                     log.warn("Publisering av melding til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
                     slog.warn("Publisering av melding for aktørid ${result.producerRecord.key()} til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
-                } else {
-                    databasetjeneste.oppdaterePubliseringstidspunkt(aktørid)
-                    databasetjeneste.oppdatereStatusPåHendelserEtterPublisering(aktørid)
+                    throw ex
                 }
             }
+
+            databasetjeneste.oppdaterePubliseringstidspunkt(aktørid)
+            databasetjeneste.oppdatereStatusPåHendelserEtterPublisering(aktørid)
         } catch (e: KafkaException) {
             // Fanger exception for å unngå at meldingsinnhold logges i åpen logg.
             slog.error("Publisering av melding for aktørid $aktørid feilet med feilmedlding: ${e.message}")
