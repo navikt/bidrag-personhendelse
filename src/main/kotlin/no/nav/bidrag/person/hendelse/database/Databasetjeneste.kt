@@ -33,6 +33,8 @@ class Databasetjeneste(
 
         if (aktør.isPresent) {
             aktør.get().publisert = LocalDateTime.now()
+        } else {
+            aktorDao.save(Aktor(aktørid))
         }
     }
 
