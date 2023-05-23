@@ -16,8 +16,8 @@ class Kontoendringsbehandler(val bidragPersonklient: BidragPersonklient, val bid
         if (aktørid != null) {
             bidragtopic.publisereEndringsmelding(aktørid, alleIdenterKontoeier.map { it.ident }.toSet())
         } else {
-            log.warn("Aktørid null for kontoeier - kontoendring ble ikke lagret.")
-            slog.warn("Aktørid null for kontoeier $personidentKontoeier - kontoendring ble ikke lagret")
+            log.warn("Aktørid null for kontoeier - kontoendring ble ikke publisert.")
+            slog.warn("Aktørid null for kontoeier $personidentKontoeier - kontoendring ble ikke publisert")
         }
     }
 

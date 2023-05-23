@@ -27,7 +27,6 @@ data class Livshendelse(
     val adressebeskyttelse: Gradering? = null,
     val offset: Long = 0L,
     val master: String = "PDL",
-
 ) {
 
     fun hentGjeldendeAktørid() = personidenter.first { it.length == 13 }
