@@ -47,7 +47,7 @@ class BidragKafkaMeldingsprodusent(
             databasetjeneste.oppdatereStatusPåHendelserEtterPublisering(aktørid)
         } catch (e: KafkaException) {
             // Fanger exception for å unngå at meldingsinnhold logges i åpen logg.
-            slog.error("Publisering av melding for aktørid $aktørid feilet med feilmedlding: ${e.message}")
+            slog.error("Publisering av melding for aktørid $aktørid feilet med feilmelding: ${e.message}")
             throw PubliseringFeiletException("Publisering av melding med nøkkel $aktørid til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
         }
     }
