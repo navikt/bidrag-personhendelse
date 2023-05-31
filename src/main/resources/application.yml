@@ -121,7 +121,7 @@ management:
 
 egenskaper:
   generelt:
-    antallMinutterForsinketVideresending: 120
+    antallMinutterForsinketVideresending: ${ANTALL_MINUTTER_FORSINKET_VIDERESENDING}
     antallDagerLevetidForUtgaatteHendelser: ${DAGER_LEVETID_UTGÅTTE_HENDELSER}
   integrasjon:
     wmq:
