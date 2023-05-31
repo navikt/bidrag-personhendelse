@@ -80,8 +80,6 @@ class Databasetjeneste(
 
         val lagretAktør = aktorDao.findByAktorid(livshendelse.aktorid).orElseGet { aktorDao.save(Aktor(livshendelse.aktorid)) }
 
-        val begrensetSett = begrensetSettMedPersonidenter.joinToString { it }
-
         return hendelsemottakDao.save(
             Hendelsemottak(
                 livshendelse.hendelseid,

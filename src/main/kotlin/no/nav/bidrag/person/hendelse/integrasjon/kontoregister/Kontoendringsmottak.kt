@@ -23,7 +23,7 @@ class Kontoendringsmottak(val kontoendringsbehandler: Kontoendringsbehandler) {
         id = "bidrag-person-hendelse-kontoregister-person-endringsmelding-v2",
         idIsGroup = false,
     )
-    fun listen(@Payload endringsmelding: Endringsmelding, cr: ConsumerRecord<String, Endringsmelding>) {
+    fun listen(@Payload(required = false) endringsmelding: Endringsmelding?, cr: ConsumerRecord<String, Endringsmelding?>) {
         slog.info(
             "Kontoregisterendringsmelding mottatt: Record key={}, value={}, value={}",
             cr.key(),
@@ -32,8 +32,8 @@ class Kontoendringsmottak(val kontoendringsbehandler: Kontoendringsbehandler) {
         )
 
         if (harGyldigFormat(endringsmelding)) {
-            kontoendringsbehandler.publisere(endringsmelding.kontohaver.toString())
-            slog.info("Kontoendring publisert for kontoeier {}", endringsmelding.kontohaver)
+            kontoendringsbehandler.publisere(endringsmelding?.kontohaver.toString())
+            slog.info("Kontoendring publisert for kontoeier {}", endringsmelding?.kontohaver)
         }
     }
 
