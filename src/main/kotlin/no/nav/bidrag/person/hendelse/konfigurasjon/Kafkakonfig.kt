@@ -46,7 +46,7 @@ class Kafkakonfig(val kafka: Kafka) {
         factory.consumerFactory = DefaultKafkaConsumerFactory(
             properties.buildConsumerProperties().also {
                 it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = OffsetResetStrategy.EARLIEST.toString().lowercase()
-                it[ConsumerConfig.ISOLATION_LEVEL_CONFIG] = IsolationLevel.READ_COMMITTED.name
+                it[ConsumerConfig.ISOLATION_LEVEL_CONFIG] = IsolationLevel.READ_COMMITTED.name.lowercase()
             },
         )
         factory.setCommonErrorHandler(kafkaOmstartFeilhåndterer)
