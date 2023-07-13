@@ -56,14 +56,6 @@ class Databasetjeneste(
 
     @Transactional(readOnly = false)
     fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
-        val begrensetSettMedPersonidenter = begrenseAntallPersonidenter(livshendelse.personidenter.toSet())
-
-        if (livshendelse.personidenter.size > MAKS_ANTALL_PERSONIDENTER) {
-            log.warn(
-                "Mottatt livshendelse med hendelseid ${livshendelse.hendelseid} inneholdt over $MAKS_ANTALL_PERSONIDENTER personidenter. " +
-                    "Kun de $MAKS_ANTALL_PERSONIDENTER første arkiveres.",
-            )
-        }
 
         // Kansellere eventuell tidligere hendelse som er lagret i databasen med status mottatt
         var status = kansellereTidligereHendelse(livshendelse)
@@ -85,7 +77,7 @@ class Databasetjeneste(
                 livshendelse.hendelseid,
                 livshendelse.opplysningstype,
                 livshendelse.endringstype,
-                begrensetSettMedPersonidenter.joinToString { it },
+                livshendelse.personidenter.toSet().joinToString { it },
                 lagretAktør,
                 livshendelse.opprettet,
                 livshendelse.tidligereHendelseid,
@@ -139,10 +131,5 @@ class Databasetjeneste(
         const val MAKS_ANTALL_PERSONIDENTER = 19
 
         val log: Logger = LoggerFactory.getLogger(Livshendelsebehandler::class.java)
-
-        fun begrenseAntallPersonidenter(personidenter: Set<String>): Set<String> {
-            if (personidenter.size > MAKS_ANTALL_PERSONIDENTER) return personidenter.take(MAKS_ANTALL_PERSONIDENTER).toSet()
-            return personidenter
-        }
     }
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Lob
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
@@ -45,6 +46,7 @@ class Hendelsemottak(
     val opplysningstype: Livshendelse.Opplysningstype,
     @Enumerated(EnumType.STRING)
     val endringstype: Livshendelse.Endringstype,
+    @Lob
     @Column(name = "personidenter", nullable = false)
     val personidenter: String,
     @ManyToOne(cascade = arrayOf(CascadeType.MERGE))
@@ -52,7 +54,8 @@ class Hendelsemottak(
     @Column(name = "opprettet", nullable = false, updatable = false)
     val opprettet: LocalDateTime = LocalDateTime.now(),
     val tidligereHendelseid: String? = null,
-    @Column(length = 5000)
+    @Lob
+    @Column
     val hendelse: String = "",
     val master: String = "",
     val offset_pdl: Long = 0L,
