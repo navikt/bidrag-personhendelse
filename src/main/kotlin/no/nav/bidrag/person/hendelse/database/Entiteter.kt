@@ -9,7 +9,6 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.Lob
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
@@ -46,16 +45,14 @@ class Hendelsemottak(
     val opplysningstype: Livshendelse.Opplysningstype,
     @Enumerated(EnumType.STRING)
     val endringstype: Livshendelse.Endringstype,
-    @Lob
-    @Column(name = "personidenter", nullable = false)
+    @Column(name = "personidenter", nullable = false, columnDefinition = "TEXT")
     val personidenter: String,
     @ManyToOne(cascade = arrayOf(CascadeType.MERGE))
     var aktor: Aktor,
     @Column(name = "opprettet", nullable = false, updatable = false)
     val opprettet: LocalDateTime = LocalDateTime.now(),
     val tidligereHendelseid: String? = null,
-    @Lob
-    @Column
+    @Column(columnDefinition = "TEXT")
     val hendelse: String = "",
     val master: String = "",
     val offset_pdl: Long = 0L,
