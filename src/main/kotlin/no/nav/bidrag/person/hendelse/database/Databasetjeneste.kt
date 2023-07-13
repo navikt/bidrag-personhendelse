@@ -56,7 +56,6 @@ class Databasetjeneste(
 
     @Transactional(readOnly = false)
     fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
-
         // Kansellere eventuell tidligere hendelse som er lagret i databasen med status mottatt
         var status = kansellereTidligereHendelse(livshendelse)
 
