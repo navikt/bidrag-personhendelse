@@ -41,7 +41,7 @@ jobs:
         run: docker push ${IMAGE_LATEST}
       - name: Deploy til prod-gcp
         if: github.ref == 'refs/heads/master'
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
