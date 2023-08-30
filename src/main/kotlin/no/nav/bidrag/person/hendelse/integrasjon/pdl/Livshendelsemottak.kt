@@ -1,6 +1,15 @@
 package no.nav.bidrag.person.hendelse.integrasjon.pdl
 
-import no.nav.bidrag.person.hendelse.domene.*
+import no.nav.bidrag.person.hendelse.domene.Foedsel
+import no.nav.bidrag.person.hendelse.domene.Folkeregisteridentifikator
+import no.nav.bidrag.person.hendelse.domene.Innflytting
+import no.nav.bidrag.person.hendelse.domene.Livshendelse
+import no.nav.bidrag.person.hendelse.domene.Navn
+import no.nav.bidrag.person.hendelse.domene.OriginaltNavn
+import no.nav.bidrag.person.hendelse.domene.Sivilstand
+import no.nav.bidrag.person.hendelse.domene.Utflytting
+import no.nav.bidrag.person.hendelse.domene.VergeEllerFremtidsfullmakt
+import no.nav.bidrag.person.hendelse.domene.VergeEllerFullmektig
 import no.nav.bidrag.person.hendelse.exception.HendelsemottakException
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
 import no.nav.person.pdl.leesah.Endringstype
@@ -78,7 +87,7 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             henteFlyttedato(
                 personhendelse.bostedsadresse,
                 personhendelse.kontaktadresse,
-                personhendelse.oppholdsadresse
+                personhendelse.oppholdsadresse,
             ),
             henteFolkeregisteridentifikator(personhendelse.folkeregisteridentifikator),
             henteFødsel(personhendelse.foedsel),
@@ -148,8 +157,8 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
 
     private fun henteFlyttedato(
         bostedsadresse: Bostedsadresse?,
-        kontaktadresse: Kontaktadresse,
-        oppholdsadresse: Oppholdsadresse
+        kontaktadresse: Kontaktadresse?,
+        oppholdsadresse: Oppholdsadresse?,
     ): LocalDate? {
         return if (bostedsadresse == null && kontaktadresse == null && oppholdsadresse == null) {
             null
@@ -158,16 +167,17 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
                 bostedsadresse.angittFlyttedato
             } else if (erKontaktadresseEndret(kontaktadresse) || erOppholdsadresseEndret(oppholdsadresse)) {
                 LocalDate.now()
+            } else {
+                null
             }
-            null
         }
     }
 
-    private fun erKontaktadresseEndret(kontaktadresse: Kontaktadresse): Boolean {
+    private fun erKontaktadresseEndret(kontaktadresse: Kontaktadresse?): Boolean {
         return kontaktadresse != null && (kontaktadresse.vegadresse != null || kontaktadresse.postadresseIFrittFormat != null || kontaktadresse.postboksadresse != null || kontaktadresse.postadresseIFrittFormat != null || kontaktadresse.utenlandskAdresse != null)
     }
 
-    private fun erOppholdsadresseEndret(oppholdsadresse: Oppholdsadresse): Boolean {
+    private fun erOppholdsadresseEndret(oppholdsadresse: Oppholdsadresse?): Boolean {
         return oppholdsadresse != null && (oppholdsadresse.utenlandskAdresse != null || oppholdsadresse.matrikkeladresse != null || oppholdsadresse.vegadresse != null)
     }
 
