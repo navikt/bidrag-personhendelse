@@ -11,6 +11,7 @@ protocol PersonhendelseProto {
   import idl "navn/Navn.avdl";
   import idl "kontaktadresse/Kontaktadresse.avdl";
   import idl "bostedsadresse/Bostedsadresse.avdl";
+  import idl "oppholdsadresse/Oppholdsadresse.avdl";
 
 
   enum Endringstype {
@@ -42,5 +43,6 @@ protocol PersonhendelseProto {
     union { null, no.nav.person.pdl.leesah.navn.Navn } navn = null;
     union { null, no.nav.person.pdl.leesah.kontaktadresse.Kontaktadresse } kontaktadresse = null;
     union { null, no.nav.person.pdl.leesah.bostedsadresse.Bostedsadresse } bostedsadresse = null;
+    union { null, no.nav.person.pdl.leesah.oppholdsadresse.Oppholdsadresse } oppholdsadresse = null;
   }
 }

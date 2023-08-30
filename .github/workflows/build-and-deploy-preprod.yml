@@ -24,7 +24,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Bygg med maven
-        run: mvn -B --no-transfer-progress package --settings .m2/maven-settings.xml --file pom.xml
+        run: mvn -B -e --no-transfer-progress package --settings .m2/maven-settings.xml --file pom.xml
       - uses: nais/docker-build-push@v0
         id: docker-push
         with:
