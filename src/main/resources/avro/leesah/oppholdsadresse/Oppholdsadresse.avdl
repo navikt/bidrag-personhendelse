@@ -1,5 +1,5 @@
 @namespace("no.nav.person.pdl.leesah.oppholdsadresse")
-protocol Oppholdsadresse {
+protocol OppholdsadresseV1 {
   import idl "../common/adresse/Vegadresse.avdl";
   import idl "../common/adresse/Matrikkeladresse.avdl";
   import idl "../common/adresse/UtenlandskAdresse.avdl";
