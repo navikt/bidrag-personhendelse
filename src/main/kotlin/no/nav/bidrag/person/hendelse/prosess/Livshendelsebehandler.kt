@@ -16,7 +16,7 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
     fun prosesserNyHendelse(livshendelse: Livshendelse) {
         when (livshendelse.opplysningstype) {
             Opplysningstype.ADRESSEBESKYTTELSE_V1 -> behandleAdressebeskyttelse(livshendelse)
-            Opplysningstype.BOSTEDSADRESSE_V1 -> behandleBostedsadresse(livshendelse)
+            Opplysningstype.BOSTEDSADRESSE_V1 -> behandleAdresse(livshendelse, Opplysningstype.BOSTEDSADRESSE_V1)
             Opplysningstype.DOEDSFALL_V1 -> behandleDødsfall(livshendelse)
             Opplysningstype.FOEDSEL_V1 -> behandleFødsel(livshendelse)
             Opplysningstype.FOLKEREGISTERIDENTIFIKATOR_V1 -> behandleFolkeregisteridentifikator(livshendelse)
@@ -26,6 +26,8 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Opplysningstype.SIVILSTAND_V1 -> behandleSivilstand(livshendelse)
             Opplysningstype.VERGEMAAL_ELLER_FREMTIDSFULLMAKT_V1 -> behandleVerge(livshendelse)
             Opplysningstype.IKKE_STØTTET -> log.error("Forsøk på prosessere medling med opplysningstype som ikke støttes av løsningen.")
+            Opplysningstype.KONTAKTADRESSE_V1 -> behandleAdresse(livshendelse, Opplysningstype.KONTAKTADRESSE_V1)
+            Opplysningstype.OPPHOLDSADRESSE_V1 -> behandleAdresse(livshendelse, Opplysningstype.OPPHOLDSADRESSE_V1)
         }
     }
 
@@ -88,8 +90,15 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
         }
     }
 
-    private fun behandleBostedsadresse(livshendelse: Livshendelse) {
-        tellerBostedsadresse.increment()
+    private fun behandleAdresse(livshendelse: Livshendelse, opplysningstype: Opplysningstype) {
+        when (opplysningstype) {
+            Opplysningstype.BOSTEDSADRESSE_V1 -> {
+                tellerBostedsadresse.increment()
+            }
+            Opplysningstype.KONTAKTADRESSE_V1 -> tellerKontaktadresse.increment()
+            Opplysningstype.OPPHOLDSADRESSE_V1 -> tellerOppholdsadresse.increment()
+            else -> { return }
+        }
 
         if (databasetjeneste.hendelsemottakDao.existsByHendelseidAndOpplysningstype(
                 livshendelse.hendelseid,
@@ -103,14 +112,44 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             return
         }
 
-        when (livshendelse.endringstype) {
+        when (opplysningstype) {
+            Opplysningstype.BOSTEDSADRESSE_V1 -> telleBostedsadresse(livshendelse.endringstype)
+            Opplysningstype.KONTAKTADRESSE_V1 -> telleKontaktsadresse(livshendelse.endringstype)
+            Opplysningstype.OPPHOLDSADRESSE_V1 -> telleOppholdsadresse(livshendelse.endringstype)
+            else -> { return }
+        }
+
+        databasetjeneste.lagreHendelse(livshendelse)
+    }
+
+    private fun test() {
+    }
+
+    private fun telleBostedsadresse(endringstype: Endringstype) {
+        when (endringstype) {
             Endringstype.ANNULLERT -> tellerBostedsadresseAnnullert.increment()
             Endringstype.KORRIGERT -> tellerBostedsadresseKorrigert.increment()
             Endringstype.OPPHOERT -> tellerBostedsadresseOpphørt.increment()
             Endringstype.OPPRETTET -> tellerBostedsadresseOpprettet.increment()
         }
+    }
 
-        databasetjeneste.lagreHendelse(livshendelse)
+    private fun telleKontaktsadresse(endringstype: Endringstype) {
+        when (endringstype) {
+            Endringstype.ANNULLERT -> tellerKontaktadresseAnnullert.increment()
+            Endringstype.KORRIGERT -> tellerKontaktadresseKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerKontaktadresseOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerKontaktadresseOpprettet.increment()
+        }
+    }
+
+    private fun telleOppholdsadresse(endringstype: Endringstype) {
+        when (endringstype) {
+            Endringstype.ANNULLERT -> tellerOppholdsadresseAnnullert.increment()
+            Endringstype.KORRIGERT -> tellerOppholdsadresseKorrigert.increment()
+            Endringstype.OPPHOERT -> tellerOppholdsadresseOpphørt.increment()
+            Endringstype.OPPRETTET -> tellerOppholdsadresseOpprettet.increment()
+        }
     }
 
     private fun behandleDødsfall(livshendelse: Livshendelse) {
@@ -530,6 +569,17 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Metrics.counter(tellernavn(innflytting + ".${Endringstype.OPPRETTET.name.lowercase()}"))
         val tellerInnflyttingIgnorert: Counter = Metrics.counter(tellernavn((innflytting + ".ignorert")))
 
+        const val kontaktadresse = "kontaktadresse"
+        val tellerKontaktadresse: Counter = Metrics.counter(tellernavn(kontaktadresse))
+        val tellerKontaktadresseAnnullert: Counter =
+            Metrics.counter(tellernavn(kontaktadresse + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerKontaktadresseKorrigert: Counter =
+            Metrics.counter(tellernavn(kontaktadresse + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerKontaktadresseOpphørt: Counter =
+            Metrics.counter(tellernavn(kontaktadresse + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerKontaktadresseOpprettet: Counter =
+            Metrics.counter(tellernavn(kontaktadresse + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+
         const val navn = "navn"
         val tellerNavn: Counter = Metrics.counter(tellernavn(navn))
         val tellerNavnAnnullert: Counter =
@@ -540,6 +590,17 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
             Metrics.counter(tellernavn(navn + ".${Endringstype.OPPHOERT.name.lowercase()}"))
         val tellerNavnOpprettet: Counter =
             Metrics.counter(tellernavn(navn + ".${Endringstype.OPPRETTET.name.lowercase()}"))
+
+        const val oppholdsadresse = "oppholdsadresse"
+        val tellerOppholdsadresse: Counter = Metrics.counter(tellernavn(oppholdsadresse))
+        val tellerOppholdsadresseAnnullert: Counter =
+            Metrics.counter(tellernavn(oppholdsadresse + ".${Endringstype.ANNULLERT.name.lowercase()}"))
+        val tellerOppholdsadresseKorrigert: Counter =
+            Metrics.counter(tellernavn(oppholdsadresse + ".${Endringstype.KORRIGERT.name.lowercase()}"))
+        val tellerOppholdsadresseOpphørt: Counter =
+            Metrics.counter(tellernavn(oppholdsadresse + ".${Endringstype.OPPHOERT.name.lowercase()}"))
+        val tellerOppholdsadresseOpprettet: Counter =
+            Metrics.counter(tellernavn(oppholdsadresse + ".${Endringstype.OPPRETTET.name.lowercase()}"))
 
         const val sivilstand = "sivilstand"
         val tellerSivilstand: Counter = Metrics.counter(tellernavn(sivilstand))

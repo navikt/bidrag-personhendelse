@@ -5,12 +5,12 @@ Mottaksapplikasjon for personhendelser. Lytter på ulike hendelser fra PDL (fød
 
 #### Elastic
 Applikasjonen logger til Elastic, eksempel på loggsøk:
-[Skedulert overføring - sjekke identifisert antall meldinger](https://logs.adeo.no/app/r/s/dNtSM)
+[Skedulert overføring - sjekke identifisert antall meldinger](https://logs.adeo.no/app/r/s/29As9)
 
 #### Prometheus
 Mottatte meldinger telles etter opplysning- og endringstype. Bare opplysningstyper definert i Livshendelse.Opplysningstype telles, øvrige meldinger ignoreres. 
 Eksempel på opptelling i Prometheus:
-[bostedsadresse](https://prometheus.prod-gcp.nav.cloud.nais.io/graph?g0.expr=bidrag_personhendelse_bostedsadresse_opprettet_total&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h&g0.end_input=2023-03-14%2009%3A27%3A32&g0.moment_input=2023-03-14%2009%3A27%3A32&g1.expr=bidrag_personhendelse_bostedsadresse_korrigert_total&g1.tab=1&g1.stacked=0&g1.show_exemplars=0&g1.range_input=1h&g1.end_input=2023-03-14%2009%3A27%3A32&g1.moment_input=2023-03-14%2009%3A27%3A32&g2.expr=bidrag_personhendelse_bostedsadresse_opphoert_total&g2.tab=1&g2.stacked=0&g2.show_exemplars=0&g2.range_input=1h&g2.end_input=2023-03-14%2008%3A28%3A08&g2.moment_input=2023-03-14%2008%3A28%3A08&g3.expr=bidrag_personhendelse_bostedsadresse_annullert_total&g3.tab=1&g3.stacked=0&g3.show_exemplars=0&g3.range_input=1h&g3.end_input=2023-03-14%2009%3A59%3A03&g3.moment_input=2023-03-14%2009%3A59%3A03)
+[bostedsadresse](https://prometheus.prod-gcp.nav.cloud.nais.io/graph?g0.expr=bidrag_personhendelse_bostedsadresse_opprettet_total&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h)
 
 ## Lokal kjøring
 Appen bygges med maven og kan kjøres fra DevLauncher-klassen. Sett `-Dspring.profiles.active=dev` under Edit Configurations -> VM Options. Lokalt må man kjøre serveren sammen med [navkafka-docker-compose][1].

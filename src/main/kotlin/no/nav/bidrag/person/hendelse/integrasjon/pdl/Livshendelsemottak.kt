@@ -17,6 +17,8 @@ import no.nav.person.pdl.leesah.Personhendelse
 import no.nav.person.pdl.leesah.adressebeskyttelse.Adressebeskyttelse
 import no.nav.person.pdl.leesah.bostedsadresse.Bostedsadresse
 import no.nav.person.pdl.leesah.doedsfall.Doedsfall
+import no.nav.person.pdl.leesah.kontaktadresse.Kontaktadresse
+import no.nav.person.pdl.leesah.oppholdsadresse.Oppholdsadresse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -28,7 +30,6 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.NoSuchElementException
 import java.util.stream.Collectors
 
 @Service
@@ -83,7 +84,11 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             LocalDateTime.ofInstant(personhendelse.opprettet, ZoneId.systemDefault()),
             personhendelse.tidligereHendelseId?.toString(),
             henteDødsdato(personhendelse.doedsfall),
-            henteFlyttedato(personhendelse.bostedsadresse),
+            henteFlyttedato(
+                personhendelse.bostedsadresse,
+                personhendelse.kontaktadresse,
+                personhendelse.oppholdsadresse,
+            ),
             henteFolkeregisteridentifikator(personhendelse.folkeregisteridentifikator),
             henteFødsel(personhendelse.foedsel),
             henteInnflytting(personhendelse.innflyttingTilNorge),
@@ -150,16 +155,30 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         }
     }
 
-    private fun henteFlyttedato(bostedsadresse: Bostedsadresse?): LocalDate? {
-        return if (bostedsadresse == null) {
+    private fun henteFlyttedato(
+        bostedsadresse: Bostedsadresse?,
+        kontaktadresse: Kontaktadresse?,
+        oppholdsadresse: Oppholdsadresse?,
+    ): LocalDate? {
+        return if (bostedsadresse == null && kontaktadresse == null && oppholdsadresse == null) {
             null
         } else {
-            if (bostedsadresse.angittFlyttedato != null) {
+            if (bostedsadresse?.angittFlyttedato != null) {
                 bostedsadresse.angittFlyttedato
-            } else {
+            } else if (erKontaktadresseEndret(kontaktadresse) || erOppholdsadresseEndret(oppholdsadresse)) {
                 LocalDate.now()
+            } else {
+                null
             }
         }
+    }
+
+    private fun erKontaktadresseEndret(kontaktadresse: Kontaktadresse?): Boolean {
+        return kontaktadresse != null && (kontaktadresse.vegadresse != null || kontaktadresse.postadresseIFrittFormat != null || kontaktadresse.postboksadresse != null || kontaktadresse.postadresseIFrittFormat != null || kontaktadresse.utenlandskAdresse != null)
+    }
+
+    private fun erOppholdsadresseEndret(oppholdsadresse: Oppholdsadresse?): Boolean {
+        return oppholdsadresse != null && (oppholdsadresse.utenlandskAdresse != null || oppholdsadresse.matrikkeladresse != null || oppholdsadresse.vegadresse != null)
     }
 
     private fun henteFolkeregisteridentifikator(folkeregisteridentifikator: no.nav.person.pdl.leesah.folkeregisteridentifikator.Folkeregisteridentifikator?): Folkeregisteridentifikator? {
