@@ -18,7 +18,7 @@
         <revision>1.0</revision>
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
-        <activemq-client.version>5.17.3</activemq-client.version>
+        <activemq-client.version>5.17.6</activemq-client.version>
         <bidrag-commons.version>20230510130746_8b93e85</bidrag-commons.version>
         <bidrag-transport.version>20230508100903_0aa6729</bidrag-transport.version>
         <google.gson.version>2.10.1</google.gson.version>
@@ -33,7 +33,7 @@
         <mockk.version>1.13.5</mockk.version>
         <apache.httpcore.version>4.4.16</apache.httpcore.version>
         <apache.httpclient.version>4.5.14</apache.httpclient.version>
-        <apache.avro.version>1.11.1</apache.avro.version>
+        <apache.avro.version>1.11.3</apache.avro.version>
         <availability.version>4.2.0</availability.version>
         <confluent.version>7.4.0</confluent.version>
         <ibm.mq.allclient.version>9.2.5.0</ibm.mq.allclient.version>
