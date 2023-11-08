@@ -57,7 +57,7 @@ spec:
           kind: Project
         role: roles/cloudsql.client
     sqlInstances:
-      - type: POSTGRES_14
+      - type: POSTGRES_15
         databases:
           - name: person-hendelse-preprod
             envVarPrefix: DB
