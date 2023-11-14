@@ -8,7 +8,7 @@ data class Egenskaper(val generelt: Generelt, val integrasjon: Integrasjon)
 @ConfigurationProperties("generelt")
 data class Generelt(
     val antallMinutterForsinketVideresending: Int = 120,
-    val antallDagerLevetidForUtgaatteHendelser: Int = 7,
+    val antallDagerLevetidForUtgaatteHendelser: Int = 30,
     val antallTimerSidenForrigePublisering: Int = 8,
     val maksAntallMeldingerSomOverfoeresTilBisysOmGangen: Int = 6500,
     val maksAntallMeldingerSomSendesTilBidragTopicOmGangen: Int = 2000,
