@@ -41,7 +41,7 @@ class Kafkakonfig(val kafka: Kafka) {
     ): ConcurrentKafkaListenerContainerFactory<Int, GenericRecord> {
         properties.properties[KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG] = "true"
         val factory = ConcurrentKafkaListenerContainerFactory<Int, GenericRecord>()
-        factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
+        factory.containerProperties.ackMode = ContainerProperties.AckMode.BATCH
         factory.containerProperties.authExceptionRetryInterval = Duration.ofSeconds(2)
         factory.consumerFactory = DefaultKafkaConsumerFactory(
             properties.buildConsumerProperties().also {
