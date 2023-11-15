@@ -62,7 +62,7 @@ spring:
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       max-poll-records: 1
       auto-offset-reset: latest
-      enable-auto-commit: false
+      enable-auto-commit: true
   jackson:
     deserialization:
       # Allerede satt i felles, setter her slik at det gjelder for rest-params også
