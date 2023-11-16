@@ -3,8 +3,8 @@ package no.nav.bidrag.person.hendelse.prosess
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
+import no.nav.bidrag.person.hendelse.domene.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
-import no.nav.bidrag.person.hendelse.domene.Livshendelse.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

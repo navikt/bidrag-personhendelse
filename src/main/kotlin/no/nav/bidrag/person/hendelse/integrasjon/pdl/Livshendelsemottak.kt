@@ -124,13 +124,13 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         }
     }
 
-    private fun konvertereEndringstype(pdlEndringstype: Endringstype?): Livshendelse.Endringstype {
+    private fun konvertereEndringstype(pdlEndringstype: Endringstype?): no.nav.bidrag.person.hendelse.domene.Endringstype {
         if (pdlEndringstype == null) {
             log.error("Endringstype i mottatt melding var null. Avbryter prosessering")
             throw HendelsemottakException("Endringstype i mottatt melding var null!")
         } else {
             try {
-                return Livshendelse.Endringstype.valueOf(pdlEndringstype.name)
+                return no.nav.bidrag.person.hendelse.domene.Endringstype.valueOf(pdlEndringstype.name)
             } catch (iae: IllegalArgumentException) {
                 log.error("Mottok ukjent endringstype ({}) fra PDL", pdlEndringstype.name)
                 iae.printStackTrace()

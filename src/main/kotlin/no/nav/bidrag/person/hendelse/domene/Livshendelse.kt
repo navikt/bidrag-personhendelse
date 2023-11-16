@@ -1,6 +1,8 @@
 package no.nav.bidrag.person.hendelse.domene
 
 import com.google.gson.GsonBuilder
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import no.nav.bidrag.person.hendelse.prosess.LocalDateTimeTypeAdapter
 import no.nav.bidrag.person.hendelse.prosess.LocalDateTypeAdapter
 import java.time.LocalDate
@@ -10,6 +12,7 @@ data class Livshendelse(
 
     val hendelseid: String,
     val opplysningstype: Opplysningstype,
+    @Enumerated(EnumType.STRING)
     val endringstype: Endringstype,
     val personidenter: List<String>,
     val aktorid: String,
@@ -38,10 +41,6 @@ data class Livshendelse(
         UGRADERT,
     }
 
-    enum class Endringstype {
-        OPPRETTET, KORRIGERT, ANNULLERT, OPPHOERT
-    }
-
     enum class Opplysningstype {
         ADRESSEBESKYTTELSE_V1, BOSTEDSADRESSE_V1, DOEDSFALL_V1, FOEDSEL_V1, FOLKEREGISTERIDENTIFIKATOR_V1, INNFLYTTING_TIL_NORGE, KONTAKTADRESSE_V1, NAVN_V1, OPPHOLDSADRESSE_V1, SIVILSTAND_V1, UTFLYTTING_FRA_NORGE, VERGEMAAL_ELLER_FREMTIDSFULLMAKT_V1, IKKE_STØTTET
     }
@@ -55,4 +54,8 @@ data class Livshendelse(
             return gson.toJson(livshendelse)
         }
     }
+}
+
+enum class Endringstype {
+    OPPRETTET, KORRIGERT, ANNULLERT, OPPHOERT
 }

@@ -11,6 +11,7 @@ import no.nav.bidrag.person.hendelse.database.AktorDao
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.HendelsemottakDao
 import no.nav.bidrag.person.hendelse.database.Status
+import no.nav.bidrag.person.hendelse.domene.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.exception.OverføringFeiletException
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.bisys.BisysMeldingsprodusjon
@@ -66,7 +67,7 @@ class OverføreHendelserTest {
             Livshendelse(
                 hendelseid1,
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-                Livshendelse.Endringstype.OPPRETTET,
+                Endringstype.OPPRETTET,
                 personidenter,
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
@@ -81,7 +82,7 @@ class OverføreHendelserTest {
         var hendelseMottattInnenforVenteperiode = Livshendelse(
             hendelseid2,
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-            Livshendelse.Endringstype.ANNULLERT,
+            Endringstype.ANNULLERT,
             personidenter,
             personidenter.first { it.length == 13 },
             LocalDateTime.now(),
@@ -96,7 +97,7 @@ class OverføreHendelserTest {
         var hendelseMedStatusOverført = Livshendelse(
             hendelseid3,
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-            Livshendelse.Endringstype.ANNULLERT,
+            Endringstype.ANNULLERT,
             personidenter,
             personidenter.first { it.length == 13 },
             LocalDateTime.now(),
@@ -132,7 +133,7 @@ class OverføreHendelserTest {
             Livshendelse(
                 hendelseid1,
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-                Livshendelse.Endringstype.OPPRETTET,
+                Endringstype.OPPRETTET,
                 personidenter,
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
@@ -147,7 +148,7 @@ class OverføreHendelserTest {
         var hendelseMottattInnenforVenteperiode = Livshendelse(
             hendelseid2,
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-            Livshendelse.Endringstype.ANNULLERT,
+            Endringstype.ANNULLERT,
             personidenter,
             personidenter.first { it.length == 13 },
             LocalDateTime.now(),
@@ -162,7 +163,7 @@ class OverføreHendelserTest {
         var hendelseMedStatusOverført = Livshendelse(
             hendelseid3,
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-            Livshendelse.Endringstype.ANNULLERT,
+            Endringstype.ANNULLERT,
             personidenter,
             personidenter.first { it.length == 13 },
             LocalDateTime.now(),
@@ -193,7 +194,7 @@ class OverføreHendelserTest {
             Livshendelse(
                 hendelseid1,
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-                Livshendelse.Endringstype.OPPRETTET,
+                Endringstype.OPPRETTET,
                 personidenter,
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
@@ -207,7 +208,7 @@ class OverføreHendelserTest {
         var hendelse2 = Livshendelse(
             hendelseid2,
             Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-            Livshendelse.Endringstype.ANNULLERT,
+            Endringstype.ANNULLERT,
             personidenter,
             personidenter.first { it.length == 13 },
             LocalDateTime.now(),

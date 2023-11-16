@@ -1,5 +1,6 @@
 package no.nav.bidrag.person.hendelse.database
 
+import no.nav.bidrag.person.hendelse.domene.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
 import no.nav.bidrag.person.hendelse.prosess.Livshendelsebehandler
@@ -60,12 +61,12 @@ class Databasetjeneste(
         var status = kansellereTidligereHendelse(livshendelse)
 
         // Sørge for at meldinger med endringstype KORRIGERT sendes videre
-        if (Status.KANSELLERT == status && Livshendelse.Endringstype.KORRIGERT == livshendelse.endringstype) {
+        if (Status.KANSELLERT == status && Endringstype.KORRIGERT == livshendelse.endringstype) {
             status = Status.MOTTATT
         }
 
         // Kansellerer hendelser om opphør av bostedsadresse. Endring av eksisterende bostedsadresse fører til utsending av to hendelser. Opprett for ny adresse og opphør for gammel.
-        if (Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1 == livshendelse.opplysningstype && Livshendelse.Endringstype.OPPHOERT == livshendelse.endringstype) {
+        if (Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1 == livshendelse.opplysningstype && Endringstype.OPPHOERT == livshendelse.endringstype) {
             status = Status.KANSELLERT
         }
 
@@ -116,7 +117,7 @@ class Databasetjeneste(
                 "Livshendelse med hendelseid ${tidligereHendelseMedStatusMottatt.hendelseid} ble erstattet av livshendelse med hendelseid ${livshendelse.hendelseid} og endringstype ${livshendelse.endringstype}.",
             )
 
-            if (Livshendelse.Endringstype.KORRIGERT != livshendelse.endringstype) {
+            if (Endringstype.KORRIGERT != livshendelse.endringstype) {
                 Status.KANSELLERT
             } else {
                 Status.MOTTATT

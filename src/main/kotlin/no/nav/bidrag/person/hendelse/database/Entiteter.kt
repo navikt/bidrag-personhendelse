@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
+import no.nav.bidrag.person.hendelse.domene.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import java.time.LocalDateTime
 
@@ -44,7 +45,7 @@ class Hendelsemottak(
     @Column(name = "opplysningstype", nullable = false, updatable = false)
     val opplysningstype: Livshendelse.Opplysningstype,
     @Enumerated(EnumType.STRING)
-    val endringstype: Livshendelse.Endringstype,
+    val endringstype: Endringstype,
     @Column(name = "personidenter", nullable = false, columnDefinition = "TEXT")
     val personidenter: String,
     @ManyToOne(cascade = arrayOf(CascadeType.MERGE))

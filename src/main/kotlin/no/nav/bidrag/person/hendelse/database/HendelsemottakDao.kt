@@ -21,20 +21,16 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     @Nullable
     fun findByHendelseidAndStatus(hendelseid: String, status: Status): Hendelsemottak?
 
-    @Query("select hm.id from Hendelsemottak hm where hm.aktor.aktorid = :aktorid and hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT")
+    @Query("select hm.id from Hendelsemottak hm where hm.aktor.aktorid = :aktorid and hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT and hm.endringstype not in (no.nav.bidrag.person.hendelse.domene.Endringstype.ANNULLERT)")
     fun finnHendelsemottakIderMedStatusOverført(aktorid: String): Set<Long>
 
     @Query(
-        "select hm.id from Hendelsemottak hm " +
-            "where hm.status in (no.nav.bidrag.person.hendelse.database.Status.MOTTATT, no.nav.bidrag.person.hendelse.database.Status.OVERFØRING_FEILET)  " +
-            "and hm.statustidspunkt < :statustidspunktFør",
+        "select hm.id from Hendelsemottak hm " + "where hm.status in (no.nav.bidrag.person.hendelse.database.Status.MOTTATT, no.nav.bidrag.person.hendelse.database.Status.OVERFØRING_FEILET)  " + "and hm.statustidspunkt < :statustidspunktFør",
     )
     fun idTilHendelserSomErKlarTilOverføring(statustidspunktFør: LocalDateTime): Set<Long>
 
     @Query(
-        "from Hendelsemottak hm " +
-            " where hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT " +
-            "and hm.aktor.publisert is null or hm.aktor.publisert < :publisertFør",
+        "from Hendelsemottak hm " + " where hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT " + "and hm.aktor.publisert is null or hm.aktor.publisert < :publisertFør",
     )
     fun hentePubliseringsklareOverførteHendelser(publisertFør: LocalDateTime): Set<Hendelsemottak>
 

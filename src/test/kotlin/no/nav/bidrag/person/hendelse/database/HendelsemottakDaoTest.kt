@@ -1,6 +1,7 @@
 package no.nav.bidrag.person.hendelse.database
 
 import no.nav.bidrag.person.hendelse.Teststarter
+import no.nav.bidrag.person.hendelse.domene.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -34,7 +35,7 @@ class HendelsemottakDaoTest {
 
         var hendelseid = "123"
         var opplysningstype = Livshendelse.Opplysningstype.SIVILSTAND_V1
-        var endringstype = Livshendelse.Endringstype.OPPRETTET
+        var endringstype = Endringstype.OPPRETTET
 
         var hendelsemottak = Hendelsemottak(hendelseid, opplysningstype, endringstype, personidenter.toString(), aktør)
 

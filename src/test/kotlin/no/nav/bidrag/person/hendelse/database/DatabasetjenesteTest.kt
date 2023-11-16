@@ -3,8 +3,8 @@ package no.nav.bidrag.person.hendelse.database
 import io.kotest.matchers.shouldBe
 import jakarta.transaction.Transactional
 import no.nav.bidrag.person.hendelse.Teststarter
+import no.nav.bidrag.person.hendelse.domene.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
-import no.nav.bidrag.person.hendelse.domene.Livshendelse.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig.Companion.PROFIL_TEST
 import org.assertj.core.api.SoftAssertions.assertSoftly
