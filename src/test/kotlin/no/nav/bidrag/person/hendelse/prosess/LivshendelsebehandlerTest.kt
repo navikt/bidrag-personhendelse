@@ -4,9 +4,9 @@ import io.mockk.clearAllMocks
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
+import no.nav.bidrag.person.hendelse.domene.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Foedsel
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
-import no.nav.bidrag.person.hendelse.domene.Livshendelse.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse.Opplysningstype
 import no.nav.bidrag.person.hendelse.domene.Sivilstand
 import no.nav.bidrag.person.hendelse.domene.Utflytting

@@ -6,6 +6,7 @@ import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.Hendelsemottak
 import no.nav.bidrag.person.hendelse.database.HendelsemottakDao
 import no.nav.bidrag.person.hendelse.database.Status
+import no.nav.bidrag.person.hendelse.domene.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
@@ -90,7 +91,7 @@ class SletteUtgåtteHendelserTest {
             Livshendelse(
                 hendelseid1,
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-                Livshendelse.Endringstype.OPPRETTET,
+                Endringstype.OPPRETTET,
                 personidenter,
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
