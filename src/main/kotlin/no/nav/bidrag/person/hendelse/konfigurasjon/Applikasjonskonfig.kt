@@ -21,6 +21,8 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.retry.annotation.EnableRetry
 import org.springframework.scheduling.annotation.EnableScheduling
 import javax.sql.DataSource
+import org.springframework.http.client.observation.ClientRequestObservationConvention
+import org.springframework.http.client.observation.DefaultClientRequestObservationConvention
 
 @EnableRetry
 @Configuration
@@ -44,6 +46,9 @@ class Applikasjonskonfig {
     fun exceptionLogger(): ExceptionLogger? {
         return ExceptionLogger(this::class.java.simpleName)
     }
+
+    @Bean
+    fun clientRequestObservationConvention(): ClientRequestObservationConvention = DefaultClientRequestObservationConvention()
 }
 
 @Configuration
