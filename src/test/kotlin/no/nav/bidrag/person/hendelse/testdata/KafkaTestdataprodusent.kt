@@ -8,8 +8,8 @@ import org.springframework.kafka.core.KafkaTemplate
 class KafkaTestdataprodusent(
     @Qualifier("testdata") val kafkaTemplateTestdata: KafkaTemplate<String, String>,
 ) {
-
     val topicLivshendelser: String = "aapen-person-pdl-leesah-v1"
+
     fun sendeMelding(melding: String) {
         kafkaTemplateTestdata.send(topicLivshendelser, melding)
     }

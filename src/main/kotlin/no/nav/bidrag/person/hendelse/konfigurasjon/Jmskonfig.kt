@@ -14,9 +14,8 @@ import javax.jms.JMSException
 @EnableJms
 @Configuration
 class Jmskonfig(var wmq: Wmq) {
-
     fun createCachingConnectionFactory(): CachingConnectionFactory {
-        var cachingConnectionFactory = CachingConnectionFactory()
+        val cachingConnectionFactory = CachingConnectionFactory()
         cachingConnectionFactory.sessionCacheSize = 1
         cachingConnectionFactory.targetConnectionFactory = forbindelsefabrikk()
         return cachingConnectionFactory

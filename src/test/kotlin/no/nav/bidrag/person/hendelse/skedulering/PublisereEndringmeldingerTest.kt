@@ -25,7 +25,6 @@ import org.springframework.test.context.ActiveProfiles
 @ActiveProfiles(Testkonfig.PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
 class PublisereEndringmeldingerTest {
-
     @Autowired
     lateinit var teststøtteMeldingsmottak: TeststøtteMeldingsmottak
 
@@ -43,11 +42,12 @@ class PublisereEndringmeldingerTest {
         clearAllMocks()
         databasetjeneste.hendelsemottakDao.deleteAll()
         databasetjeneste.aktorDao.deleteAll()
-        publisereEndringsmeldinger = PublisereEndringsmeldinger(
-            meldingsprodusent,
-            databasetjeneste,
-            databasetjeneste.egenskaper,
-        )
+        publisereEndringsmeldinger =
+            PublisereEndringsmeldinger(
+                meldingsprodusent,
+                databasetjeneste,
+                databasetjeneste.egenskaper,
+            )
         every { meldingsprodusent.publisereEndringsmelding(any(), any()) }
     }
 

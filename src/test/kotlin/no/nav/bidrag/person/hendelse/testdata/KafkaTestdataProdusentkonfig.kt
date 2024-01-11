@@ -13,10 +13,9 @@ import org.springframework.kafka.core.ProducerFactory
 
 @Configuration
 @Profile("lokal")
-open class KafkaTestdataProdusentkonfig(val kafka: Kafkakonfig.Kafka) {
-
+class KafkaTestdataProdusentkonfig(val kafka: Kafkakonfig.Kafka) {
     @Bean
-    open fun producerFactory(): ProducerFactory<String, String> {
+    fun producerFactory(): ProducerFactory<String, String> {
         val konfig = HashMap<String, Any>()
         konfig[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafka.bootstrapServers as Any
         konfig[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java as Any
@@ -26,7 +25,7 @@ open class KafkaTestdataProdusentkonfig(val kafka: Kafkakonfig.Kafka) {
 
     @Bean
     @Qualifier("testdata")
-    open fun kafkaTemplateTestdata(): KafkaTemplate<String?, String?>? {
+    fun kafkaTemplateTestdata(): KafkaTemplate<String?, String?>? {
         return KafkaTemplate(producerFactory())
     }
 }

@@ -26,9 +26,9 @@
         <jvmTarget>21</jvmTarget>
         <javax.jms-api.version>2.0.1</javax.jms-api.version>
         <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
-        <ktlint.version>0.49.1</ktlint.version>
         <kotlin.version>1.9.22</kotlin.version>
         <ktlint.version>1.1.1</ktlint.version>
+        <flyway-maven-plugin.version>10.4.1</flyway-maven-plugin.version>
         <mockk.version>1.13.5</mockk.version>
         <apache.httpcore.version>4.4.16</apache.httpcore.version>
         <apache.httpclient.version>4.5.14</apache.httpclient.version>
@@ -557,8 +557,8 @@
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>com.pinterest</groupId>
-                        <artifactId>ktlint</artifactId>
+                        <groupId>com.pinterest.ktlint</groupId>
+                        <artifactId>ktlint-cli</artifactId>
                         <version>${ktlint.version}</version>
                     </dependency>
                 </dependencies>

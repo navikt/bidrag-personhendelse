@@ -10,17 +10,20 @@ import javax.jms.Queue
 
 @Component
 class BisysMeldingsprodusjon(private val jmsTemplate: JmsTemplate) {
-
-    fun sendeMeldinger(mottakerkoe: String, hendelser: List<String>): Int {
+    fun sendeMeldinger(
+        mottakerkoe: String,
+        hendelser: List<String>,
+    ): Int {
         var antallOverført = 0
 
-        val producerCallback = ProducerCallback { session, producer ->
-            val destination: Queue = session.createQueue(mottakerkoe)
-            for (hendelse in hendelser) {
-                producer.send(destination, session.createTextMessage(hendelse))
-                antallOverført++
+        val producerCallback =
+            ProducerCallback { session, producer ->
+                val destination: Queue = session.createQueue(mottakerkoe)
+                for (hendelse in hendelser) {
+                    producer.send(destination, session.createTextMessage(hendelse))
+                    antallOverført++
+                }
             }
-        }
 
         try {
             jmsTemplate.execute(producerCallback)

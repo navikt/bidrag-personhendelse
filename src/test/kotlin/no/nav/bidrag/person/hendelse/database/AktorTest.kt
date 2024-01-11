@@ -9,7 +9,6 @@ import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)
 class AktorTest {
-
     @Test
     fun `teste equals for Aktør`() {
         // gitt

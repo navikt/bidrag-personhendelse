@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional
 class BidragKafkaMeldingsprodusent(
     private val kafkaTemplate: KafkaTemplate<String, String>,
     private val databasetjeneste: Databasetjeneste,
-
 ) {
     @Transactional
     @Retryable(
@@ -25,20 +24,28 @@ class BidragKafkaMeldingsprodusent(
         maxAttempts = 3,
         backoff = Backoff(delay = 1000, multiplier = 2.0),
     )
-    fun publisereEndringsmelding(aktørid: String, personidenter: Set<String>) {
-        publisereMelding(BIDRAG_PERSONHENDELSE_TOPIC, aktørid, personidenter)
+    fun publisereEndringsmelding(
+        aktørid: String,
+        personidenter: Set<String>,
+    ) {
+        publisereMelding(aktørid, personidenter)
     }
 
-    private fun publisereMelding(emne: String, aktørid: String, personidenter: Set<String>) {
+    private fun publisereMelding(
+        aktørid: String,
+        personidenter: Set<String>,
+    ) {
         slog.info("Publiserer endringsmelding for aktørid $aktørid")
         val melding = tilJson(Endringsmelding(aktørid, personidenter))
         try {
-            val future = kafkaTemplate.send(emne, aktørid, melding)
+            val future = kafkaTemplate.send(BIDRAG_PERSONHENDELSE_TOPIC, aktørid, melding)
 
             future.whenComplete { result, ex ->
                 if (ex != null) {
                     log.warn("Publisering av melding til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
-                    slog.warn("Publisering av melding for aktørid ${result.producerRecord.key()} til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.")
+                    slog.warn(
+                        "Publisering av melding for aktørid ${result.producerRecord.key()} til topic $BIDRAG_PERSONHENDELSE_TOPIC feilet.",
+                    )
                     throw ex
                 }
             }

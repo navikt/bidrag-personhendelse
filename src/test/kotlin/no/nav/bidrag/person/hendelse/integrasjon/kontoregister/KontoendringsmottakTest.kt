@@ -18,11 +18,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.Instant
-import java.util.*
+import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
 class KontoendringsmottakTest {
-
     @MockK
     lateinit var kontoendringsbehandler: Kontoendringsbehandler
 
@@ -39,17 +38,18 @@ class KontoendringsmottakTest {
     @Test
     fun `skal lagre kontoendring`() {
         // gitt
-        var kontoeierFødselsnummer: String = generererFødselsnummer()
-        var endringsmelding: Endringsmelding =
+        val kontoeierFødselsnummer: String = generererFødselsnummer()
+        val endringsmelding: Endringsmelding =
             Endringsmelding.newBuilder().setKontohaver(kontoeierFødselsnummer).setKontonummer("123")
                 .setUtenlandskKontoInfo(
                     UtenlandskKontoInfo(),
                 ).build()
-        var cr = ConsumerRecord(
-            "okonomi.kontoregister-person-endringsmelding.v2", 1, 229055,
-            Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-            endringsmelding, RecordHeaders(), Optional.of(0),
-        )
+        val cr =
+            ConsumerRecord(
+                "okonomi.kontoregister-person-endringsmelding.v2", 1, 229055,
+                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
+                endringsmelding, RecordHeaders(), Optional.of(0),
+            )
 
         // hvis
         kontoendringsmottak.listen(endringsmelding, cr)

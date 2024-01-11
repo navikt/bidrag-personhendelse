@@ -19,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class HendelsemottakDaoTest {
-
     @Autowired
     lateinit var aktorDao: AktorDao
 
@@ -29,21 +28,21 @@ class HendelsemottakDaoTest {
     @Test
     fun skalLagreHendelse() {
         // gitt
-        var personidenter = listOf("12345678910", "1234567891013")
-        var aktørid = personidenter.first { it.length == 13 }
-        var aktør = aktorDao.save(Aktor(aktørid))
+        val personidenter = listOf("12345678910", "1234567891013")
+        val aktørid = personidenter.first { it.length == 13 }
+        val aktør = aktorDao.save(Aktor(aktørid))
 
-        var hendelseid = "123"
-        var opplysningstype = Livshendelse.Opplysningstype.SIVILSTAND_V1
-        var endringstype = Endringstype.OPPRETTET
+        val hendelseid = "123"
+        val opplysningstype = Livshendelse.Opplysningstype.SIVILSTAND_V1
+        val endringstype = Endringstype.OPPRETTET
 
-        var hendelsemottak = Hendelsemottak(hendelseid, opplysningstype, endringstype, personidenter.toString(), aktør)
+        val hendelsemottak = Hendelsemottak(hendelseid, opplysningstype, endringstype, personidenter.toString(), aktør)
 
         // hvis
         hendelsemottakDao.save(hendelsemottak)
 
         // så
-        var eksisterer = hendelsemottakDao.existsByHendelseidAndOpplysningstype(hendelseid, opplysningstype)
+        val eksisterer = hendelsemottakDao.existsByHendelseidAndOpplysningstype(hendelseid, opplysningstype)
         assertThat(eksisterer).isTrue
     }
 }

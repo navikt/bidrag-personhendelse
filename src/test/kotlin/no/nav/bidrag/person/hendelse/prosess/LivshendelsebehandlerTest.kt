@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LivshendelsebehandlerTest {
@@ -34,12 +34,13 @@ class LivshendelsebehandlerTest {
     @Test
     fun `Skal prosessere dødsfallhendelse`() {
         val hendelseId = UUID.randomUUID().toString()
-        val livshendelse = oppretteLivshendelseForDødsfall(
-            hendelseId,
-            Opplysningstype.DOEDSFALL_V1,
-            Endringstype.OPPRETTET,
-            LocalDate.now(),
-        )
+        val livshendelse =
+            oppretteLivshendelseForDødsfall(
+                hendelseId,
+                Opplysningstype.DOEDSFALL_V1,
+                Endringstype.OPPRETTET,
+                LocalDate.now(),
+            )
         service.prosesserNyHendelse(livshendelse)
     }
 
@@ -107,11 +108,11 @@ class LivshendelsebehandlerTest {
         service.prosesserNyHendelse(livshendelse)
         verify(exactly = 0) { mockDatabasetjeneste.lagreHendelse(livshendelse) }
 
-        var livshendelseMedFødelandNorgeMenUtenFødselsdato = livshendelse.copy(foedsel = Foedsel("NOR"))
+        val livshendelseMedFødelandNorgeMenUtenFødselsdato = livshendelse.copy(foedsel = Foedsel("NOR"))
         service.prosesserNyHendelse(livshendelseMedFødelandNorgeMenUtenFødselsdato)
         verify(exactly = 0) { mockDatabasetjeneste.lagreHendelse(livshendelseMedFødelandNorgeMenUtenFødselsdato) }
 
-        var livshendelseUtenFødeland = livshendelse.copy(foedsel = Foedsel(null))
+        val livshendelseUtenFødeland = livshendelse.copy(foedsel = Foedsel(null))
         service.prosesserNyHendelse(livshendelseUtenFødeland)
         verify(exactly = 0) { mockDatabasetjeneste.lagreHendelse(livshendelseUtenFødeland) }
     }

@@ -19,7 +19,6 @@ class OverføreHendelser(
     open val egenskaper: Egenskaper,
     open val meldingsprodusent: BisysMeldingsprodusjon,
 ) {
-
     @Transactional
     @Scheduled(cron = "\${overføre_hendelser.kjøreplan}")
     @SchedulerLock(
@@ -46,10 +45,11 @@ class OverføreHendelser(
             hendelserKlarTilOverføring.take(egenskaper.generelt.maksAntallMeldingerSomOverfoeresTilBisysOmGangen)
 
         try {
-            val antallOverført: Int = meldingsprodusent.sendeMeldinger(
-                egenskaper.integrasjon.wmq.queueNameLivshendelser,
-                databasetjeneste.hendelsemottakDao.findAllById(hendelserSomOverføresIDenneOmgang).map { it.hendelse },
-            )
+            val antallOverført: Int =
+                meldingsprodusent.sendeMeldinger(
+                    egenskaper.integrasjon.wmq.queueNameLivshendelser,
+                    databasetjeneste.hendelsemottakDao.findAllById(hendelserSomOverføresIDenneOmgang).map { it.hendelse },
+                )
             databasetjeneste.oppdatereStatusPåHendelser(hendelserSomOverføresIDenneOmgang, Status.OVERFØRT)
             log.info("Overføring fullført (for antall: $antallOverført)")
         } catch (ofe: OverføringFeiletException) {
@@ -58,9 +58,13 @@ class OverføreHendelser(
         }
     }
 
-    private fun henteLoggmelding(antallIdentifiserteHendelser: Int, maksAntallHendelserPerKjøring: Int): String {
+    private fun henteLoggmelding(
+        antallIdentifiserteHendelser: Int,
+        maksAntallHendelserPerKjøring: Int,
+    ): String {
         val melding =
-            "Fant $antallIdentifiserteHendelser livshendelser med status MOTTATT. Antall hendelser per kjøring er begrenset til $maksAntallHendelserPerKjøring. "
+            "Fant $antallIdentifiserteHendelser livshendelser med status MOTTATT. " +
+                "Antall hendelser per kjøring er begrenset til $maksAntallHendelserPerKjøring. "
         return if (antallIdentifiserteHendelser > maksAntallHendelserPerKjøring) {
             melding + "Overfører $maksAntallHendelserPerKjøring hendelser i denne omgang."
         } else {

@@ -26,7 +26,6 @@ import java.time.Duration
     matchIfMissing = true,
 )
 class Kafkakonfig(val kafka: Kafka) {
-
     @Primary
     @ConfigurationProperties("spring.kafka")
     data class Kafka(
@@ -43,12 +42,13 @@ class Kafkakonfig(val kafka: Kafka) {
         val factory = ConcurrentKafkaListenerContainerFactory<Int, GenericRecord>()
         factory.containerProperties.ackMode = ContainerProperties.AckMode.BATCH
         factory.containerProperties.authExceptionRetryInterval = Duration.ofSeconds(2)
-        factory.consumerFactory = DefaultKafkaConsumerFactory(
-            properties.buildConsumerProperties().also {
-                it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = OffsetResetStrategy.EARLIEST.toString().lowercase()
-                it[ConsumerConfig.ISOLATION_LEVEL_CONFIG] = IsolationLevel.READ_COMMITTED.name.lowercase()
-            },
-        )
+        factory.consumerFactory =
+            DefaultKafkaConsumerFactory(
+                properties.buildConsumerProperties().also {
+                    it[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = OffsetResetStrategy.EARLIEST.toString().lowercase()
+                    it[ConsumerConfig.ISOLATION_LEVEL_CONFIG] = IsolationLevel.READ_COMMITTED.name.lowercase()
+                },
+            )
         factory.setCommonErrorHandler(kafkaOmstartFeilhåndterer)
         return factory
     }

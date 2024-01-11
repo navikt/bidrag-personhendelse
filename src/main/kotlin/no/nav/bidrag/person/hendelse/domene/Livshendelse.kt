@@ -9,7 +9,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class Livshendelse(
-
     val hendelseid: String,
     val opplysningstype: Opplysningstype,
     @Enumerated(EnumType.STRING)
@@ -31,7 +30,6 @@ data class Livshendelse(
     val offset: Long = 0L,
     val master: String = "PDL",
 ) {
-
     fun hentGjeldendeAktørid() = personidenter.first { it.length == 13 }
 
     enum class Gradering {
@@ -42,7 +40,19 @@ data class Livshendelse(
     }
 
     enum class Opplysningstype {
-        ADRESSEBESKYTTELSE_V1, BOSTEDSADRESSE_V1, DOEDSFALL_V1, FOEDSEL_V1, FOLKEREGISTERIDENTIFIKATOR_V1, INNFLYTTING_TIL_NORGE, KONTAKTADRESSE_V1, NAVN_V1, OPPHOLDSADRESSE_V1, SIVILSTAND_V1, UTFLYTTING_FRA_NORGE, VERGEMAAL_ELLER_FREMTIDSFULLMAKT_V1, IKKE_STØTTET
+        ADRESSEBESKYTTELSE_V1,
+        BOSTEDSADRESSE_V1,
+        DOEDSFALL_V1,
+        FOEDSEL_V1,
+        FOLKEREGISTERIDENTIFIKATOR_V1,
+        INNFLYTTING_TIL_NORGE,
+        KONTAKTADRESSE_V1,
+        NAVN_V1,
+        OPPHOLDSADRESSE_V1,
+        SIVILSTAND_V1,
+        UTFLYTTING_FRA_NORGE,
+        VERGEMAAL_ELLER_FREMTIDSFULLMAKT_V1,
+        IKKE_STØTTET,
     }
 
     companion object {
@@ -57,5 +67,8 @@ data class Livshendelse(
 }
 
 enum class Endringstype {
-    OPPRETTET, KORRIGERT, ANNULLERT, OPPHOERT
+    OPPRETTET,
+    KORRIGERT,
+    ANNULLERT,
+    OPPHOERT,
 }

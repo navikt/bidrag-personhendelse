@@ -26,9 +26,16 @@ class PublisereEndringsmeldinger(
         val aktørerPersonopplysninger = databasetjeneste.hentePubliseringsklareHendelser()
         log.info("Fant ${aktørerPersonopplysninger.size} unike personer med nylige endringer i personopplysninger.")
 
-        val subsetMedAktørider = aktørerPersonopplysninger.keys.take(egenskaper.generelt.maksAntallMeldingerSomSendesTilBidragTopicOmGangen).toSet()
+        val subsetMedAktørider =
+            aktørerPersonopplysninger.keys.take(
+                egenskaper.generelt.maksAntallMeldingerSomSendesTilBidragTopicOmGangen,
+            ).toSet()
 
-        if (subsetMedAktørider.size < aktørerPersonopplysninger.size) log.info("Begrenser antall meldinger som skal publiseres til ${subsetMedAktørider.size}")
+        if (subsetMedAktørider.size < aktørerPersonopplysninger.size) {
+            log.info(
+                "Begrenser antall meldinger som skal publiseres til ${subsetMedAktørider.size}",
+            )
+        }
 
         // Publisere melding til intern topic for samtlige personer med endringer
         subsetMedAktørider.forEach {

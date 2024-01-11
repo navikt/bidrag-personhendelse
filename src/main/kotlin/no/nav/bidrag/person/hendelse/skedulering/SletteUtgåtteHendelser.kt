@@ -15,7 +15,6 @@ import java.time.LocalDateTime
 class SletteUtgåtteHendelser(
     open val databasetjeneste: Databasetjeneste,
     open val egenskaper: Egenskaper,
-
 ) {
     @Scheduled(cron = "\${slette_hendelser.kjøreplan}")
     @SchedulerLock(
@@ -24,8 +23,9 @@ class SletteUtgåtteHendelser(
         lockAtMostFor = "\${slette_hendelser.lås.max}",
     )
     fun sletteUtgåtteHendelserFraDatabase() {
-        val statusoppdateringFør = LocalDate.now().atStartOfDay()
-            .minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong())
+        val statusoppdateringFør =
+            LocalDate.now().atStartOfDay()
+                .minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong())
 
         log.info("Ser etter utgåtte livshendelser med siste statusoppdatering før $statusoppdateringFør som skal slettes fra databasen.")
 
@@ -34,16 +34,30 @@ class SletteUtgåtteHendelser(
         val publiserteHendelser =
             databasetjeneste.hendelsemottakDao.henteIdTilHendelser(Status.PUBLISERT, statusoppdateringFør)
 
-        log.info("Fant ${kansellerteHendelser.size} kansellerte, og ${publiserteHendelser.size} publiserte hendelser som skal slettes fra databasen")
+        log.info(
+            "Fant ${kansellerteHendelser.size} kansellerte, " +
+                "og ${publiserteHendelser.size} publiserte hendelser som skal slettes fra databasen",
+        )
 
         val antallSlettedeKansellerteHendelser = sletteHendelser(kansellerteHendelser, "kansellerte")
-        if (kansellerteHendelser.size > 0) log.info("Totalt ble $antallSlettedeKansellerteHendelser av ${kansellerteHendelser.size} identifiserte kansellerte hendelser slettet")
+        if (kansellerteHendelser.size > 0) {
+            log.info(
+                "Totalt ble $antallSlettedeKansellerteHendelser av " +
+                    "${kansellerteHendelser.size} identifiserte kansellerte hendelser slettet",
+            )
+        }
 
         val antallSLettedePubliserteHendelser = sletteHendelser(publiserteHendelser, "publiserte")
-        if (publiserteHendelser.size > 0) log.info("Totalt ble $antallSLettedePubliserteHendelser av ${publiserteHendelser.size} identifiserte publiserte hendelser slettet")
+        if (publiserteHendelser.size > 0) {
+            log.info(
+                "Totalt ble $antallSLettedePubliserteHendelser av ${publiserteHendelser.size} identifiserte publiserte hendelser slettet",
+            )
+        }
 
         if (kansellerteHendelser.size + publiserteHendelser.size > 0) {
-            if (kansellerteHendelser.size.toLong() + publiserteHendelser.size.toLong() == antallSlettedeKansellerteHendelser + antallSLettedePubliserteHendelser) {
+            if (kansellerteHendelser.size.toLong() + publiserteHendelser.size.toLong()
+                == antallSlettedeKansellerteHendelser + antallSLettedePubliserteHendelser
+            ) {
                 log.info("Alle de identifiserte hendelsene ble slettet.")
             } else {
                 log.warn("Ikke alle de identifiserte hendelsene ble slettet.")
@@ -55,18 +69,26 @@ class SletteUtgåtteHendelser(
 
     private fun sletteAktørerSomManglerReferanseTilHendelse(publisertFør: LocalDateTime) {
         val aktørerUtenReferanseTilHendelse = databasetjeneste.aktorDao.henteAktørerSomManglerReferanseTilHendelse(publisertFør)
-        log.info("Fant ${aktørerUtenReferanseTilHendelse.size} aktører uten referanse til hendelse og som ble sist publisert før $publisertFør.")
+        log.info(
+            "Fant ${aktørerUtenReferanseTilHendelse.size} aktører uten referanse til hendelse og som ble sist publisert før $publisertFør.",
+        )
         databasetjeneste.aktorDao.deleteAktorByIdIn(aktørerUtenReferanseTilHendelse)
         if (aktørerUtenReferanseTilHendelse.size > 0) log.info("Alle de referanseløse aktørene ble slettet fra databasen.")
     }
 
-    private fun sletteHendelser(ider: Set<Long>, hendelsebeskrivelse: String): Long {
+    private fun sletteHendelser(
+        ider: Set<Long>,
+        hendelsebeskrivelse: String,
+    ): Long {
         if (ider.size > egenskaper.generelt.bolkstoerrelseVedSletting) {
-            log.info("Antall $hendelsebeskrivelse-hendelser identifisert for sletting oversteg grensen på ${egenskaper.generelt.bolkstoerrelseVedSletting}.")
+            log.info(
+                "Antall $hendelsebeskrivelse-hendelser identifisert for sletting oversteg grensen på " +
+                    "${egenskaper.generelt.bolkstoerrelseVedSletting}.",
+            )
             val listeMedListeAvHendelseider = ider.chunked(egenskaper.generelt.bolkstoerrelseVedSletting)
 
             var totaltAntallHendelserSomBleSlettet: Long = 0
-            var bolknummer: Int = 1
+            var bolknummer = 1
             listeMedListeAvHendelseider.forEach {
                 log.info("Sletter bolk-$bolknummer med ${it.size} $hendelsebeskrivelse-hendelser.")
                 val antallHendelserSomBleSlettet = databasetjeneste.hendelsemottakDao.deleteByIdIn(it.toSet())

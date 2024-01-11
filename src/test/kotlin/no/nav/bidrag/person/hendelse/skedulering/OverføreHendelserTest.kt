@@ -30,7 +30,6 @@ import java.time.LocalDateTime
 @ActiveProfiles(Testkonfig.PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
 class OverføreHendelserTest {
-
     val personidenter = listOf("12345678901", "1234567890123")
 
     @Autowired
@@ -62,8 +61,8 @@ class OverføreHendelserTest {
     @Test
     fun `skal sette status til OVERFØRING_FEILET dersom exception oppstår under sending`() {
         // gitt
-        var hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
-        var hendelseMottattUtenforVenteperiode =
+        val hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+        val hendelseMottattUtenforVenteperiode =
             Livshendelse(
                 hendelseid1,
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
@@ -72,38 +71,40 @@ class OverføreHendelserTest {
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
             )
-        var lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
+        val lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
         lagretHendelseVenteperiodeUtløpt.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
-        var oppdatertHendelseMedUtløptVenteperiode = hendelsemottakDao.save(lagretHendelseVenteperiodeUtløpt)
+        val oppdatertHendelseMedUtløptVenteperiode = hendelsemottakDao.save(lagretHendelseVenteperiodeUtløpt)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedUtløptVenteperiode.statustidspunkt)
 
-        var hendelseid2 = "38468520-70f2-40c0-b4ae-6c765c307a7d"
-        var hendelseMottattInnenforVenteperiode = Livshendelse(
-            hendelseid2,
-            Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-            Endringstype.ANNULLERT,
-            personidenter,
-            personidenter.first { it.length == 13 },
-            LocalDateTime.now(),
-        )
-        var lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
+        val hendelseid2 = "38468520-70f2-40c0-b4ae-6c765c307a7d"
+        val hendelseMottattInnenforVenteperiode =
+            Livshendelse(
+                hendelseid2,
+                Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
+                Endringstype.ANNULLERT,
+                personidenter,
+                personidenter.first { it.length == 13 },
+                LocalDateTime.now(),
+            )
+        val lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
         lagretHendelserVenteperiodeIkkeUtløpt.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 5)
-        var oppdatertHendelseVenteperiodeIkkeUtløpt = hendelsemottakDao.save(lagretHendelserVenteperiodeIkkeUtløpt)
+        val oppdatertHendelseVenteperiodeIkkeUtløpt = hendelsemottakDao.save(lagretHendelserVenteperiodeIkkeUtløpt)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseVenteperiodeIkkeUtløpt.statustidspunkt)
 
-        var hendelseid3 = "87925614-70f2-40c0-b4ae-6c765c308h8h"
-        var hendelseMedStatusOverført = Livshendelse(
-            hendelseid3,
-            Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-            Endringstype.ANNULLERT,
-            personidenter,
-            personidenter.first { it.length == 13 },
-            LocalDateTime.now(),
-        )
-        var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
-        var oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
+        val hendelseid3 = "87925614-70f2-40c0-b4ae-6c765c308h8h"
+        val hendelseMedStatusOverført =
+            Livshendelse(
+                hendelseid3,
+                Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
+                Endringstype.ANNULLERT,
+                personidenter,
+                personidenter.first { it.length == 13 },
+                LocalDateTime.now(),
+            )
+        val lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
+        val oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedStatusOverført.statustidspunkt)
 
         every { meldingsprodusent.sendeMeldinger(any(), any()) } throws OverføringFeiletException("auda!")
@@ -128,8 +129,8 @@ class OverføreHendelserTest {
     @Test
     fun skalOverføreHendelserMedStatusMottattOgUtløptVentetid() {
         // gitt
-        var hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
-        var hendelseMottattUtenforVenteperiode =
+        val hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+        val hendelseMottattUtenforVenteperiode =
             Livshendelse(
                 hendelseid1,
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
@@ -138,38 +139,40 @@ class OverføreHendelserTest {
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
             )
-        var lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
+        val lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
         lagretHendelseVenteperiodeUtløpt.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
-        var oppdatertHendelseMedUtløptVenteperiode = hendelsemottakDao.save(lagretHendelseVenteperiodeUtløpt)
+        val oppdatertHendelseMedUtløptVenteperiode = hendelsemottakDao.save(lagretHendelseVenteperiodeUtløpt)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedUtløptVenteperiode.statustidspunkt)
 
-        var hendelseid2 = "38468520-70f2-40c0-b4ae-6c765c307a7d"
-        var hendelseMottattInnenforVenteperiode = Livshendelse(
-            hendelseid2,
-            Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-            Endringstype.ANNULLERT,
-            personidenter,
-            personidenter.first { it.length == 13 },
-            LocalDateTime.now(),
-        )
-        var lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
+        val hendelseid2 = "38468520-70f2-40c0-b4ae-6c765c307a7d"
+        val hendelseMottattInnenforVenteperiode =
+            Livshendelse(
+                hendelseid2,
+                Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
+                Endringstype.ANNULLERT,
+                personidenter,
+                personidenter.first { it.length == 13 },
+                LocalDateTime.now(),
+            )
+        val lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
         lagretHendelserVenteperiodeIkkeUtløpt.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 5)
-        var oppdatertHendelseVenteperiodeIkkeUtløpt = hendelsemottakDao.save(lagretHendelserVenteperiodeIkkeUtløpt)
+        val oppdatertHendelseVenteperiodeIkkeUtløpt = hendelsemottakDao.save(lagretHendelserVenteperiodeIkkeUtløpt)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseVenteperiodeIkkeUtløpt.statustidspunkt)
 
-        var hendelseid3 = "87925614-70f2-40c0-b4ae-6c765c308h8h"
-        var hendelseMedStatusOverført = Livshendelse(
-            hendelseid3,
-            Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-            Endringstype.ANNULLERT,
-            personidenter,
-            personidenter.first { it.length == 13 },
-            LocalDateTime.now(),
-        )
-        var lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
-        var oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
+        val hendelseid3 = "87925614-70f2-40c0-b4ae-6c765c308h8h"
+        val hendelseMedStatusOverført =
+            Livshendelse(
+                hendelseid3,
+                Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
+                Endringstype.ANNULLERT,
+                personidenter,
+                personidenter.first { it.length == 13 },
+                LocalDateTime.now(),
+            )
+        val lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
+        val oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedStatusOverført.statustidspunkt)
 
         // hvis
@@ -189,8 +192,8 @@ class OverføreHendelserTest {
     @Test
     fun `skal ikke overføre flere hendelser enn maks antall om gangen`() {
         // gitt
-        var hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
-        var hendelse1 =
+        val hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+        val hendelse1 =
             Livshendelse(
                 hendelseid1,
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
@@ -199,21 +202,22 @@ class OverføreHendelserTest {
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
             )
-        var lagretHendelse1 = databasetjeneste.lagreHendelse(hendelse1)
+        val lagretHendelse1 = databasetjeneste.lagreHendelse(hendelse1)
         lagretHendelse1.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
         hendelsemottakDao.save(lagretHendelse1)
 
-        var hendelseid2 = "38468520-70f2-40c0-b4ae-6c765c307a7d"
-        var hendelse2 = Livshendelse(
-            hendelseid2,
-            Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-            Endringstype.ANNULLERT,
-            personidenter,
-            personidenter.first { it.length == 13 },
-            LocalDateTime.now(),
-        )
-        var lagretHendelse2 = databasetjeneste.lagreHendelse(hendelse2)
+        val hendelseid2 = "38468520-70f2-40c0-b4ae-6c765c307a7d"
+        val hendelse2 =
+            Livshendelse(
+                hendelseid2,
+                Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
+                Endringstype.ANNULLERT,
+                personidenter,
+                personidenter.first { it.length == 13 },
+                LocalDateTime.now(),
+            )
+        val lagretHendelse2 = databasetjeneste.lagreHendelse(hendelse2)
         lagretHendelse2.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 2)
         hendelsemottakDao.save(lagretHendelse2)

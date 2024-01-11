@@ -23,7 +23,10 @@ class Kontoendringsmottak(val kontoendringsbehandler: Kontoendringsbehandler) {
         id = "bidrag-person-hendelse-kontoregister-person-endringsmelding-v2",
         idIsGroup = false,
     )
-    fun listen(@Payload(required = false) endringsmelding: Endringsmelding?, cr: ConsumerRecord<String, Endringsmelding?>) {
+    fun listen(
+        @Payload(required = false) endringsmelding: Endringsmelding?,
+        cr: ConsumerRecord<String, Endringsmelding?>,
+    ) {
         slog.info(
             "Kontoregisterendringsmelding mottatt: Record key={}, value={}, value={}",
             cr.key(),
@@ -54,7 +57,7 @@ class Kontoendringsmottak(val kontoendringsbehandler: Kontoendringsbehandler) {
     }
 
     fun harGylidgFormat(personident: String): Boolean {
-        return !personident.isNullOrEmpty() && personident.length == 11 || personident.length == 13
+        return personident.isNotEmpty() && personident.length == 11 || personident.length == 13
     }
 
     companion object {
