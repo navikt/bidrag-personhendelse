@@ -11,27 +11,30 @@ import java.util.zip.CRC32
 
 @Component
 class TeststøtteMeldingsmottak(val databasetjeneste: Databasetjeneste) {
-
     fun henteAktør(aktørid: String): Aktor {
         val eksisteredeAktør = databasetjeneste.aktorDao.findByAktorid(aktørid)
 
-        if (eksisteredeAktør.isPresent) {
-            return eksisteredeAktør.get()
+        return if (eksisteredeAktør.isPresent) {
+            eksisteredeAktør.get()
         } else {
-            return databasetjeneste.aktorDao.save(Aktor(aktørid))
+            databasetjeneste.aktorDao.save(Aktor(aktørid))
         }
     }
 
-    fun oppretteOgLagreHendelsemottak(personidenter: List<String>, status: Status = Status.OVERFØRT): Hendelsemottak {
+    fun oppretteOgLagreHendelsemottak(
+        personidenter: List<String>,
+        status: Status = Status.OVERFØRT,
+    ): Hendelsemottak {
         val aktør = henteAktør(personidenter.first { it.length == 13 })
 
-        var mottattHendelse = Hendelsemottak(
-            CRC32().value.toString(),
-            Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
-            Endringstype.OPPRETTET,
-            personidenter.joinToString { it },
-            aktør,
-        )
+        val mottattHendelse =
+            Hendelsemottak(
+                CRC32().value.toString(),
+                Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
+                Endringstype.OPPRETTET,
+                personidenter.joinToString { it },
+                aktør,
+            )
 
         mottattHendelse.status = status
 

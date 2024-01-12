@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
 class KontoendringsbehandlerTest {
-
     @MockK
     lateinit var bidragKafkaMeldingsprodusent: BidragKafkaMeldingsprodusent
 

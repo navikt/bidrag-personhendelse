@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class Kontoendringsbehandler(val bidragPersonklient: BidragPersonklient, val bidragtopic: BidragKafkaMeldingsprodusent) {
-
     fun publisere(personidentKontoeier: String) {
         val alleIdenterKontoeier = bidragPersonklient.henteAlleIdenterForPerson(personidentKontoeier)
         val aktørid = alleIdenterKontoeier?.find { it.gruppe.equals(Identgruppe.AKTORID) }?.ident

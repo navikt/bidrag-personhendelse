@@ -21,7 +21,6 @@ import java.util.UUID
 @ActiveProfiles(Testkonfig.PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
 class SletteUtgåtteHendelserTest {
-
     val personidenter = listOf("12345678901", "1234567890123")
 
     @Autowired
@@ -39,35 +38,42 @@ class SletteUtgåtteHendelserTest {
     @Test
     fun skalSletteKansellerteOgPubliserteHendelser() {
         // gitt
-        var kansellertHendelse1 = oppretteOgLagreHendelse(
-            Status.KANSELLERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1),
-        )
-        var kansellertHendelse2 = oppretteOgLagreHendelse(
-            Status.KANSELLERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2),
-        )
-        var kansellertHendelseUtenforSlettevindu = oppretteOgLagreHendelse(
-            Status.KANSELLERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2),
-        )
-        var mottattHendelseInnenforSlettevindu = oppretteOgLagreHendelse(
-            Status.MOTTATT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2),
-        )
-        var mottattHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT, LocalDateTime.now())
-        var publisertHendelse1 = oppretteOgLagreHendelse(
-            Status.PUBLISERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1),
-        )
-        var publisertHendelse2 = oppretteOgLagreHendelse(
-            Status.PUBLISERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2),
-        )
-        var publisertHendelseUtenforSlettevindu = oppretteOgLagreHendelse(
-            Status.PUBLISERT,
-            LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2),
-        )
+        val kansellertHendelse1 =
+            oppretteOgLagreHendelse(
+                Status.KANSELLERT,
+                LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1),
+            )
+        val kansellertHendelse2 =
+            oppretteOgLagreHendelse(
+                Status.KANSELLERT,
+                LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2),
+            )
+        val kansellertHendelseUtenforSlettevindu =
+            oppretteOgLagreHendelse(
+                Status.KANSELLERT,
+                LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2),
+            )
+        val mottattHendelseInnenforSlettevindu =
+            oppretteOgLagreHendelse(
+                Status.MOTTATT,
+                LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2),
+            )
+        val mottattHendelseUtenforSlettevindu = oppretteOgLagreHendelse(Status.MOTTATT, LocalDateTime.now())
+        val publisertHendelse1 =
+            oppretteOgLagreHendelse(
+                Status.PUBLISERT,
+                LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 1),
+            )
+        val publisertHendelse2 =
+            oppretteOgLagreHendelse(
+                Status.PUBLISERT,
+                LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() + 2),
+            )
+        val publisertHendelseUtenforSlettevindu =
+            oppretteOgLagreHendelse(
+                Status.PUBLISERT,
+                LocalDateTime.now().minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong() - 2),
+            )
 
         // hvis
         sletteUtgåtteHendelser.sletteUtgåtteHendelserFraDatabase()
@@ -85,9 +91,12 @@ class SletteUtgåtteHendelserTest {
         }
     }
 
-    private fun oppretteOgLagreHendelse(status: Status, statustidspunkt: LocalDateTime): Hendelsemottak {
-        var hendelseid1 = UUID.randomUUID().toString()
-        var hendelseMottattUtenforVenteperiode =
+    private fun oppretteOgLagreHendelse(
+        status: Status,
+        statustidspunkt: LocalDateTime,
+    ): Hendelsemottak {
+        val hendelseid1 = UUID.randomUUID().toString()
+        val hendelseMottattUtenforVenteperiode =
             Livshendelse(
                 hendelseid1,
                 Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1,
@@ -96,7 +105,7 @@ class SletteUtgåtteHendelserTest {
                 personidenter.first { it.length == 13 },
                 LocalDateTime.now(),
             )
-        var kansellertHendelseSomSkalSlettes = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
+        val kansellertHendelseSomSkalSlettes = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
         kansellertHendelseSomSkalSlettes.status = status
         kansellertHendelseSomSkalSlettes.statustidspunkt = statustidspunkt
         return hendelsemottakDao.save(kansellertHendelseSomSkalSlettes)

@@ -8,8 +8,10 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class LocalDateTypeAdapter : TypeAdapter<LocalDate>() {
-
-    override fun write(out: JsonWriter, value: LocalDate) {
+    override fun write(
+        out: JsonWriter,
+        value: LocalDate,
+    ) {
         out.value(DateTimeFormatter.ISO_LOCAL_DATE.format(value))
     }
 
@@ -17,8 +19,10 @@ class LocalDateTypeAdapter : TypeAdapter<LocalDate>() {
 }
 
 class LocalDateTimeTypeAdapter : TypeAdapter<LocalDateTime>() {
-
-    override fun write(out: JsonWriter, value: LocalDateTime) {
+    override fun write(
+        out: JsonWriter,
+        value: LocalDateTime,
+    ) {
         out.value(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(value))
     }
 

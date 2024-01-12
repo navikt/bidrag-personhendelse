@@ -34,7 +34,6 @@ import java.util.concurrent.CompletableFuture
 @ActiveProfiles(Testkonfig.PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
 class BidragKafkaMeldingsprodusentTest {
-
     @MockK
     lateinit var kafkaTemplate: KafkaTemplate<String, String>
 
@@ -100,13 +99,13 @@ class BidragKafkaMeldingsprodusentTest {
             kafkaTemplate.send(BidragKafkaMeldingsprodusent.BIDRAG_PERSONHENDELSE_TOPIC, aktørid, any())
         }
 
-        var aktør = aktorDao.findByAktorid(aktørid)
+        val aktør = aktorDao.findByAktorid(aktørid)
         assertSoftly {
             aktør.isPresent
             aktør.get().publisert shouldNotBe null
         }
 
-        var oppdatertHendelsemottak = hendelsemottakDao.findById(hendelsemottak.id)
+        val oppdatertHendelsemottak = hendelsemottakDao.findById(hendelsemottak.id)
         assertSoftly {
             oppdatertHendelsemottak.isPresent
             oppdatertHendelsemottak.get().status shouldBe Status.PUBLISERT
@@ -131,7 +130,7 @@ class BidragKafkaMeldingsprodusentTest {
             kafkaTemplate.send(BidragKafkaMeldingsprodusent.BIDRAG_PERSONHENDELSE_TOPIC, aktørid, any())
         }
 
-        var aktør = aktorDao.findByAktorid(aktørid)
+        val aktør = aktorDao.findByAktorid(aktørid)
         assertSoftly {
             aktør.isPresent
             aktør.get().publisert shouldNotBe null

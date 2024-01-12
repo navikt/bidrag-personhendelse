@@ -14,7 +14,6 @@ import org.springframework.jms.core.JmsTemplate
 
 @ExtendWith(MockKExtension::class)
 class MeldingsprodusentTest {
-
     @MockK
     lateinit var jmsTemplate: JmsTemplate
     lateinit var meldingsprodusent: BisysMeldingsprodusjon

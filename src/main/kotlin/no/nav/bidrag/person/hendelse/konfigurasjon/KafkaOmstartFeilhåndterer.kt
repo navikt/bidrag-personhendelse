@@ -2,7 +2,6 @@ package no.nav.bidrag.person.hendelse.konfigurasjon
 
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRecord
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.task.SimpleAsyncTaskExecutor
 import org.springframework.kafka.KafkaException
@@ -17,13 +16,10 @@ import java.util.concurrent.atomic.AtomicLong
 
 @Component
 class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
-
-    val LOGGER: Logger = LoggerFactory.getLogger(KafkaOmstartFeilhåndterer::class.java)
-    val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLogger")
-
     private val executor: Executor
     private val counter = AtomicInteger(0)
     private val lastError = AtomicLong(0)
+
     override fun handleRemaining(
         e: Exception,
         records: List<ConsumerRecord<*, *>>?,
@@ -108,6 +104,9 @@ class KafkaOmstartFeilhåndterer : CommonContainerStoppingErrorHandler() {
     }
 
     companion object {
+        private val LOGGER = LoggerFactory.getLogger(KafkaOmstartFeilhåndterer::class.java)
+        private val SECURE_LOGGER = LoggerFactory.getLogger("secureLogger")
+
         private val LONG_SLEEP = Duration.ofHours(3).toMillis()
         private val SHORT_SLEEP = Duration.ofSeconds(20).toMillis()
         private const val SLOW_ERROR_COUNT = 10

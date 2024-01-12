@@ -20,20 +20,26 @@ class BidragPersonklient(
     @Value("\${egenskaper.integrasjon.bidrag-person.url}") val bidragPersonUrl: URI,
     @Qualifier("azure") val restTemplate: RestTemplate,
 ) : AbstractRestClient(restTemplate, "bidrag-person") {
-
-    private fun createUri(path: String?) = UriComponentsBuilder.fromUri(bidragPersonUrl)
-        .path(path ?: "").build().toUri()
-
     @Retryable(value = [Exception::class], maxAttempts = 10, backoff = Backoff(delay = 1000, multiplier = 2.0))
     fun henteAlleIdenterForPerson(personIdent: String): List<PersonidentDto>? {
         return try {
-            postForEntity(createUri(ENDEPUNKT_PERSONIDENTER), HentePersonidenterRequest(personIdent))
+            postForEntity(createUri(), HentePersonidenterRequest(personIdent))
         } catch (e: HttpStatusCodeException) {
-            log.warn("Kall mot bidrag-person for å hente alle registrerte personidenter for personident feilet med statuskode ${e.statusCode} og melding ${e.message}")
-            slog.warn("Kall mot bidrag-person for å hente alle registrerte personidenter for personident $personIdent feilet med statuskode ${e.statusCode} og melding ${e.message}")
+            log.warn(
+                "Kall mot bidrag-person for å hente alle registrerte personidenter " +
+                    "for personident feilet med statuskode ${e.statusCode} og melding ${e.message}",
+            )
+            slog.warn(
+                "Kall mot bidrag-person for å hente alle registrerte personidenter " +
+                    "for personident $personIdent feilet med statuskode ${e.statusCode} og melding ${e.message}",
+            )
             throw e
         }
     }
+
+    private fun createUri() =
+        UriComponentsBuilder.fromUri(bidragPersonUrl)
+            .path(ENDEPUNKT_PERSONIDENTER).build().toUri()
 
     companion object {
         const val ENDEPUNKT_PERSONIDENTER = "/personidenter"

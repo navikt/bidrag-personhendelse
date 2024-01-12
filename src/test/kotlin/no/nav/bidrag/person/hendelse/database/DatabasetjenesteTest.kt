@@ -19,7 +19,6 @@ import java.time.LocalDateTime
 @ActiveProfiles(PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
 class DatabasetjenesteTest {
-
     private val personidenter = listOf("12345678901", "1234567890123")
 
     @Autowired
@@ -30,7 +29,6 @@ class DatabasetjenesteTest {
 
     @Nested
     open inner class Hendelsemottak {
-
         @BeforeEach
         fun initialisere() {
             hendelsemottakDao.deleteAll()
@@ -40,8 +38,8 @@ class DatabasetjenesteTest {
         @Transactional
         open fun skalKansellereTidligereOgNyHendelseVedAnnulleringDersomTidligereHendelseIkkeErOverført() {
             // gitt
-            var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
-            var opprinneligHendelse =
+            val hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+            val opprinneligHendelse =
                 Livshendelse(
                     hendelseidOpprinneligHendelse,
                     Opplysningstype.BOSTEDSADRESSE_V1,
@@ -50,26 +48,27 @@ class DatabasetjenesteTest {
                     personidenter.first { it.length == 13 },
                     LocalDateTime.now(),
                 )
-            var lagretOpprinneligHendelse = databasetjeneste.lagreHendelse(opprinneligHendelse)
+            val lagretOpprinneligHendelse = databasetjeneste.lagreHendelse(opprinneligHendelse)
 
-            var hendelseidAnnulleringshendelse = "38468520-70f2-40c0-b4ae-6c765c307a7d"
-            var annulleringAvOpprinneligHendelse = Livshendelse(
-                hendelseidAnnulleringshendelse,
-                Opplysningstype.BOSTEDSADRESSE_V1,
-                Endringstype.ANNULLERT,
-                personidenter,
-                personidenter.first { it.length == 13 },
-                LocalDateTime.now(),
-                hendelseidOpprinneligHendelse,
-            )
+            val hendelseidAnnulleringshendelse = "38468520-70f2-40c0-b4ae-6c765c307a7d"
+            val annulleringAvOpprinneligHendelse =
+                Livshendelse(
+                    hendelseidAnnulleringshendelse,
+                    Opplysningstype.BOSTEDSADRESSE_V1,
+                    Endringstype.ANNULLERT,
+                    personidenter,
+                    personidenter.first { it.length == 13 },
+                    LocalDateTime.now(),
+                    hendelseidOpprinneligHendelse,
+                )
 
             // hvis
-            var lagretAnnulleringAvOpprinneligHendelse =
+            val lagretAnnulleringAvOpprinneligHendelse =
                 databasetjeneste.lagreHendelse(annulleringAvOpprinneligHendelse)
 
             // så
-            var lagretOpprinneligHendelseEtterKansellering = hendelsemottakDao.findById(lagretOpprinneligHendelse.id)
-            var lagretNyHendelseEtterKansellering =
+            val lagretOpprinneligHendelseEtterKansellering = hendelsemottakDao.findById(lagretOpprinneligHendelse.id)
+            val lagretNyHendelseEtterKansellering =
                 hendelsemottakDao.findById(lagretAnnulleringAvOpprinneligHendelse.id)
 
             assertSoftly {
@@ -83,8 +82,8 @@ class DatabasetjenesteTest {
         @Test
         fun `skal kansellere opphør av bostedsadresse`() {
             // gitt
-            var hendelseid = "c096ca6f-9801-4543-9a44-116f4ed806ce"
-            var hendelse =
+            val hendelseid = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+            val hendelse =
                 Livshendelse(
                     hendelseid,
                     Opplysningstype.BOSTEDSADRESSE_V1,
@@ -95,7 +94,7 @@ class DatabasetjenesteTest {
                 )
 
             // hvis
-            var lagretHendelse = databasetjeneste.lagreHendelse(hendelse)
+            val lagretHendelse = databasetjeneste.lagreHendelse(hendelse)
 
             // så
             assertSoftly {
@@ -106,31 +105,32 @@ class DatabasetjenesteTest {
         @Test
         fun `skal håndtere høyt antall personidenter`() {
             // gitt
-            var langRekkePersonidenter = listOf(
-                "12345678910",
-                "12345678911",
-                "12345678912",
-                "12345678913",
-                "12345678914",
-                "12345678915",
-                "12345678916",
-                "12345678917",
-                "12345678918",
-                "12345678919",
-                "12345678910",
-                "2345678910123",
-                "22345678910",
-                "22345678911",
-                "22345678912",
-                "22345678913",
-                "22345678914",
-                "22345678915",
-                "32345678913",
-                "32345678914",
-                "32345678915",
-            )
-            var hendelseid = "c096ca6f-9801-4543-9a44-116f4ed806ce"
-            var hendelse =
+            val langRekkePersonidenter =
+                listOf(
+                    "12345678910",
+                    "12345678911",
+                    "12345678912",
+                    "12345678913",
+                    "12345678914",
+                    "12345678915",
+                    "12345678916",
+                    "12345678917",
+                    "12345678918",
+                    "12345678919",
+                    "12345678910",
+                    "2345678910123",
+                    "22345678910",
+                    "22345678911",
+                    "22345678912",
+                    "22345678913",
+                    "22345678914",
+                    "22345678915",
+                    "32345678913",
+                    "32345678914",
+                    "32345678915",
+                )
+            val hendelseid = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+            val hendelse =
                 Livshendelse(
                     hendelseid,
                     Opplysningstype.BOSTEDSADRESSE_V1,
@@ -141,7 +141,7 @@ class DatabasetjenesteTest {
                 )
 
             // hvis
-            var lagretHendelse = databasetjeneste.lagreHendelse(hendelse)
+            val lagretHendelse = databasetjeneste.lagreHendelse(hendelse)
 
             // så
             assertSoftly {
@@ -153,25 +153,26 @@ class DatabasetjenesteTest {
         @Transactional
         open fun tidligereHendelseidFinnesIkkeIDatabasen() {
             // gitt
-            var hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
+            val hendelseidOpprinneligHendelse = "c096ca6f-9801-4543-9a44-116f4ed806ce"
 
-            var hendelseidAnnulleringshendelse = "38468520-70f2-40c0-b4ae-6c765c307a7d"
-            var annulleringAvOpprinneligHendelse = Livshendelse(
-                hendelseidAnnulleringshendelse,
-                Opplysningstype.BOSTEDSADRESSE_V1,
-                Endringstype.ANNULLERT,
-                personidenter,
-                personidenter.first { it.length == 13 },
-                LocalDateTime.now(),
-                hendelseidOpprinneligHendelse,
-            )
+            val hendelseidAnnulleringshendelse = "38468520-70f2-40c0-b4ae-6c765c307a7d"
+            val annulleringAvOpprinneligHendelse =
+                Livshendelse(
+                    hendelseidAnnulleringshendelse,
+                    Opplysningstype.BOSTEDSADRESSE_V1,
+                    Endringstype.ANNULLERT,
+                    personidenter,
+                    personidenter.first { it.length == 13 },
+                    LocalDateTime.now(),
+                    hendelseidOpprinneligHendelse,
+                )
 
             // hvis
-            var lagretAnnulleringAvOpprinneligHendelse =
+            val lagretAnnulleringAvOpprinneligHendelse =
                 databasetjeneste.lagreHendelse(annulleringAvOpprinneligHendelse)
 
             // så
-            var lagretNyHendelseEtterKansellering =
+            val lagretNyHendelseEtterKansellering =
                 hendelsemottakDao.findById(lagretAnnulleringAvOpprinneligHendelse.id)
 
             assertSoftly {

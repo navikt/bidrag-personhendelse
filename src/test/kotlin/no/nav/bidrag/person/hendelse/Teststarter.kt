@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Import
 class Teststarter
 
 fun main(args: Array<String>) {
-    val app = SpringApplicationBuilder(Teststarter::class.java)
-        .profiles(args[0])
+    val app =
+        SpringApplicationBuilder(Teststarter::class.java)
+            .profiles(args[0])
     app.run(*args)
 }

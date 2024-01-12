@@ -39,7 +39,6 @@ import java.util.stream.Collectors
     matchIfMissing = true,
 )
 class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
-
     object MdcKonstanter {
         const val MDC_KALLID = "id-kall"
     }
@@ -51,11 +50,14 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         idIsGroup = false,
         containerFactory = "kafkaLeesahListenerContainerFactory",
     )
-    fun listen(@Payload personhendelse: Personhendelse, cr: ConsumerRecord<String, Personhendelse>) {
+    fun listen(
+        @Payload personhendelse: Personhendelse,
+        cr: ConsumerRecord<String, Personhendelse>,
+    ) {
         log.info("Livshendelse med hendelseid {} mottatt.", personhendelse.hendelseId)
         slog.info("Har mottatt leesah-hendelse $cr")
 
-        var opplysningstype = konvertereOpplysningstype(personhendelse.opplysningstype)
+        val opplysningstype = konvertereOpplysningstype(personhendelse.opplysningstype)
 
         if (Livshendelse.Opplysningstype.IKKE_STØTTET.equals(opplysningstype)) {
             log.info("Mottok opplysningstype som ikke støttes av løsningen - avbryter videre prosessering.")
@@ -71,35 +73,39 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             personhendelse.personidenter?.first { it.length == 13 }
         } catch (nsee: NoSuchElementException) {
             log.warn("Mottok hendelse uten aktørid - avbryter videre prosessering")
-            slog.warn("Fant ikke aktørid i hendelse med hendelseid: ${personhendelse.hendelseId} og personidenter: {${personhendelse.personidenter}}")
+            slog.warn(
+                "Fant ikke aktørid i hendelse med hendelseid: " +
+                    "${personhendelse.hendelseId} og personidenter: {${personhendelse.personidenter}}",
+            )
             return
         }
 
-        val livshendelse = Livshendelse(
-            personhendelse.hendelseId.toString(),
-            opplysningstype,
-            konvertereEndringstype(personhendelse.endringstype),
-            personhendelse.personidenter?.stream()?.map(CharSequence::toString)!!.collect(Collectors.toList()),
-            personhendelse.personidenter.first { it.length == 13 }.toString(),
-            LocalDateTime.ofInstant(personhendelse.opprettet, ZoneId.systemDefault()),
-            personhendelse.tidligereHendelseId?.toString(),
-            henteDødsdato(personhendelse.doedsfall),
-            henteFlyttedato(
-                personhendelse.bostedsadresse,
-                personhendelse.kontaktadresse,
-                personhendelse.oppholdsadresse,
-            ),
-            henteFolkeregisteridentifikator(personhendelse.folkeregisteridentifikator),
-            henteFødsel(personhendelse.foedsel),
-            henteInnflytting(personhendelse.innflyttingTilNorge),
-            henteNavn(personhendelse.navn),
-            henteUtflytting(personhendelse.utflyttingFraNorge),
-            henteSivilstand(personhendelse.sivilstand),
-            henteVerge(personhendelse.vergemaalEllerFremtidsfullmakt),
-            henteAdressebeskyttelse(personhendelse.adressebeskyttelse),
-            cr.offset(),
-            personhendelse.master.toString(),
-        )
+        val livshendelse =
+            Livshendelse(
+                personhendelse.hendelseId.toString(),
+                opplysningstype,
+                konvertereEndringstype(personhendelse.endringstype),
+                personhendelse.personidenter?.stream()?.map(CharSequence::toString)!!.collect(Collectors.toList()),
+                personhendelse.personidenter.first { it.length == 13 }.toString(),
+                LocalDateTime.ofInstant(personhendelse.opprettet, ZoneId.systemDefault()),
+                personhendelse.tidligereHendelseId?.toString(),
+                henteDødsdato(personhendelse.doedsfall),
+                henteFlyttedato(
+                    personhendelse.bostedsadresse,
+                    personhendelse.kontaktadresse,
+                    personhendelse.oppholdsadresse,
+                ),
+                henteFolkeregisteridentifikator(personhendelse.folkeregisteridentifikator),
+                henteFødsel(personhendelse.foedsel),
+                henteInnflytting(personhendelse.innflyttingTilNorge),
+                henteNavn(personhendelse.navn),
+                henteUtflytting(personhendelse.utflyttingFraNorge),
+                henteSivilstand(personhendelse.sivilstand),
+                henteVerge(personhendelse.vergemaalEllerFremtidsfullmakt),
+                henteAdressebeskyttelse(personhendelse.adressebeskyttelse),
+                cr.offset(),
+                personhendelse.master.toString(),
+            )
 
         try {
             MDC.put(MdcKonstanter.MDC_KALLID, livshendelse.hendelseid)
@@ -174,14 +180,28 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
     }
 
     private fun erKontaktadresseEndret(kontaktadresse: Kontaktadresse?): Boolean {
-        return kontaktadresse != null && (kontaktadresse.vegadresse != null || kontaktadresse.postadresseIFrittFormat != null || kontaktadresse.postboksadresse != null || kontaktadresse.postadresseIFrittFormat != null || kontaktadresse.utenlandskAdresse != null)
+        return kontaktadresse != null &&
+            (
+                kontaktadresse.vegadresse != null ||
+                    kontaktadresse.postadresseIFrittFormat != null ||
+                    kontaktadresse.postboksadresse != null ||
+                    kontaktadresse.postadresseIFrittFormat != null ||
+                    kontaktadresse.utenlandskAdresse != null
+            )
     }
 
     private fun erOppholdsadresseEndret(oppholdsadresse: Oppholdsadresse?): Boolean {
-        return oppholdsadresse != null && (oppholdsadresse.utenlandskAdresse != null || oppholdsadresse.matrikkeladresse != null || oppholdsadresse.vegadresse != null)
+        return oppholdsadresse != null &&
+            (
+                oppholdsadresse.utenlandskAdresse != null ||
+                    oppholdsadresse.matrikkeladresse != null ||
+                    oppholdsadresse.vegadresse != null
+            )
     }
 
-    private fun henteFolkeregisteridentifikator(folkeregisteridentifikator: no.nav.person.pdl.leesah.folkeregisteridentifikator.Folkeregisteridentifikator?): Folkeregisteridentifikator? {
+    private fun henteFolkeregisteridentifikator(
+        folkeregisteridentifikator: no.nav.person.pdl.leesah.folkeregisteridentifikator.Folkeregisteridentifikator?,
+    ): Folkeregisteridentifikator? {
         return if (folkeregisteridentifikator == null) {
             null
         } else {
@@ -213,11 +233,12 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (navn == null) {
             null
         } else {
-            var originaltNavn = OriginaltNavn(
-                navn.originaltNavn?.fornavn?.toString(),
-                navn.originaltNavn?.mellomnavn?.toString(),
-                navn.originaltNavn?.etternavn?.toString(),
-            )
+            val originaltNavn =
+                OriginaltNavn(
+                    navn.originaltNavn?.fornavn?.toString(),
+                    navn.originaltNavn?.mellomnavn?.toString(),
+                    navn.originaltNavn?.etternavn?.toString(),
+                )
             Navn(
                 navn.fornavn?.toString(),
                 navn.mellomnavn?.toString(),
@@ -252,11 +273,12 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         return if (verge == null) {
             null
         } else {
-            var vergeEllerFullmektig = VergeEllerFullmektig(
-                verge.vergeEllerFullmektig?.motpartsPersonident?.toString(),
-                verge.vergeEllerFullmektig?.omfang.toString(),
-                verge.vergeEllerFullmektig?.omfangetErInnenPersonligOmraade,
-            )
+            val vergeEllerFullmektig =
+                VergeEllerFullmektig(
+                    verge.vergeEllerFullmektig?.motpartsPersonident?.toString(),
+                    verge.vergeEllerFullmektig?.omfang.toString(),
+                    verge.vergeEllerFullmektig?.omfangetErInnenPersonligOmraade,
+                )
             VergeEllerFremtidsfullmakt(verge.type?.toString(), verge.embete?.toString(), vergeEllerFullmektig)
         }
     }
