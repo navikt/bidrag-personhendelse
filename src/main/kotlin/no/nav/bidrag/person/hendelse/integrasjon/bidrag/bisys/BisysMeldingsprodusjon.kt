@@ -18,6 +18,7 @@ class BisysMeldingsprodusjon(private val jmsTemplate: JmsTemplate) {
 
         val producerCallback =
             ProducerCallback { session, producer ->
+
                 val destination: Queue = session.createQueue(mottakerkoe)
                 for (hendelse in hendelser) {
                     producer.send(destination, session.createTextMessage(hendelse))
