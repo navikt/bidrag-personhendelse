@@ -17,12 +17,12 @@ spec:
     path: /internal/health
     initialDelay: 50
     failureThreshold: 10
-    timeoutSeconds: 15
+    timeout: 15
   readiness:
     path: /internal/health
     initialDelay: 50
     failureThreshold: 10
-    timeoutSeconds: 15
+    timeout: 15
   prometheus:
     enabled: true
     path: /internal/prometheus
@@ -66,7 +66,5 @@ spec:
       external:
         - host: b27apvl222.preprod.local
           ports:
-            - name: mq
-              port: 1413
-              protocol: TCP
+            - port: 1413
         - host: bidrag-person.dev-fss-pub.nais.io

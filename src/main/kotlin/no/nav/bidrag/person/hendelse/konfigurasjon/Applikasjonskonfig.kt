@@ -17,12 +17,12 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Profile
+import org.springframework.http.client.observation.ClientRequestObservationConvention
+import org.springframework.http.client.observation.DefaultClientRequestObservationConvention
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.retry.annotation.EnableRetry
 import org.springframework.scheduling.annotation.EnableScheduling
 import javax.sql.DataSource
-import org.springframework.http.client.observation.ClientRequestObservationConvention
-import org.springframework.http.client.observation.DefaultClientRequestObservationConvention
 
 @EnableRetry
 @Configuration
