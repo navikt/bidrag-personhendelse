@@ -25,7 +25,7 @@
         <java.version>21</java.version>
         <jvmTarget>21</jvmTarget>
         <javax.jms-api.version>2.0.1</javax.jms-api.version>
-        <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
         <kotlin.version>1.9.22</kotlin.version>
         <ktlint.version>1.1.1</ktlint.version>
         <flyway-maven-plugin.version>10.6.0</flyway-maven-plugin.version>
@@ -38,8 +38,8 @@
         <ibm.mq.allclient.version>9.3.4.1</ibm.mq.allclient.version>
         <prosessering.version>1.20220624132237_7f5ba9c</prosessering.version>
         <logback.encoder.version>7.3</logback.encoder.version>
-        <spring.cloud.version>4.1.0</spring.cloud.version>
-        <spring-cloud-gcp.version>5.0.0</spring-cloud-gcp.version>
+        <spring.cloud.version>4.1.1</spring.cloud.version>
+        <spring-cloud-gcp.version>5.0.1</spring-cloud-gcp.version>
         <spring-jms.version>5.3.31</spring-jms.version>
         <unleash-client-java.version>4.4.1</unleash-client-java.version>
         <shedlock.version>5.10.2</shedlock.version>
