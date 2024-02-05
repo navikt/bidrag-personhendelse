@@ -29,7 +29,7 @@
         <kotlin.version>1.9.22</kotlin.version>
         <ktlint.version>1.1.1</ktlint.version>
         <flyway-maven-plugin.version>10.6.0</flyway-maven-plugin.version>
-        <mockk.version>1.13.5</mockk.version>
+        <mockk.version>1.13.9</mockk.version>
         <apache.httpcore.version>4.4.16</apache.httpcore.version>
         <apache.httpclient.version>4.5.14</apache.httpclient.version>
         <apache.avro.version>1.11.3</apache.avro.version>
