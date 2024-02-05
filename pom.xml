@@ -37,7 +37,7 @@
         <confluent.version>7.5.3</confluent.version>
         <ibm.mq.allclient.version>9.3.4.1</ibm.mq.allclient.version>
         <prosessering.version>1.20220624132237_7f5ba9c</prosessering.version>
-        <logback.encoder.version>7.3</logback.encoder.version>
+        <logback.encoder.version>7.4</logback.encoder.version>
         <spring.cloud.version>4.1.1</spring.cloud.version>
         <spring-cloud-gcp.version>5.0.1</spring-cloud-gcp.version>
         <spring-jms.version>5.3.31</spring-jms.version>
