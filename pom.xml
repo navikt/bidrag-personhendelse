@@ -28,7 +28,7 @@
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
         <kotlin.version>1.9.22</kotlin.version>
         <ktlint.version>1.1.1</ktlint.version>
-        <flyway-maven-plugin.version>10.6.0</flyway-maven-plugin.version>
+        <flyway-maven-plugin.version>10.7.1</flyway-maven-plugin.version>
         <mockk.version>1.13.9</mockk.version>
         <apache.httpcore.version>4.4.16</apache.httpcore.version>
         <apache.httpclient.version>4.5.14</apache.httpclient.version>
@@ -37,7 +37,7 @@
         <confluent.version>7.5.3</confluent.version>
         <ibm.mq.allclient.version>9.3.4.1</ibm.mq.allclient.version>
         <prosessering.version>1.20220624132237_7f5ba9c</prosessering.version>
-        <logback.encoder.version>7.3</logback.encoder.version>
+        <logback.encoder.version>7.4</logback.encoder.version>
         <spring.cloud.version>4.1.1</spring.cloud.version>
         <spring-cloud-gcp.version>5.0.1</spring-cloud-gcp.version>
         <spring-jms.version>5.3.31</spring-jms.version>
