@@ -28,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.SendResult
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 
@@ -61,6 +62,7 @@ class BidragKafkaMeldingsprodusentTest {
     }
 
     @Test
+    @Transactional
     fun `skal produsere meldinger på riktig format`() {
         // gitt
         val aktørid = "123"
@@ -82,6 +84,7 @@ class BidragKafkaMeldingsprodusentTest {
     }
 
     @Test
+    @Transactional
     fun `skal oppdatere status på hendelse etter publisering`() {
         // gitt
         val personidenter = generereIdenter()
@@ -114,6 +117,7 @@ class BidragKafkaMeldingsprodusentTest {
     }
 
     @Test
+    @Transactional
     fun `skal oppdatere publiseringstidspunkt til aktør uten hendelse`() {
         // gitt
         val aktørid = "1234"

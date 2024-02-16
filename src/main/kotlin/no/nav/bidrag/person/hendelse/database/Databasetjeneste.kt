@@ -21,20 +21,13 @@ class Databasetjeneste(
         id: Long,
         nyStatus: Status,
     ) {
-        val hendelse =
-            hendelsemottakDao.findById(
-                id,
-            )
+        val hendelse = hendelsemottakDao.findById(id)
+
         if (hendelse.isPresent) {
-            val hendelsemottak =
-                hendelse.get()
-            hendelsemottak.status =
-                nyStatus
-            hendelsemottak.statustidspunkt =
-                LocalDateTime.now()
-            this.hendelsemottakDao.save(
-                hendelsemottak,
-            )
+            val hendelsemottak = hendelse.get()
+            hendelsemottak.status = nyStatus
+            hendelsemottak.statustidspunkt = LocalDateTime.now()
+            this.hendelsemottakDao.save(hendelsemottak)
         }
     }
 
@@ -63,25 +56,16 @@ class Databasetjeneste(
         nyStatus: Status,
     ) {
         for (id in ider) {
-            oppdatereStatusPåHendelse(
-                id,
-                nyStatus,
-            )
+            oppdatereStatusPåHendelse(id, nyStatus)
         }
     }
 
     @Transactional
     fun oppdatereStatusPåHendelserEtterPublisering(aktørid: String) {
-        val ider =
-            hendelsemottakDao.finnHendelsemottakIderMedStatusOverført(
-                aktørid,
-            )
+        val ider = hendelsemottakDao.finnHendelsemottakIderMedStatusOverført(aktørid)
 
         for (id in ider) {
-            oppdatereStatusPåHendelse(
-                id,
-                Status.PUBLISERT,
-            )
+            oppdatereStatusPåHendelse(id, Status.PUBLISERT)
         }
     }
 
@@ -90,35 +74,24 @@ class Databasetjeneste(
     )
     fun lagreHendelse(livshendelse: Livshendelse): Hendelsemottak {
         // Kansellere eventuell tidligere hendelse som er lagret i databasen med status mottatt
-        var status =
-            kansellereTidligereHendelse(
-                livshendelse,
-            )
+        var status = kansellereTidligereHendelse(livshendelse)
 
         // Sørge for at meldinger med endringstype KORRIGERT sendes videre
         if (Status.KANSELLERT == status && Endringstype.KORRIGERT == livshendelse.endringstype) {
-            status =
-                Status.MOTTATT
+            status = Status.MOTTATT
         }
 
         // Kansellerer hendelser om opphør av bostedsadresse. Endring av eksisterende bostedsadresse fører til utsending av to hendelser. Opprett for ny adresse og opphør for gammel.
         if (Livshendelse.Opplysningstype.BOSTEDSADRESSE_V1 == livshendelse.opplysningstype &&
             Endringstype.OPPHOERT == livshendelse.endringstype
         ) {
-            status =
-                Status.KANSELLERT
+            status = Status.KANSELLERT
         }
 
         val lagretAktør =
-            aktorDao.findByAktorid(
-                livshendelse.aktorid,
-            )
+            aktorDao.findByAktorid(livshendelse.aktorid)
                 .orElseGet {
-                    aktorDao.save(
-                        Aktor(
-                            livshendelse.aktorid,
-                        ),
-                    )
+                    aktorDao.save(Aktor(livshendelse.aktorid))
                 }
 
         return hendelsemottakDao.save(

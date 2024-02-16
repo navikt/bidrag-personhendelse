@@ -29,6 +29,7 @@ class BidragKafkaMeldingsprodusent(
         personidenter: Set<String>,
     ) {
         publisereMelding(aktørid, personidenter)
+        databasetjeneste.hendelsemottakDao.oppdaterePubliseringsstatusForAlleHendelser()
     }
 
     private fun publisereMelding(
