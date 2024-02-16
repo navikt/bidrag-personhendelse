@@ -45,7 +45,7 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     @Query(
         "from Hendelsemottak hm " +
             "where hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT " +
-            "and hm.aktor.publisert is null or hm.aktor.publisert < :publisertFør",
+            "and (hm.aktor.publisert is null or hm.aktor.publisert < :publisertFør)",
     )
     fun hentePubliseringsklareOverførteHendelser(publisertFør: LocalDateTime): Set<Hendelsemottak>
 

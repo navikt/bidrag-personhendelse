@@ -10,6 +10,7 @@ import io.mockk.slot
 import io.mockk.verify
 import no.nav.bidrag.person.hendelse.Teststarter
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
+import no.nav.bidrag.person.hendelse.database.Status
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.BidragKafkaMeldingsprodusent
 import no.nav.bidrag.person.hendelse.konfigurasjon.Testkonfig
 import no.nav.bidrag.person.hendelse.testdata.TeststøtteMeldingsmottak
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import java.time.LocalDateTime
 
 @ActiveProfiles(Testkonfig.PROFIL_TEST)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Teststarter::class])
@@ -105,5 +107,35 @@ class PublisereEndringmeldingerTest {
 
         aktørid.asClue { it.captured shouldBe personidentDtoAktør?.ident }
         identer.asClue { it.captured shouldBe personidenter }
+    }
+
+    @Test
+    fun `skal ikke publisere endringsmelding for hendelse som har status 'PUBLISERT'`() {
+        // gitt
+        val personidenter = generereIdenter()
+        val personidentDtoer = tilPersonidentDtoer(personidenter)
+
+        val personidentDtoAktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
+
+        teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidenter = personidentDtoer!!.map { it.ident }, status = Status.PUBLISERT)
+
+        val aktor = databasetjeneste.aktorDao.findByAktorid(personidentDtoAktør?.ident!!)
+        aktor.get().publisert = LocalDateTime.now().minusMonths(1)
+        databasetjeneste.aktorDao.save(aktor.get())
+
+        every { meldingsprodusent.publisereEndringsmelding(any(), any()) } returns Unit
+
+        // hvis
+        publisereEndringsmeldinger.identifisereOgPublisere()
+
+        // så
+        val aktørid = slot<String>()
+        val identer = slot<Set<String>>()
+        verify(exactly = 0) {
+            meldingsprodusent.publisereEndringsmelding(
+                capture(aktørid),
+                capture(identer),
+            )
+        }
     }
 }
