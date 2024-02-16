@@ -4,6 +4,7 @@ import jakarta.persistence.LockModeType
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Lock
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.lang.Nullable
 import org.springframework.stereotype.Repository
@@ -58,6 +59,14 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
         status: Status,
         statustidspunktFør: LocalDateTime,
     ): Set<Long>
+
+    @Modifying
+    @Query(
+        "update Hendelsemottak hm " +
+            "set hm.status = no.nav.bidrag.person.hendelse.database.Status.PUBLISERT " +
+            "where hm.aktor.id in (select a.id from Aktor a where a.publisert is not null)",
+    )
+    fun oppdaterePubliseringsstatusForAlleHendelser()
 
     @Transactional
     fun deleteByIdIn(ider: Set<Long>): Long

@@ -117,7 +117,10 @@ class PublisereEndringmeldingerTest {
 
         val personidentDtoAktør = personidentDtoer?.find { it.gruppe == Identgruppe.AKTORID }
 
-        teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(personidenter = personidentDtoer!!.map { it.ident }, status = Status.PUBLISERT)
+        teststøtteMeldingsmottak.oppretteOgLagreHendelsemottak(
+            personidenter = personidentDtoer!!.map { it.ident },
+            status = Status.PUBLISERT,
+        )
 
         val aktor = databasetjeneste.aktorDao.findByAktorid(personidentDtoAktør?.ident!!)
         aktor.get().publisert = LocalDateTime.now().minusMonths(1)
