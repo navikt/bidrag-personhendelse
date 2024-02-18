@@ -12,7 +12,6 @@ import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Component
 class BidragKafkaMeldingsprodusent(
@@ -30,7 +29,6 @@ class BidragKafkaMeldingsprodusent(
         personidenter: Set<String>,
     ) {
         publisereMelding(aktørid, personidenter)
-        databasetjeneste.hendelsemottakDao.oppdaterePubliseringsstatusForAlleHendelser(LocalDateTime.now())
     }
 
     private fun publisereMelding(
