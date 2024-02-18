@@ -60,6 +60,16 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
         statustidspunktFør: LocalDateTime,
     ): Set<Long>
 
+    @Modifying
+    @Query(
+        "update Hendelsemottak hm " +
+            "set hm.status = no.nav.bidrag.person.hendelse.database.Status.PUBLISERT," +
+            "hm.statustidspunkt =:statustidspunkt " +
+            "where hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT and " +
+            "hm.aktor.id in (select a.id from Aktor a where a.publisert is not null)",
+    )
+    fun oppdaterePubliseringsstatusForAlleHendelser(statustidspunkt: LocalDateTime)
+
     @Transactional
     fun deleteByIdIn(ider: Set<Long>): Long
 }
