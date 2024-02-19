@@ -1,5 +1,6 @@
 package no.nav.bidrag.person.hendelse.database
 
+import jakarta.persistence.EntityManager
 import no.nav.bidrag.person.hendelse.domene.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper.Egenskaper
@@ -16,6 +17,7 @@ class Databasetjeneste(
     open val aktorDao: AktorDao,
     open val hendelsemottakDao: HendelsemottakDao,
     val egenskaper: Egenskaper,
+    val entityManager: EntityManager,
 ) {
     fun oppdatereStatusPåHendelse(
         id: Long,
@@ -39,9 +41,15 @@ class Databasetjeneste(
             )
 
         if (aktør.isPresent) {
-            aktør.get().publisert =
-                LocalDateTime.now()
+            val statustidspunkt = LocalDateTime.now()
+            entityManager.refresh(aktør.get())
+            aktør.get().publisert = statustidspunkt
+            aktør.get().hendelsemottak.filter { hm -> hm.status == Status.OVERFØRT }.forEach { hm ->
+                hm.statustidspunkt = statustidspunkt
+                hm.status = Status.PUBLISERT
+            }
         } else {
+            // Lagrer aktører som ikke er knyttet til PDL-hendelse (kan gjelde for kontoendringer)
             aktorDao.save(
                 Aktor(
                     aktørid,
@@ -57,15 +65,6 @@ class Databasetjeneste(
     ) {
         for (id in ider) {
             oppdatereStatusPåHendelse(id, nyStatus)
-        }
-    }
-
-    @Transactional
-    fun oppdatereStatusPåHendelserEtterPublisering(aktørid: String) {
-        val ider = hendelsemottakDao.finnHendelsemottakIderMedStatusOverført(aktørid)
-
-        for (id in ider) {
-            oppdatereStatusPåHendelse(id, Status.PUBLISERT)
         }
     }
 

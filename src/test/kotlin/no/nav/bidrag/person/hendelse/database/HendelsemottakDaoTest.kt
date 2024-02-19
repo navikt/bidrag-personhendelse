@@ -1,5 +1,7 @@
 package no.nav.bidrag.person.hendelse.database
 
+import jakarta.persistence.EntityManager
+import jakarta.transaction.Transactional
 import no.nav.bidrag.person.hendelse.Teststarter
 import no.nav.bidrag.person.hendelse.domene.Endringstype
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
@@ -25,7 +27,11 @@ class HendelsemottakDaoTest {
     @Autowired
     lateinit var hendelsemottakDao: HendelsemottakDao
 
+    @Autowired
+    lateinit var entityManager: EntityManager
+
     @Test
+    @Transactional
     fun skalLagreHendelse() {
         // gitt
         val personidenter = listOf("12345678910", "1234567891013")

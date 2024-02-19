@@ -11,6 +11,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import jakarta.persistence.EntityManager
 import no.nav.bidrag.person.hendelse.Teststarter
 import no.nav.bidrag.person.hendelse.database.Aktor
 import no.nav.bidrag.person.hendelse.database.AktorDao
@@ -50,13 +51,16 @@ class BidragKafkaMeldingsprodusentTest {
     @Autowired
     lateinit var teststøtteMeldingsmottak: TeststøtteMeldingsmottak
 
+    @Autowired
+    lateinit var entityManager: EntityManager
+
     lateinit var bidragKafkaMeldingsprodusent: BidragKafkaMeldingsprodusent
 
     @BeforeEach
     internal fun oppsett() {
         MockKAnnotations.init(this)
         clearAllMocks()
-        bidragKafkaMeldingsprodusent = BidragKafkaMeldingsprodusent(kafkaTemplate, databasetjeneste)
+        bidragKafkaMeldingsprodusent = BidragKafkaMeldingsprodusent(kafkaTemplate, databasetjeneste, entityManager)
         hendelsemottakDao.deleteAll()
         aktorDao.deleteAll()
     }

@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
+import jakarta.transaction.Transactional
 import no.nav.bidrag.person.hendelse.Teststarter
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.database.Status
@@ -54,6 +55,7 @@ class PublisereEndringmeldingerTest {
     }
 
     @Test
+    @Transactional
     fun `skal publisere endringsmeldinger for personer med nylig oppdaterte personopplysninger`() {
         // gitt
         val personidenter = generereIdenter()
@@ -82,6 +84,7 @@ class PublisereEndringmeldingerTest {
     }
 
     @Test
+    @Transactional
     fun `skal ikke publisere endringsmelding for samme person mer enn én gang innenfor en bestemt periode`() {
         // gitt
         val personidenter = generereIdenter()
@@ -110,6 +113,7 @@ class PublisereEndringmeldingerTest {
     }
 
     @Test
+    @Transactional
     fun `skal ikke publisere endringsmelding for hendelse som har status 'PUBLISERT'`() {
         // gitt
         val personidenter = generereIdenter()
