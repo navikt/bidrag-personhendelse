@@ -1,6 +1,7 @@
 package no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic
 
 import com.google.gson.GsonBuilder
+import jakarta.persistence.EntityManager
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
 import no.nav.bidrag.person.hendelse.exception.PubliseringFeiletException
 import no.nav.bidrag.person.hendelse.integrasjon.bidrag.topic.domene.Endringsmelding
@@ -12,12 +13,12 @@ import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Component
 class BidragKafkaMeldingsprodusent(
     private val kafkaTemplate: KafkaTemplate<String, String>,
     private val databasetjeneste: Databasetjeneste,
+    private val entityManager: EntityManager,
 ) {
     @Transactional
     @Retryable(
@@ -30,7 +31,6 @@ class BidragKafkaMeldingsprodusent(
         personidenter: Set<String>,
     ) {
         publisereMelding(aktørid, personidenter)
-        databasetjeneste.hendelsemottakDao.synkroniserePubliseringsstatusForPubliserteHendelser(LocalDateTime.now())
     }
 
     private fun publisereMelding(
@@ -53,7 +53,6 @@ class BidragKafkaMeldingsprodusent(
             }
 
             databasetjeneste.oppdaterePubliseringstidspunkt(aktørid)
-            databasetjeneste.oppdatereStatusPåHendelserEtterPublisering(aktørid)
         } catch (e: KafkaException) {
             // Fanger exception for å unngå at meldingsinnhold logges i åpen logg.
             slog.error("Publisering av melding for aktørid $aktørid feilet med feilmelding: ${e.message}")

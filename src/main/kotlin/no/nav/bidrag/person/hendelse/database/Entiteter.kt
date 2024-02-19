@@ -24,7 +24,7 @@ class Aktor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = 0,
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "aktor", cascade = arrayOf(CascadeType.MERGE))
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "aktor", cascade = arrayOf(CascadeType.MERGE))
     val hendelsemottak: Set<Hendelsemottak> = HashSet(),
 ) {
     override fun equals(other: Any?): Boolean {
@@ -48,7 +48,7 @@ class Hendelsemottak(
     val endringstype: Endringstype,
     @Column(name = "personidenter", nullable = false, columnDefinition = "TEXT")
     val personidenter: String,
-    @ManyToOne(cascade = arrayOf(CascadeType.MERGE))
+    @ManyToOne(cascade = arrayOf(CascadeType.MERGE, CascadeType.PERSIST))
     var aktor: Aktor,
     @Column(name = "opprettet", nullable = false, updatable = false)
     val opprettet: LocalDateTime = LocalDateTime.now(),

@@ -6,6 +6,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
+import jakarta.persistence.EntityManager
+import jakarta.transaction.Transactional
 import no.nav.bidrag.person.hendelse.Teststarter
 import no.nav.bidrag.person.hendelse.database.AktorDao
 import no.nav.bidrag.person.hendelse.database.Databasetjeneste
@@ -43,6 +45,9 @@ class OverføreHendelserTest {
     @Autowired
     lateinit var egenskaper: Egenskaper
 
+    @Autowired
+    lateinit var entityManager: EntityManager
+
     @MockK
     lateinit var meldingsprodusent: BisysMeldingsprodusjon
 
@@ -52,13 +57,14 @@ class OverføreHendelserTest {
     fun initialisere() {
         MockKAnnotations.init(this)
         clearAllMocks()
-        databasetjeneste = Databasetjeneste(aktorDao, hendelsemottakDao, egenskaper)
+        databasetjeneste = Databasetjeneste(aktorDao, hendelsemottakDao, egenskaper, entityManager)
         hendelsemottakDao.deleteAll()
         overføreHendelser = OverføreHendelser(databasetjeneste, egenskaper, meldingsprodusent)
         every { meldingsprodusent.sendeMeldinger(any(), any()) } returns 1
     }
 
     @Test
+    @Transactional
     fun `skal sette status til OVERFØRING_FEILET dersom exception oppstår under sending`() {
         // gitt
         val hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
@@ -72,9 +78,11 @@ class OverføreHendelserTest {
                 LocalDateTime.now(),
             )
         val lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
+        entityManager.flush()
         lagretHendelseVenteperiodeUtløpt.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
         val oppdatertHendelseMedUtløptVenteperiode = hendelsemottakDao.save(lagretHendelseVenteperiodeUtløpt)
+        entityManager.flush()
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedUtløptVenteperiode.statustidspunkt)
 
         val hendelseid2 = "38468520-70f2-40c0-b4ae-6c765c307a7d"
@@ -88,9 +96,11 @@ class OverføreHendelserTest {
                 LocalDateTime.now(),
             )
         val lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
+        entityManager.flush()
         lagretHendelserVenteperiodeIkkeUtløpt.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 5)
         val oppdatertHendelseVenteperiodeIkkeUtløpt = hendelsemottakDao.save(lagretHendelserVenteperiodeIkkeUtløpt)
+        entityManager.flush()
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseVenteperiodeIkkeUtløpt.statustidspunkt)
 
         val hendelseid3 = "87925614-70f2-40c0-b4ae-6c765c308h8h"
@@ -104,7 +114,9 @@ class OverføreHendelserTest {
                 LocalDateTime.now(),
             )
         val lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
+        entityManager.flush()
         val oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
+        entityManager.flush()
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedStatusOverført.statustidspunkt)
 
         every { meldingsprodusent.sendeMeldinger(any(), any()) } throws OverføringFeiletException("auda!")
@@ -127,6 +139,7 @@ class OverføreHendelserTest {
     }
 
     @Test
+    @Transactional
     fun skalOverføreHendelserMedStatusMottattOgUtløptVentetid() {
         // gitt
         val hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
@@ -140,9 +153,11 @@ class OverføreHendelserTest {
                 LocalDateTime.now(),
             )
         val lagretHendelseVenteperiodeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattUtenforVenteperiode)
+        entityManager.flush()
         lagretHendelseVenteperiodeUtløpt.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
         val oppdatertHendelseMedUtløptVenteperiode = hendelsemottakDao.save(lagretHendelseVenteperiodeUtløpt)
+        entityManager.flush()
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedUtløptVenteperiode.statustidspunkt)
 
         val hendelseid2 = "38468520-70f2-40c0-b4ae-6c765c307a7d"
@@ -156,6 +171,7 @@ class OverføreHendelserTest {
                 LocalDateTime.now(),
             )
         val lagretHendelserVenteperiodeIkkeUtløpt = databasetjeneste.lagreHendelse(hendelseMottattInnenforVenteperiode)
+        entityManager.flush()
         lagretHendelserVenteperiodeIkkeUtløpt.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() - 5)
         val oppdatertHendelseVenteperiodeIkkeUtløpt = hendelsemottakDao.save(lagretHendelserVenteperiodeIkkeUtløpt)
@@ -172,7 +188,9 @@ class OverføreHendelserTest {
                 LocalDateTime.now(),
             )
         val lagretHendelseMedStatusOverført = databasetjeneste.lagreHendelse(hendelseMedStatusOverført)
+        entityManager.flush()
         val oppdatertHendelseMedStatusOverført = hendelsemottakDao.save(lagretHendelseMedStatusOverført)
+        entityManager.flush()
         log.info("Lagret hendelse med statustidspunkt {}", oppdatertHendelseMedStatusOverført.statustidspunkt)
 
         // hvis
@@ -190,6 +208,7 @@ class OverføreHendelserTest {
     }
 
     @Test
+    @Transactional
     fun `skal ikke overføre flere hendelser enn maks antall om gangen`() {
         // gitt
         val hendelseid1 = "c096ca6f-9801-4543-9a44-116f4ed806ce"
@@ -203,9 +222,11 @@ class OverføreHendelserTest {
                 LocalDateTime.now(),
             )
         val lagretHendelse1 = databasetjeneste.lagreHendelse(hendelse1)
+        entityManager.flush()
         lagretHendelse1.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 5)
         hendelsemottakDao.save(lagretHendelse1)
+        entityManager.flush()
 
         val hendelseid2 = "38468520-70f2-40c0-b4ae-6c765c307a7d"
         val hendelse2 =
@@ -218,9 +239,11 @@ class OverføreHendelserTest {
                 LocalDateTime.now(),
             )
         val lagretHendelse2 = databasetjeneste.lagreHendelse(hendelse2)
+        entityManager.flush()
         lagretHendelse2.statustidspunkt =
             LocalDateTime.now().minusMinutes(egenskaper.generelt.antallMinutterForsinketVideresending.toLong() + 2)
         hendelsemottakDao.save(lagretHendelse2)
+        entityManager.flush()
 
         // hvis
         overføreHendelser.overføreHendelserTilBisys()

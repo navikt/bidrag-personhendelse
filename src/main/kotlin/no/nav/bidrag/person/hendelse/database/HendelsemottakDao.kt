@@ -4,7 +4,6 @@ import jakarta.persistence.LockModeType
 import no.nav.bidrag.person.hendelse.domene.Livshendelse
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Lock
-import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.lang.Nullable
 import org.springframework.stereotype.Repository
@@ -49,17 +48,6 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
             "and (hm.aktor.publisert is null or hm.aktor.publisert < :publisertFør)",
     )
     fun hentePubliseringsklareOverførteHendelser(publisertFør: LocalDateTime): Set<Hendelsemottak>
-
-    @Modifying
-    @Query(
-        "update Hendelsemottak hm " +
-                "set hm.status = no.nav.bidrag.person.hendelse.database.Status.PUBLISERT," +
-                "hm.statustidspunkt = hm.aktor.publisert " +
-                "where hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT " +
-                "and hm.aktor.publisert is not null " +
-                "and hm.aktor.publisert > hm.statustidspunkt",
-    )
-    fun synkroniserePubliseringsstatusForPubliserteHendelser(statustidspunkt: LocalDateTime)
 
     @Query(
         "select hm.id from Hendelsemottak hm " +
