@@ -50,6 +50,17 @@ interface HendelsemottakDao : JpaRepository<Hendelsemottak, Long> {
     )
     fun hentePubliseringsklareOverførteHendelser(publisertFør: LocalDateTime): Set<Hendelsemottak>
 
+    @Modifying
+    @Query(
+        "update Hendelsemottak hm " +
+                "set hm.status = no.nav.bidrag.person.hendelse.database.Status.PUBLISERT," +
+                "hm.statustidspunkt = hm.aktor.publisert " +
+                "where hm.status = no.nav.bidrag.person.hendelse.database.Status.OVERFØRT " +
+                "and hm.aktor.publisert is not null " +
+                "and hm.aktor.publisert > hm.statustidspunkt",
+    )
+    fun synkroniserePubliseringsstatusForPubliserteHendelser(statustidspunkt: LocalDateTime)
+
     @Query(
         "select hm.id from Hendelsemottak hm " +
             "where hm.status = :status " +

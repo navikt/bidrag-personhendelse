@@ -30,6 +30,7 @@ class BidragKafkaMeldingsprodusent(
         personidenter: Set<String>,
     ) {
         publisereMelding(aktørid, personidenter)
+        databasetjeneste.hendelsemottakDao.synkroniserePubliseringsstatusForPubliserteHendelser(LocalDateTime.now())
     }
 
     private fun publisereMelding(
