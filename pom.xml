@@ -27,22 +27,22 @@
         <javax.jms-api.version>2.0.1</javax.jms-api.version>
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
         <kotlin.version>1.9.22</kotlin.version>
-        <ktlint.version>1.1.1</ktlint.version>
+        <ktlint.version>1.2.1</ktlint.version>
         <flyway-maven-plugin.version>10.8.1</flyway-maven-plugin.version>
-        <mockk.version>1.13.9</mockk.version>
+        <mockk.version>1.13.10</mockk.version>
         <apache.httpcore.version>4.4.16</apache.httpcore.version>
         <apache.httpclient.version>4.5.14</apache.httpclient.version>
         <apache.avro.version>1.11.3</apache.avro.version>
         <availability.version>4.2.0</availability.version>
         <confluent.version>7.6.0</confluent.version>
-        <ibm.mq.allclient.version>9.3.4.1</ibm.mq.allclient.version>
+        <ibm.mq.allclient.version>9.3.5.0</ibm.mq.allclient.version>
         <prosessering.version>1.20220624132237_7f5ba9c</prosessering.version>
         <logback.encoder.version>7.4</logback.encoder.version>
         <spring.cloud.version>4.1.1</spring.cloud.version>
         <spring-cloud-gcp.version>5.0.4</spring-cloud-gcp.version>
         <spring-jms.version>5.3.31</spring-jms.version>
         <unleash-client-java.version>4.4.1</unleash-client-java.version>
-        <shedlock.version>5.11.0</shedlock.version>
+        <shedlock.version>5.12.0</shedlock.version>
         <kotest.version>5.8.0</kotest.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
