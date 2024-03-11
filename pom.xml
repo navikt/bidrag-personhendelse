@@ -26,7 +26,7 @@
         <jvmTarget>21</jvmTarget>
         <javax.jms-api.version>2.0.1</javax.jms-api.version>
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
-        <kotlin.version>1.9.22</kotlin.version>
+        <kotlin.version>1.9.23</kotlin.version>
         <ktlint.version>1.2.1</ktlint.version>
         <flyway-maven-plugin.version>10.8.1</flyway-maven-plugin.version>
         <mockk.version>1.13.10</mockk.version>
