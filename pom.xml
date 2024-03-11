@@ -26,9 +26,9 @@
         <jvmTarget>21</jvmTarget>
         <javax.jms-api.version>2.0.1</javax.jms-api.version>
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
-        <kotlin.version>1.9.22</kotlin.version>
+        <kotlin.version>1.9.23</kotlin.version>
         <ktlint.version>1.2.1</ktlint.version>
-        <flyway-maven-plugin.version>10.8.1</flyway-maven-plugin.version>
+        <flyway-maven-plugin.version>10.9.1</flyway-maven-plugin.version>
         <mockk.version>1.13.10</mockk.version>
         <apache.httpcore.version>4.4.16</apache.httpcore.version>
         <apache.httpclient.version>4.5.14</apache.httpclient.version>
@@ -43,7 +43,7 @@
         <spring-jms.version>5.3.31</spring-jms.version>
         <unleash-client-java.version>4.4.1</unleash-client-java.version>
         <shedlock.version>5.12.0</shedlock.version>
-        <kotest.version>5.8.0</kotest.version>
+        <kotest.version>5.8.1</kotest.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
         <token-support.version>3.2.0</token-support.version>
