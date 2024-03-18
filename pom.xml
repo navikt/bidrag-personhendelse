@@ -135,7 +135,7 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-client-jakarta</artifactId>
-            <version>${activemq-client.version}</version>
+            <version>${activemq-client-jakarta.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
