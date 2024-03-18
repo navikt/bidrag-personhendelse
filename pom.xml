@@ -35,7 +35,7 @@
         <apache.avro.version>1.11.3</apache.avro.version>
         <availability.version>4.2.1</availability.version>
         <confluent.version>7.6.0</confluent.version>
-        <ibm.mq.allclient.version>9.3.5.0</ibm.mq.allclient.version>
+        <ibm.mq.jakarta.client.version>9.3.5.0</ibm.mq.jakarta.client.version>
         <prosessering.version>1.20220624132237_7f5ba9c</prosessering.version>
         <logback.encoder.version>7.4</logback.encoder.version>
         <spring.cloud.version>4.1.1</spring.cloud.version>
@@ -124,8 +124,8 @@
         <!--MQ dependencies-->
         <dependency>
             <groupId>com.ibm.mq</groupId>
-            <artifactId>com.ibm.mq.allclient</artifactId>
-            <version>${ibm.mq.allclient.version}</version>
+            <artifactId>com.ibm.mq.jakarta.client</artifactId>
+            <version>${ibm.mq.jakarta.client.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
