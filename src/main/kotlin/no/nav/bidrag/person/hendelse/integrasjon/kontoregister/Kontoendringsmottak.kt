@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service
     havingValue = "true",
     matchIfMissing = true,
 )
-class Kontoendringsmottak(val kontoendringsbehandler: Kontoendringsbehandler) {
+class Kontoendringsmottak(
+    val kontoendringsbehandler: Kontoendringsbehandler,
+) {
     @KafkaListener(
         groupId = "kontoregister-person-endringsmelding-v2.bidrag",
         topics = ["okonomi.kontoregister-person-endringsmelding.v2"],
@@ -56,9 +58,7 @@ class Kontoendringsmottak(val kontoendringsbehandler: Kontoendringsbehandler) {
         return true
     }
 
-    fun harGylidgFormat(personident: String): Boolean {
-        return personident.isNotEmpty() && personident.length == 11 || personident.length == 13
-    }
+    fun harGylidgFormat(personident: String): Boolean = personident.isNotEmpty() && personident.length == 11 || personident.length == 13
 
     companion object {
         val log: Logger = LoggerFactory.getLogger(this::class.java)

@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component
 import java.util.zip.CRC32
 
 @Component
-class TeststøtteMeldingsmottak(val databasetjeneste: Databasetjeneste) {
+class TeststøtteMeldingsmottak(
+    val databasetjeneste: Databasetjeneste,
+) {
     fun henteAktør(aktørid: String): Aktor {
         val eksisteredeAktør = databasetjeneste.aktorDao.findByAktorid(aktørid)
 

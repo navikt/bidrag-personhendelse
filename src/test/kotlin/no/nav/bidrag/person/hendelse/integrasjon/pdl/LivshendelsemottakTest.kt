@@ -52,9 +52,17 @@ class LivshendelsemottakTest {
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -72,9 +80,17 @@ class LivshendelsemottakTest {
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -94,9 +110,17 @@ class LivshendelsemottakTest {
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -116,9 +140,17 @@ class LivshendelsemottakTest {
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -148,9 +180,17 @@ class LivshendelsemottakTest {
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -171,9 +211,17 @@ class LivshendelsemottakTest {
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -195,9 +243,17 @@ class LivshendelsemottakTest {
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -217,9 +273,17 @@ class LivshendelsemottakTest {
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -244,9 +308,17 @@ class LivshendelsemottakTest {
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -269,9 +341,17 @@ class LivshendelsemottakTest {
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -303,16 +383,27 @@ class LivshendelsemottakTest {
 
         val personhendelse = henteMetadataTilPersonhendelse(personidenterUtenAktørid)
         val sivilstand =
-            no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now())
-                .setType("GIFT").build()
+            no.nav.person.pdl.leesah.sivilstand.Sivilstand
+                .newBuilder()
+                .setBekreftelsesdato(LocalDate.now())
+                .setType("GIFT")
+                .build()
         personhendelse.sivilstand = sivilstand
         personhendelse.opplysningstype = Opplysningstype.SIVILSTAND_V1.name
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -352,16 +443,27 @@ class LivshendelsemottakTest {
 
         val personhendelse = henteMetadataTilPersonhendelse(langRekkePersonidenter)
         val sivilstand =
-            no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now())
-                .setType("GIFT").build()
+            no.nav.person.pdl.leesah.sivilstand.Sivilstand
+                .newBuilder()
+                .setBekreftelsesdato(LocalDate.now())
+                .setType("GIFT")
+                .build()
         personhendelse.sivilstand = sivilstand
         personhendelse.opplysningstype = Opplysningstype.SIVILSTAND_V1.name
 
         val cr =
             ConsumerRecord(
-                "pdl.leesah-v1", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                personhendelse, RecordHeaders(), Optional.of(0),
+                "pdl.leesah-v1",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                personhendelse,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis
@@ -397,7 +499,8 @@ class LivshendelsemottakTest {
         fun hentePersonhendelseForBostedsadresse(): Personhendelse {
             val personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.bostedsadresse =
-                Bostedsadresse.newBuilder()
+                Bostedsadresse
+                    .newBuilder()
                     .setAngittFlyttedato(LocalDate.now())
                     .setVegadresse(Vegadresse.newBuilder().setAdressenavn("Korketrekkeren 20").build())
                     .build()
@@ -409,7 +512,8 @@ class LivshendelsemottakTest {
         fun hentePersonhendelseForFolkeregisteridentifikator(): Personhendelse {
             val personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.folkeregisteridentifikator =
-                Folkeregisteridentifikator.newBuilder()
+                Folkeregisteridentifikator
+                    .newBuilder()
                     .setIdentifikasjonsnummer("12345678910")
                     .setStatus("I_BRUK")
                     .setType("FNR")
@@ -440,7 +544,12 @@ class LivshendelsemottakTest {
         }
 
         fun hentePersonhendelseForNavn(): Personhendelse {
-            val navn = Navn.newBuilder().setFornavn("Stolpe").setEtternavn("Hekk").build()
+            val navn =
+                Navn
+                    .newBuilder()
+                    .setFornavn("Stolpe")
+                    .setEtternavn("Hekk")
+                    .build()
             val personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.navn = navn
             personhendelse.opplysningstype = Opplysningstype.NAVN_V1.name
@@ -449,7 +558,11 @@ class LivshendelsemottakTest {
 
         fun hentePersonhendelseForUtflytting(): Personhendelse {
             val utflytting =
-                UtflyttingFraNorge.newBuilder().setTilflyttingsland("POL").setUtflyttingsdato(LocalDate.now()).build()
+                UtflyttingFraNorge
+                    .newBuilder()
+                    .setTilflyttingsland("POL")
+                    .setUtflyttingsdato(LocalDate.now())
+                    .build()
             val personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.utflyttingFraNorge = utflytting
             personhendelse.opplysningstype = Opplysningstype.UTFLYTTING_FRA_NORGE.name
@@ -458,8 +571,11 @@ class LivshendelsemottakTest {
 
         fun hentePersonhendelseForSivilstand(): Personhendelse {
             val sivilstand =
-                no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now())
-                    .setType("GIFT").build()
+                no.nav.person.pdl.leesah.sivilstand.Sivilstand
+                    .newBuilder()
+                    .setBekreftelsesdato(LocalDate.now())
+                    .setType("GIFT")
+                    .build()
             val personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.sivilstand = sivilstand
             personhendelse.opplysningstype = Opplysningstype.SIVILSTAND_V1.name
@@ -468,8 +584,11 @@ class LivshendelsemottakTest {
 
         fun hentePersonhendelseForSivilstandKorrigering(): Personhendelse {
             val sivilstand =
-                no.nav.person.pdl.leesah.sivilstand.Sivilstand.newBuilder().setBekreftelsesdato(LocalDate.now())
-                    .setType("GIFT").build()
+                no.nav.person.pdl.leesah.sivilstand.Sivilstand
+                    .newBuilder()
+                    .setBekreftelsesdato(LocalDate.now())
+                    .setType("GIFT")
+                    .build()
             val personhendelse = henteMetadataTilPersonhendelse()
             personhendelse.sivilstand = sivilstand
             personhendelse.tidligereHendelseId = "123"
@@ -478,13 +597,13 @@ class LivshendelsemottakTest {
             return personhendelse
         }
 
-        internal fun henteMetadataTilPersonhendelse(): Personhendelse {
-            return henteMetadataTilPersonhendelse(listOf("2541031559331", "07486302423"))
-        }
+        internal fun henteMetadataTilPersonhendelse(): Personhendelse =
+            henteMetadataTilPersonhendelse(listOf("2541031559331", "07486302423"))
 
         internal fun henteMetadataTilPersonhendelse(personidenter: List<String>): Personhendelse {
             val personhendelse =
-                Personhendelse.newBuilder()
+                Personhendelse
+                    .newBuilder()
                     .setHendelseId("567f35f1-b5c0-4457-8848-01d897d78bba")
                     .setPersonidenter(personidenter)
                     .setMaster("FREG")

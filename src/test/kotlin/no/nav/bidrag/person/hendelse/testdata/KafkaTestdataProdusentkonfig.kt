@@ -13,7 +13,9 @@ import org.springframework.kafka.core.ProducerFactory
 
 @Configuration
 @Profile("lokal")
-class KafkaTestdataProdusentkonfig(val kafka: Kafkakonfig.Kafka) {
+class KafkaTestdataProdusentkonfig(
+    val kafka: Kafkakonfig.Kafka,
+) {
     @Bean
     fun producerFactory(): ProducerFactory<String, String> {
         val konfig = HashMap<String, Any>()
@@ -25,7 +27,5 @@ class KafkaTestdataProdusentkonfig(val kafka: Kafkakonfig.Kafka) {
 
     @Bean
     @Qualifier("testdata")
-    fun kafkaTemplateTestdata(): KafkaTemplate<String?, String?>? {
-        return KafkaTemplate(producerFactory())
-    }
+    fun kafkaTemplateTestdata(): KafkaTemplate<String?, String?>? = KafkaTemplate(producerFactory())
 }

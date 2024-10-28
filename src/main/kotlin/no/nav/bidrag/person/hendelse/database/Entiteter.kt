@@ -33,9 +33,7 @@ class Aktor(
         return aktorid == other.aktorid
     }
 
-    override fun hashCode(): Int {
-        return aktorid.hashCode() * 31
-    }
+    override fun hashCode(): Int = aktorid.hashCode() * 31
 }
 
 @Entity

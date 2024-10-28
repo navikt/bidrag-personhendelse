@@ -13,7 +13,9 @@ import javax.jms.JMSException
 
 @EnableJms
 @Configuration
-class Jmskonfig(var wmq: Wmq) {
+class Jmskonfig(
+    var wmq: Wmq,
+) {
     fun createCachingConnectionFactory(): CachingConnectionFactory {
         val cachingConnectionFactory = CachingConnectionFactory()
         cachingConnectionFactory.sessionCacheSize = 1
@@ -22,9 +24,7 @@ class Jmskonfig(var wmq: Wmq) {
     }
 
     @Bean
-    fun jmsTemplate(): JmsTemplate {
-        return JmsTemplate(createCachingConnectionFactory())
-    }
+    fun jmsTemplate(): JmsTemplate = JmsTemplate(createCachingConnectionFactory())
 
     @Throws(JMSException::class)
     fun forbindelsefabrikk(): JmsConnectionFactory {

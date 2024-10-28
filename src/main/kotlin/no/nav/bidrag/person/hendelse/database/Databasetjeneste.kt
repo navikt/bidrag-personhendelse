@@ -88,7 +88,8 @@ class Databasetjeneste(
         }
 
         val lagretAktør =
-            aktorDao.findByAktorid(livshendelse.aktorid)
+            aktorDao
+                .findByAktorid(livshendelse.aktorid)
                 .orElseGet {
                     aktorDao.save(Aktor(livshendelse.aktorid))
                 }
@@ -98,7 +99,8 @@ class Databasetjeneste(
                 livshendelse.hendelseid,
                 livshendelse.opplysningstype,
                 livshendelse.endringstype,
-                livshendelse.personidenter.toSet()
+                livshendelse.personidenter
+                    .toSet()
                     .joinToString { it },
                 lagretAktør,
                 livshendelse.opprettet,
@@ -118,16 +120,16 @@ class Databasetjeneste(
         readOnly = true,
         noRollbackFor = [Exception::class],
     )
-    fun hentePubliseringsklareHendelser(): HashMap<Aktor, Set<String>> {
-        return tilHashMap(
+    fun hentePubliseringsklareHendelser(): HashMap<Aktor, Set<String>> =
+        tilHashMap(
             hendelsemottakDao.hentePubliseringsklareOverførteHendelser(
-                LocalDateTime.now()
+                LocalDateTime
+                    .now()
                     .minusHours(
                         egenskaper.generelt.antallTimerSidenForrigePublisering.toLong(),
                     ),
             ),
         )
-    }
 
     private fun tilHashMap(liste: Set<Hendelsemottak>): HashMap<Aktor, Set<String>> {
         val map =
@@ -135,10 +137,10 @@ class Databasetjeneste(
         liste.forEach {
             map.put(
                 it.aktor,
-                it.personidenter.split(
-                    ',',
-                )
-                    .map { ident -> ident.trim() }
+                it.personidenter
+                    .split(
+                        ',',
+                    ).map { ident -> ident.trim() }
                     .toSet(),
             )
         }

@@ -39,8 +39,7 @@ class KafkaOmstartFeilhåndtererTest {
                 consumer,
                 container,
             )
-        }
-            .hasMessageContaining("Stopper kafka container")
+        }.hasMessageContaining("Stopper kafka container")
             .hasCauseExactlyInstanceOf(RuntimeException::class.java)
     }
 
@@ -54,8 +53,7 @@ class KafkaOmstartFeilhåndtererTest {
                 consumer,
                 container,
             )
-        }
-            .hasMessageContaining("Stopper kafka container")
+        }.hasMessageContaining("Stopper kafka container")
             .isInstanceOf(KafkaException::class.java)
             .hasCauseExactlyInstanceOf(RuntimeException::class.java)
     }

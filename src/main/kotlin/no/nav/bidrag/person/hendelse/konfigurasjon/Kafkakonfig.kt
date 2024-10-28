@@ -25,7 +25,9 @@ import java.time.Duration
     havingValue = "true",
     matchIfMissing = true,
 )
-class Kafkakonfig(val kafka: Kafka) {
+class Kafkakonfig(
+    val kafka: Kafka,
+) {
     @Primary
     @ConfigurationProperties("spring.kafka")
     data class Kafka(

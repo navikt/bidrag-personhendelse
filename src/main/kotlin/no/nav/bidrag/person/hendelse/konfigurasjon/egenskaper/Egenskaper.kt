@@ -3,7 +3,10 @@ package no.nav.bidrag.person.hendelse.konfigurasjon.egenskaper
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "egenskaper")
-data class Egenskaper(val generelt: Generelt, val integrasjon: Integrasjon)
+data class Egenskaper(
+    val generelt: Generelt,
+    val integrasjon: Integrasjon,
+)
 
 @ConfigurationProperties("generelt")
 data class Generelt(
@@ -16,7 +19,10 @@ data class Generelt(
 )
 
 @ConfigurationProperties("egenskaper.integrasjon")
-data class Integrasjon(val wmq: Wmq, val bidragPerson: BidragPerson)
+data class Integrasjon(
+    val wmq: Wmq,
+    val bidragPerson: BidragPerson,
+)
 
 @ConfigurationProperties("egenskaper.integrasjon.wmq")
 data class Wmq(
@@ -32,4 +38,6 @@ data class Wmq(
 )
 
 @ConfigurationProperties("egenskaper.integrasjon.bidrag-person")
-data class BidragPerson(val url: String)
+data class BidragPerson(
+    val url: String,
+)
