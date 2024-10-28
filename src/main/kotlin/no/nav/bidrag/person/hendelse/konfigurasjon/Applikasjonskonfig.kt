@@ -33,9 +33,7 @@ import javax.sql.DataSource
 @Import(RestTemplateBuilderBean::class, RestOperationsAzure::class)
 class Applikasjonskonfig {
     @Bean
-    fun servletWebServerFactory(): ServletWebServerFactory {
-        return JettyServletWebServerFactory()
-    }
+    fun servletWebServerFactory(): ServletWebServerFactory = JettyServletWebServerFactory()
 
     companion object {
         const val PROFIL_I_SKY = "i-sky"
@@ -43,9 +41,7 @@ class Applikasjonskonfig {
     }
 
     @Bean
-    fun exceptionLogger(): ExceptionLogger? {
-        return ExceptionLogger(this::class.java.simpleName)
-    }
+    fun exceptionLogger(): ExceptionLogger? = ExceptionLogger(this::class.java.simpleName)
 
     @Bean
     fun clientRequestObservationConvention(): ClientRequestObservationConvention = DefaultClientRequestObservationConvention()
@@ -57,13 +53,13 @@ class Applikasjonskonfig {
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 class SchedulerConfiguration {
     @Bean
-    fun lockProvider(dataSource: DataSource): JdbcTemplateLockProvider {
-        return JdbcTemplateLockProvider(
-            JdbcTemplateLockProvider.Configuration.builder()
+    fun lockProvider(dataSource: DataSource): JdbcTemplateLockProvider =
+        JdbcTemplateLockProvider(
+            JdbcTemplateLockProvider.Configuration
+                .builder()
                 .withTableName("shedlock")
                 .withColumnNames(JdbcTemplateLockProvider.ColumnNames("name", "lock_until", "locked_at", "locked_by"))
                 .withJdbcTemplate(JdbcTemplate(dataSource))
                 .build(),
         )
-    }
 }

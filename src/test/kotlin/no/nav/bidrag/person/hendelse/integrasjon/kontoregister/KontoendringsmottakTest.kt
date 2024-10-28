@@ -40,15 +40,26 @@ class KontoendringsmottakTest {
         // gitt
         val kontoeierFødselsnummer: String = generererFødselsnummer()
         val endringsmelding: Endringsmelding =
-            Endringsmelding.newBuilder().setKontohaver(kontoeierFødselsnummer).setKontonummer("123")
+            Endringsmelding
+                .newBuilder()
+                .setKontohaver(kontoeierFødselsnummer)
+                .setKontonummer("123")
                 .setUtenlandskKontoInfo(
                     UtenlandskKontoInfo(),
                 ).build()
         val cr =
             ConsumerRecord(
-                "okonomi.kontoregister-person-endringsmelding.v2", 1, 229055,
-                Instant.now().toEpochMilli(), TimestampType.CREATE_TIME, 0, 0, "2541031559331",
-                endringsmelding, RecordHeaders(), Optional.of(0),
+                "okonomi.kontoregister-person-endringsmelding.v2",
+                1,
+                229055,
+                Instant.now().toEpochMilli(),
+                TimestampType.CREATE_TIME,
+                0,
+                0,
+                "2541031559331",
+                endringsmelding,
+                RecordHeaders(),
+                Optional.of(0),
             )
 
         // hvis

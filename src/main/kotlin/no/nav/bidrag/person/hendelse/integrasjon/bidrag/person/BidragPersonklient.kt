@@ -21,8 +21,8 @@ class BidragPersonklient(
     @Qualifier("azure") val restTemplate: RestTemplate,
 ) : AbstractRestClient(restTemplate, "bidrag-person") {
     @Retryable(value = [Exception::class], maxAttempts = 10, backoff = Backoff(delay = 1000, multiplier = 2.0))
-    fun henteAlleIdenterForPerson(personIdent: String): List<PersonidentDto>? {
-        return try {
+    fun henteAlleIdenterForPerson(personIdent: String): List<PersonidentDto>? =
+        try {
             postForEntity(createUri(), HentePersonidenterRequest(personIdent))
         } catch (e: HttpStatusCodeException) {
             log.warn(
@@ -35,11 +35,13 @@ class BidragPersonklient(
             )
             throw e
         }
-    }
 
     private fun createUri() =
-        UriComponentsBuilder.fromUri(bidragPersonUrl)
-            .path(ENDEPUNKT_PERSONIDENTER).build().toUri()
+        UriComponentsBuilder
+            .fromUri(bidragPersonUrl)
+            .path(ENDEPUNKT_PERSONIDENTER)
+            .build()
+            .toUri()
 
     companion object {
         const val ENDEPUNKT_PERSONIDENTER = "/personidenter"

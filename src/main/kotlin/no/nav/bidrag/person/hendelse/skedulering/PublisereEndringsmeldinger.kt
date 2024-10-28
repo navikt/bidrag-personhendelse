@@ -27,9 +27,10 @@ class PublisereEndringsmeldinger(
         log.info("Fant ${aktørerPersonopplysninger.size} unike personer med nylige endringer i personopplysninger.")
 
         val subsetMedAktørider =
-            aktørerPersonopplysninger.keys.take(
-                egenskaper.generelt.maksAntallMeldingerSomSendesTilBidragTopicOmGangen,
-            ).toSet()
+            aktørerPersonopplysninger.keys
+                .take(
+                    egenskaper.generelt.maksAntallMeldingerSomSendesTilBidragTopicOmGangen,
+                ).toSet()
 
         if (subsetMedAktørider.size < aktørerPersonopplysninger.size) {
             log.info(

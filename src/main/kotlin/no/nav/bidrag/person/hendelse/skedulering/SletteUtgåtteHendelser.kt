@@ -24,7 +24,9 @@ class SletteUtgåtteHendelser(
     )
     fun sletteUtgåtteHendelserFraDatabase() {
         val statusoppdateringFør =
-            LocalDate.now().atStartOfDay()
+            LocalDate
+                .now()
+                .atStartOfDay()
                 .minusDays(egenskaper.generelt.antallDagerLevetidForUtgaatteHendelser.toLong())
 
         log.info("Ser etter utgåtte livshendelser med siste statusoppdatering før $statusoppdateringFør som skal slettes fra databasen.")

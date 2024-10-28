@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component
 import javax.jms.Queue
 
 @Component
-class BisysMeldingsprodusjon(private val jmsTemplate: JmsTemplate) {
+class BisysMeldingsprodusjon(
+    private val jmsTemplate: JmsTemplate,
+) {
     fun sendeMeldinger(
         mottakerkoe: String,
         hendelser: List<String>,

@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
+class Livshendelsebehandler(
+    val databasetjeneste: Databasetjeneste,
+) {
     fun prosesserNyHendelse(livshendelse: Livshendelse) {
         when (livshendelse.opplysningstype) {
             Opplysningstype.ADRESSEBESKYTTELSE_V1 -> behandleAdressebeskyttelse(livshendelse)
@@ -513,16 +515,13 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
         )
     }
 
-    private fun erUnder6mnd(fødselsDato: LocalDate): Boolean {
-        return LocalDate.now().isBefore(fødselsDato.plusMonths(6))
-    }
+    private fun erUnder6mnd(fødselsDato: LocalDate): Boolean = LocalDate.now().isBefore(fødselsDato.plusMonths(6))
 
-    private fun erUtenforNorge(fødeland: String?): Boolean {
-        return when (fødeland) {
+    private fun erUtenforNorge(fødeland: String?): Boolean =
+        when (fødeland) {
             null, "NOR" -> false
             else -> true
         }
-    }
 
     companion object {
         val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -668,8 +667,6 @@ class Livshendelsebehandler(val databasetjeneste: Databasetjeneste) {
         val tellerVergeOpprettet: Counter =
             Metrics.counter(tellernavn(VERGE + ".${Endringstype.OPPRETTET.name.lowercase()}"))
 
-        private fun tellernavn(navn: String): String {
-            return "bidrag.personhendelse.$navn"
-        }
+        private fun tellernavn(navn: String): String = "bidrag.personhendelse.$navn"
     }
 }

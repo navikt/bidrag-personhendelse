@@ -122,8 +122,8 @@ class LivshendelsebehandlerTest {
         opplysningstype: Opplysningstype,
         endringstype: Endringstype,
         foedsel: Foedsel,
-    ): Livshendelse {
-        return Livshendelse(
+    ): Livshendelse =
+        Livshendelse(
             hendelseId,
             opplysningstype,
             endringstype,
@@ -136,15 +136,14 @@ class LivshendelsebehandlerTest {
             null,
             foedsel,
         )
-    }
 
     fun oppretteLivshendelseForDødsfall(
         hendelseId: String,
         opplysningstype: Opplysningstype,
         endringstype: Endringstype,
         dødsdato: LocalDate,
-    ): Livshendelse {
-        return Livshendelse(
+    ): Livshendelse =
+        Livshendelse(
             hendelseId,
             opplysningstype,
             endringstype,
@@ -154,15 +153,14 @@ class LivshendelsebehandlerTest {
             null,
             dødsdato,
         )
-    }
 
     fun oppretteLivshendelseForUtflytting(
         hendelseId: String,
         opplysningstype: Opplysningstype,
         endringstype: Endringstype,
         utflytting: Utflytting,
-    ): Livshendelse {
-        return Livshendelse(
+    ): Livshendelse =
+        Livshendelse(
             hendelseId,
             opplysningstype,
             endringstype,
@@ -178,15 +176,14 @@ class LivshendelsebehandlerTest {
             null,
             utflytting,
         )
-    }
 
     fun oppretteLivshendelseForSivilstand(
         hendelseId: String,
         opplysningstype: Opplysningstype,
         endringstype: Endringstype,
         sivilstand: Sivilstand,
-    ): Livshendelse {
-        return Livshendelse(
+    ): Livshendelse =
+        Livshendelse(
             hendelseId,
             opplysningstype,
             endringstype,
@@ -203,5 +200,4 @@ class LivshendelsebehandlerTest {
             null,
             sivilstand,
         )
-    }
 }

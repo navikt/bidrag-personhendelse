@@ -38,7 +38,9 @@ import java.util.stream.Collectors
     havingValue = "true",
     matchIfMissing = true,
 )
-class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
+class Livshendelsemottak(
+    val livshendelsebehandler: Livshendelsebehandler,
+) {
     object MdcKonstanter {
         const val MDC_KALLID = "id-kall"
     }
@@ -85,7 +87,10 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
                 personhendelse.hendelseId.toString(),
                 opplysningstype,
                 konvertereEndringstype(personhendelse.endringstype),
-                personhendelse.personidenter?.stream()?.map(CharSequence::toString)!!.collect(Collectors.toList()),
+                personhendelse.personidenter
+                    ?.stream()
+                    ?.map(CharSequence::toString)!!
+                    .collect(Collectors.toList()),
                 personhendelse.personidenter.first { it.length == 13 }.toString(),
                 LocalDateTime.ofInstant(personhendelse.opprettet, ZoneId.systemDefault()),
                 personhendelse.tidligereHendelseId?.toString(),
@@ -118,8 +123,8 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         }
     }
 
-    private fun konvertereOpplysningstype(pdlOpplysningstype: CharSequence?): Livshendelse.Opplysningstype {
-        return try {
+    private fun konvertereOpplysningstype(pdlOpplysningstype: CharSequence?): Livshendelse.Opplysningstype =
+        try {
             Livshendelse.Opplysningstype.valueOf(pdlOpplysningstype.toString())
         } catch (iae: IllegalArgumentException) {
             log.info(
@@ -128,7 +133,6 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             )
             Livshendelse.Opplysningstype.IKKE_STØTTET
         }
-    }
 
     private fun konvertereEndringstype(pdlEndringstype: Endringstype?): no.nav.bidrag.person.hendelse.domene.Endringstype {
         if (pdlEndringstype == null) {
@@ -136,7 +140,8 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
             throw HendelsemottakException("Endringstype i mottatt melding var null!")
         } else {
             try {
-                return no.nav.bidrag.person.hendelse.domene.Endringstype.valueOf(pdlEndringstype.name)
+                return no.nav.bidrag.person.hendelse.domene.Endringstype
+                    .valueOf(pdlEndringstype.name)
             } catch (iae: IllegalArgumentException) {
                 log.error("Mottok ukjent endringstype ({}) fra PDL", pdlEndringstype.name)
                 iae.printStackTrace()
@@ -145,28 +150,26 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
         }
     }
 
-    private fun henteAdressebeskyttelse(adressebeskyttelse: Adressebeskyttelse?): Livshendelse.Gradering {
-        return if (adressebeskyttelse == null) {
+    private fun henteAdressebeskyttelse(adressebeskyttelse: Adressebeskyttelse?): Livshendelse.Gradering =
+        if (adressebeskyttelse == null) {
             Livshendelse.Gradering.UGRADERT
         } else {
             Livshendelse.Gradering.valueOf(adressebeskyttelse.gradering.name)
         }
-    }
 
-    private fun henteDødsdato(doedsfall: Doedsfall?): LocalDate? {
-        return if (doedsfall == null) {
+    private fun henteDødsdato(doedsfall: Doedsfall?): LocalDate? =
+        if (doedsfall == null) {
             null
         } else {
             doedsfall.doedsdato
         }
-    }
 
     private fun henteFlyttedato(
         bostedsadresse: Bostedsadresse?,
         kontaktadresse: Kontaktadresse?,
         oppholdsadresse: Oppholdsadresse?,
-    ): LocalDate? {
-        return if (bostedsadresse == null && kontaktadresse == null && oppholdsadresse == null) {
+    ): LocalDate? =
+        if (bostedsadresse == null && kontaktadresse == null && oppholdsadresse == null) {
             null
         } else {
             if (bostedsadresse?.angittFlyttedato != null) {
@@ -177,10 +180,9 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
                 null
             }
         }
-    }
 
-    private fun erKontaktadresseEndret(kontaktadresse: Kontaktadresse?): Boolean {
-        return kontaktadresse != null &&
+    private fun erKontaktadresseEndret(kontaktadresse: Kontaktadresse?): Boolean =
+        kontaktadresse != null &&
             (
                 kontaktadresse.vegadresse != null ||
                     kontaktadresse.postadresseIFrittFormat != null ||
@@ -188,21 +190,19 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
                     kontaktadresse.postadresseIFrittFormat != null ||
                     kontaktadresse.utenlandskAdresse != null
             )
-    }
 
-    private fun erOppholdsadresseEndret(oppholdsadresse: Oppholdsadresse?): Boolean {
-        return oppholdsadresse != null &&
+    private fun erOppholdsadresseEndret(oppholdsadresse: Oppholdsadresse?): Boolean =
+        oppholdsadresse != null &&
             (
                 oppholdsadresse.utenlandskAdresse != null ||
                     oppholdsadresse.matrikkeladresse != null ||
                     oppholdsadresse.vegadresse != null
             )
-    }
 
     private fun henteFolkeregisteridentifikator(
         folkeregisteridentifikator: no.nav.person.pdl.leesah.folkeregisteridentifikator.Folkeregisteridentifikator?,
-    ): Folkeregisteridentifikator? {
-        return if (folkeregisteridentifikator == null) {
+    ): Folkeregisteridentifikator? =
+        if (folkeregisteridentifikator == null) {
             null
         } else {
             Folkeregisteridentifikator(
@@ -211,26 +211,23 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
                 folkeregisteridentifikator.status?.toString(),
             )
         }
-    }
 
-    private fun henteFødsel(foedsel: no.nav.person.pdl.leesah.foedsel.Foedsel?): Foedsel? {
-        return if (foedsel == null) {
+    private fun henteFødsel(foedsel: no.nav.person.pdl.leesah.foedsel.Foedsel?): Foedsel? =
+        if (foedsel == null) {
             null
         } else {
             Foedsel(foedsel.foedeland?.toString(), foedsel.foedselsdato)
         }
-    }
 
-    private fun henteInnflytting(innflytting: no.nav.person.pdl.leesah.innflytting.InnflyttingTilNorge?): Innflytting? {
-        return if (innflytting == null) {
+    private fun henteInnflytting(innflytting: no.nav.person.pdl.leesah.innflytting.InnflyttingTilNorge?): Innflytting? =
+        if (innflytting == null) {
             null
         } else {
             Innflytting(innflytting.fraflyttingsland?.toString(), innflytting.fraflyttingsstedIUtlandet?.toString())
         }
-    }
 
-    private fun henteNavn(navn: no.nav.person.pdl.leesah.navn.Navn?): Navn? {
-        return if (navn == null) {
+    private fun henteNavn(navn: no.nav.person.pdl.leesah.navn.Navn?): Navn? =
+        if (navn == null) {
             null
         } else {
             val originaltNavn =
@@ -247,10 +244,9 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
                 navn.gyldigFraOgMed,
             )
         }
-    }
 
-    private fun henteUtflytting(utflytting: no.nav.person.pdl.leesah.utflytting.UtflyttingFraNorge?): Utflytting? {
-        return if (utflytting == null) {
+    private fun henteUtflytting(utflytting: no.nav.person.pdl.leesah.utflytting.UtflyttingFraNorge?): Utflytting? =
+        if (utflytting == null) {
             null
         } else {
             Utflytting(
@@ -259,18 +255,16 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
                 utflytting.utflyttingsdato,
             )
         }
-    }
 
-    private fun henteSivilstand(sivilstand: no.nav.person.pdl.leesah.sivilstand.Sivilstand?): Sivilstand? {
-        return if (sivilstand == null) {
+    private fun henteSivilstand(sivilstand: no.nav.person.pdl.leesah.sivilstand.Sivilstand?): Sivilstand? =
+        if (sivilstand == null) {
             null
         } else {
             Sivilstand(sivilstand.type?.toString(), sivilstand.bekreftelsesdato, sivilstand.gyldigFraOgMed)
         }
-    }
 
-    private fun henteVerge(verge: no.nav.person.pdl.leesah.verge.VergemaalEllerFremtidsfullmakt?): VergeEllerFremtidsfullmakt? {
-        return if (verge == null) {
+    private fun henteVerge(verge: no.nav.person.pdl.leesah.verge.VergemaalEllerFremtidsfullmakt?): VergeEllerFremtidsfullmakt? =
+        if (verge == null) {
             null
         } else {
             val vergeEllerFullmektig =
@@ -281,7 +275,6 @@ class Livshendelsemottak(val livshendelsebehandler: Livshendelsebehandler) {
                 )
             VergeEllerFremtidsfullmakt(verge.type?.toString(), verge.embete?.toString(), vergeEllerFullmektig)
         }
-    }
 
     companion object {
         val slog: Logger = LoggerFactory.getLogger("secureLogger")
