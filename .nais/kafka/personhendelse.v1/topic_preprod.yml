@@ -23,10 +23,22 @@ spec:
       application: bidrag-person-hendelse
       access: readwrite
     - team: bidrag
-      application: bidrag-aktoerregister
+      application: bidrag-aktoerregister-q1
       access: read
     - team: bidrag
-      application: bidrag-aktoerregister-feature
+      application: bidrag-aktoerregister-q2
+      access: read
+    - team: bidrag
+      application: bidrag-aktoerregister-q4
+      access: read
+    - team: bidrag
+      application: bidrag-regnskap-q1
+      access: read
+    - team: bidrag
+      application: bidrag-regnskap-q2
+      access: read
+    - team: bidrag
+      application: bidrag-regnskap-q4
       access: read
     - team: bidrag
       application: bidrag-kafka-manager
