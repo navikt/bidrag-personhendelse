@@ -41,5 +41,14 @@ spec:
       application: bidrag-regnskap-q4
       access: read
     - team: bidrag
+      application: bidrag-aldersjustering-q1
+      access: read
+    - team: bidrag
+      application: bidrag-aldersjustering-q2
+      access: read
+    - team: bidrag
+      application: bidrag-aldersjustering-q4
+      access: read
+    - team: bidrag
       application: bidrag-kafka-manager
       access: read
